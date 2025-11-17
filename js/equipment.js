@@ -6,6 +6,27 @@
  * organized, documented, and maintainable code.
  */
 
+/**
+ * Add equipment row to table
+ * @param {string} ecode - Equipment code
+ * @param {string} name - Equipment name
+ * @param {number} weight - Equipment weight
+ * @param {number} quantity - Quantity needed
+ * @param {HTMLElement} tbody - Table body element to append to
+ */
+function addEquipmentRow(ecode, name, weight, quantity, tbody) {
+  if (!tbody || quantity <= 0) return;
+
+  const row = tbody.insertRow();
+  const cell1 = row.insertCell(0);
+  const cell2 = row.insertCell(1);
+  const cell3 = row.insertCell(2);
+
+  cell1.textContent = ecode;
+  cell2.textContent = name;
+  cell3.textContent = quantity;
+}
+
 const EquipmentCalculator = {
 
   /**
@@ -1071,6 +1092,7 @@ function displayEquipment(data) {
 if (typeof window !== 'undefined') {
   window.EquipmentCalculator = EquipmentCalculator;
   window.displayEquipment = displayEquipment;
+  window.addEquipmentRow = addEquipmentRow;
   window.addAbsenEquipment = addAbsenEquipment;
   window.addROEEquipment = addROEEquipment;
   window.addTheatrixxEquipment = addTheatrixxEquipment;
@@ -1081,6 +1103,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     EquipmentCalculator,
     displayEquipment,
+    addEquipmentRow,
     addAbsenEquipment,
     addROEEquipment,
     addTheatrixxEquipment

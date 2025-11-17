@@ -1557,36 +1557,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       });
     }
 
-    // Utility functions
-    // Make functions globally accessible
-    window.showCombineDistroDialog = showCombineDistroDialog;
-    window.closeCombineDistroDialog = closeCombineDistroDialog;
-    window.applyCombinedDistro = applyCombinedDistro;
-    window.calculateCombinedDistro = calculateCombinedDistro;
-    window.addCombineDistroButton = addCombineDistroButton;
-	
-	<!-- LOCATION 1: Add the combined processor functions after the existing combine distro functions -->
-<!-- Find this section in your code (around line 2800+) and add the new functions after it -->
-
-    // Make functions globally accessible
-    window.showCombineDistroDialog = showCombineDistroDialog;
-    window.closeCombineDistroDialog = closeCombineDistroDialog;
-    window.applyCombinedDistro = applyCombinedDistro;
-    window.calculateCombinedDistro = calculateCombinedDistro;
-    window.addCombineDistroButton = addCombineDistroButton;
-
-    // ✅ ADD ALL THE COMBINED PROCESSOR FUNCTIONS HERE ✅
-    // Combined processor calculation function
-    // Make processing functions globally accessible
-    window.showCombineProcessingDialog = showCombineProcessingDialog;
-    window.closeCombineProcessingDialog = closeCombineProcessingDialog;
-    window.applyCombinedProcessing = applyCombinedProcessing;
-    window.calculateCombinedProcessing = calculateCombinedProcessing;
-
-    // ✅ END OF NEW FUNCTIONS ✅
-
-    // LOCATION 2: Replace the existing addCombineDistroButton function
-    // Find this function (around line 2750+) and replace it entirely:
+    // Multi-screen functions are exported from multiscreen.js
 
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {

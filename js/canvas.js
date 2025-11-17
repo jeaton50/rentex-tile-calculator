@@ -71,7 +71,7 @@ const CanvasRenderer = {
    * @param {boolean} showNumbers - Whether to show tile numbers
    * @param {HTMLImageElement} blockImage - Tile image to render
    */
-  drawWall(wallData, zoomLevel, showNumbers, blockImage) {
+  drawWall(wallData, zoomLevel = 4, showNumbers = false, blockImage = null) {
     const canvas = document.getElementById('wallCanvas2D');
     if (!canvas) {
       console.error('Canvas element not found');
@@ -79,6 +79,10 @@ const CanvasRenderer = {
     }
 
     const ctx = canvas.getContext('2d');
+
+    // Use provided blockImage or fall back to loaded image or create fallback
+    const tileImage = blockImage || this.images.block;
+
     const blockSize = (this.config.baseBlockPixels / 4) * zoomLevel;
 
     // Get number of screens (default to 1)
@@ -114,8 +118,16 @@ const CanvasRenderer = {
           const posX = xOffset + col * blockSize;
           const posY = extraHeightTop + row * blockSize;
 
-          // Draw tile image
-          ctx.drawImage(blockImage, posX, posY, blockSize, blockSize);
+          // Draw tile image or fallback rectangle
+          if (tileImage && tileImage.complete && tileImage.naturalHeight !== 0) {
+            ctx.drawImage(tileImage, posX, posY, blockSize, blockSize);
+          } else {
+            // Fallback: draw colored rectangle
+            ctx.fillStyle = '#444';
+            ctx.fillRect(posX, posY, blockSize, blockSize);
+            ctx.strokeStyle = '#666';
+            ctx.strokeRect(posX, posY, blockSize, blockSize);
+          }
 
           // Draw tile number if enabled
           if (showNumbers) {
