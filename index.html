@@ -657,13 +657,19 @@ window.addEventListener("DOMContentLoaded", () => {
           powerDistroType
         };
 
-        showLoadingSpinner(300);
-        displayEquipment(requestData);
-        displayWallDimensions();
-        drawWall(requestData);
-		display208CircuitsNeeded();
-        //displayTotalPower(requestData);
-        hideLoadingSpinner();
+        // Call module functions (showLoadingSpinner/hideLoadingSpinner removed)
+        if (typeof displayEquipment === 'function') {
+          displayEquipment(requestData);
+        }
+        if (typeof CanvasRenderer !== 'undefined' && CanvasRenderer.displayWallDimensions) {
+          CanvasRenderer.displayWallDimensions();
+        }
+        if (typeof CanvasRenderer !== 'undefined' && CanvasRenderer.drawWall) {
+          CanvasRenderer.drawWall(requestData);
+        }
+        if (typeof display208CircuitsNeeded === 'function') {
+          display208CircuitsNeeded();
+        }
       }
 
   // <-- existing generateWall() function end
@@ -1083,24 +1089,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
 // Function to update the power-weight summary in the top section
 // Updated combined equipment function
 // Update the combined equipment function with improved consistent sorting
-  class ScreenConfig {
-    constructor(id) {
-      this.id = id;
-      this.productType = "absen";
-      this.blocksHor = 10;
-      this.blocksVer = 10;
-      this.wallType = "Flat";
-      this.supportType = "groundSupport";
-      this.supportOption = "Single Base";
-      this.powerDistroType = "Auto";
-      this.redundancy = "None";
-      this.sourceSignals = 1;
-      this.dummyTiles = false;
-      this.dummyTileCount = 1;
-    }
-  }
-
-  // Global variables
+// Global variables
   window.screenConfigurations = [new ScreenConfig(1)];
   window.activeScreenIndex = 0;
   window.originalAddEquipmentRow = null;
