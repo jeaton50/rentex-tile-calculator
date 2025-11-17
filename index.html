@@ -83,21 +83,6 @@
     `;
   }
 
-// Function to update table row color based on product type
-function updateTableRowColor(productType) {
-  // existing code...
-}
-
-// ✅ INSERT THIS FUNCTION RIGHT AFTER updateTableRowColor
- else {
-    warningDiv.innerHTML = "";
-    warningDiv.style.display = "none";
-  }
-}
-
-
-
-
   // Attach event listener to Product Type dropdown
   document.getElementById("productType").addEventListener("change", function () {
     updateTableRowColor(this.value);
