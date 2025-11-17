@@ -409,6 +409,7 @@ function display208CircuitsNeeded() {
 if (typeof window !== 'undefined') {
   window.Calculator = Calculator;
   window.generateWallConfiguration = generateWallConfiguration;
+  window.generateWall = generateWallConfiguration; // Alias for backward compatibility
   window.handleDimensionInput = handleDimensionInput;
   window.handleBlockInput = handleBlockInput;
   window.updateBlocksFromAspectRatio = updateBlocksFromAspectRatio;
@@ -420,6 +421,10 @@ if (typeof window !== 'undefined') {
   window.updateDimensionsFromBlocks = handleBlockInput;
   window.updateBlocksBasedOnSelection = updateBlocksFromAspectRatio;
   window.roundToDimension = Calculator.roundToDimension;
+
+  // Export constants for backward compatibility
+  window.BLOCK_SIZE_FEET = BLOCK_SIZE_FEET;
+  window.BLOCK_SIZE_MM = BLOCK_SIZE_MM;
 }
 
 // Export for module systems

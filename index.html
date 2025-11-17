@@ -528,9 +528,7 @@ window.addEventListener("DOMContentLoaded", () => {
       var totalWeight = 0;
       let hasChecked = false;
 
-      // Constants
-      const BLOCK_SIZE_MM = 500;
-      const BLOCK_SIZE_FEET = BLOCK_SIZE_MM / 304.8;
+      // Constants are now exported from calculator.js
 
       // Flags for preventing recursive updates
       let isUpdatingDimensions = false;
