@@ -94,20 +94,7 @@
     updateTableRowColor(this.value);
   });
 
-// Function to display the IBolts warning
-function displayIBoltWarning(productType) {
-  const warningDiv = document.getElementById("IBoltWarning");
-
-  if (["BP2B1", "BP2B2", "BP2V2"].includes(productType)) {
-    warningDiv.innerHTML = "\u26A0\uFE0F Headers come with clamps, check with client if they need IBolts.";
-    warningDiv.style.display = "block";
-  } else {
-    warningDiv.innerHTML = "";
-    warningDiv.style.display = "none";
-  }
-}
-
-// The product type change event listener is now consolidated in the DOMContentLoaded section
+// Function displayIBoltWarning is now in js/ui.js
 
 // Trigger once on page load
 window.addEventListener("DOMContentLoaded", () => {
@@ -116,7 +103,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Check if flown support is selected and update IBolt warning
   if (document.getElementById('flownSupport').checked) {
-    displayIBoltWarning(initialProductType);
+    UI.displayIBoltWarning(initialProductType);
   }
 });
 </script>
