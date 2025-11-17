@@ -512,7 +512,7 @@ window.addEventListener("DOMContentLoaded", () => {
       // Define initial zoom level and global variables
       let zoomLevel = 1;
 	 
-      let showNumbers = true;
+      window.showNumbers = true;
       var totalWeight = 0;
       let hasChecked = false;
 
@@ -665,7 +665,9 @@ window.addEventListener("DOMContentLoaded", () => {
           CanvasRenderer.displayWallDimensions();
         }
         if (typeof CanvasRenderer !== 'undefined' && CanvasRenderer.drawWall) {
-          CanvasRenderer.drawWall(requestData);
+          const zoom = window.currentZoomLevel || 4;
+          const showNumbers = window.showNumbers || false;
+          CanvasRenderer.drawWall(requestData, zoom, showNumbers);
         }
         if (typeof display208CircuitsNeeded === 'function') {
           display208CircuitsNeeded();
@@ -938,9 +940,9 @@ document.getElementById('dummyTileCount').addEventListener('input', function () 
           blocksVerInput.addEventListener('change', debouncedUpdateDimensionsFromBlocks);
         }
         if (toggleNumbersCheckbox) {
-          showNumbers = toggleNumbersCheckbox.checked;
+          window.showNumbers = toggleNumbersCheckbox.checked;
           toggleNumbersCheckbox.addEventListener('change', () => {
-            showNumbers = toggleNumbersCheckbox.checked;
+            window.showNumbers = toggleNumbersCheckbox.checked;
             generateWall();
           });
         }
@@ -1369,24 +1371,24 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
     // Multi-screen functions are exported from multiscreen.js
 
     // Zoom functions for canvas
-    let currentZoomLevel = 4; // Default zoom level
+    window.currentZoomLevel = 4; // Default zoom level
 
     function zoomIn() {
-      currentZoomLevel = Math.min(currentZoomLevel + 1, 8);
+      window.currentZoomLevel = Math.min(window.currentZoomLevel + 1, 8);
       if (typeof generateWall === 'function') {
         generateWall();
       }
     }
 
     function zoomOut() {
-      currentZoomLevel = Math.max(currentZoomLevel - 1, 1);
+      window.currentZoomLevel = Math.max(window.currentZoomLevel - 1, 1);
       if (typeof generateWall === 'function') {
         generateWall();
       }
     }
 
     function resetScreen() {
-      currentZoomLevel = 4;
+      window.currentZoomLevel = 4;
       if (typeof generateWall === 'function') {
         generateWall();
       }
@@ -1419,9 +1421,9 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
 
       const toggleNumbersCheckbox = document.getElementById('toggleNumbers');
       if (toggleNumbersCheckbox) {
-        showNumbers = toggleNumbersCheckbox.checked;
+        window.showNumbers = toggleNumbersCheckbox.checked;
         toggleNumbersCheckbox.addEventListener('change', () => {
-          showNumbers = toggleNumbersCheckbox.checked;
+          window.showNumbers = toggleNumbersCheckbox.checked;
           generateWall();
         });
       }
