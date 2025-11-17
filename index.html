@@ -1367,7 +1367,153 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
     // Email capture function
     // Multi-screen functions are exported from multiscreen.js
 
-    // Zoom functions for canvas
+    // Display functions for power and weight information
+    window.displayWallWeight = function(weight) {
+      const totalWeightDiv = document.getElementById('totalWallWeight');
+      if (!totalWeightDiv) return;
+      totalWeightDiv.innerHTML = `<strong>Wall Weight:</strong> ${weight.toFixed(2)} lbs`;
+    };
+
+    window.displayEstShippingWeight = function(weight) {
+      const totalWeightDiv = document.getElementById('totalWeight');
+      if (!totalWeightDiv) return;
+      totalWeightDiv.innerHTML = `<strong>EST Shipping Weight:</strong> ${weight.toFixed(2)} lbs`;
+    };
+
+    window.displayTotalPower = function(voltage, amps, watts) {
+      const totalPowerDiv = document.getElementById('totalPower');
+      if (!totalPowerDiv) return;
+      totalPowerDiv.innerHTML = `
+        <strong>Average Power Consumption:</strong><br>
+        Voltage: ${voltage}V<br>
+        Total Amperage: ${amps.toFixed(2)} A<br>
+        Total Max Watts: ${watts.toFixed(2)} W
+      `;
+
+      // Show 110V circuits if applicable
+      if (typeof display110Circuits === 'function') {
+        display110Circuits();
+      }
+
+      // Show 208V circuits when "Auto" is chosen
+      if (typeof display208Circuits === 'function') {
+        display208Circuits();
+      }
+    };
+
+    window.display110Circuits = function() {
+      const totalPowerDiv = document.getElementById('totalPower');
+      if (!totalPowerDiv) return;
+
+      // Remove ALL existing circuits displays first (in case there are multiple)
+      const existingCircuitsDivs = document.querySelectorAll('#circuits110Display');
+      existingCircuitsDivs.forEach(div => div.remove());
+
+      // Also remove any divs that might have been created without the ID
+      const allDivs = totalPowerDiv.querySelectorAll('div');
+      allDivs.forEach(div => {
+        if (div.textContent.includes('Number of 110 circuits needed')) {
+          div.remove();
+        }
+      });
+
+      // Check if 110V is selected
+      const powerDistroType = document.getElementById('powerDistroType').value;
+      const voltage = (powerDistroType == "110") ? 110 : 208;
+
+      if (voltage === 110) {
+        // Look for EDT110M quantity in the equipment table
+        const equipmentRows = document.querySelectorAll('#equipmentTable tbody tr');
+        let edt110mQuantity = 0;
+
+        equipmentRows.forEach(row => {
+          const cells = row.cells;
+          if (cells.length >= 3) {
+            const ecode = cells[0].textContent.trim();
+            const name = cells[1].textContent.trim();
+            // Check both ecode and name to catch different variations
+            if (ecode === 'EDT110M' || name.includes('Edison to True1 power cable')) {
+              edt110mQuantity = parseInt(cells[2].textContent.trim(), 10) || 0;
+            }
+          }
+        });
+
+        // If EDT110M not found in table, calculate it directly based on product type
+        if (edt110mQuantity === 0) {
+          const productType = document.getElementById('productType').value;
+          const blocksHor = parseInt(document.getElementById('blocksHor').value, 10);
+          const blocksVer = parseInt(document.getElementById('blocksVer').value, 10);
+          const totalBlocks = blocksHor * blocksVer;
+
+          let O32, P32;
+
+          if (productType === "absen") {
+            // For Absen: Math.ceil(totalBlocksWithSpares / 8)
+            const totalSpares = window.calcSpares(totalBlocks, 8, 1.5);
+            const totalBlocksWithSpares = totalBlocks + totalSpares;
+            O32 = Math.ceil(totalBlocksWithSpares / 8);
+            P32 = Math.ceil(O32 + (O32 * 0.05));
+            edt110mQuantity = P32;
+          } else if (productType === "BP2B1" || productType === "BP2B2" || productType === "BP2V2") {
+            // For ROE: Math.ceil(totalBlocks / 11)
+            O32 = Math.ceil(totalBlocks / 11);
+            P32 = Math.ceil(O32 + (O32 * 0.05));
+            edt110mQuantity = P32;
+          } else if (productType === "theatrixx") {
+            // For Theatrixx: Math.ceil(totalBlocksWithSpares / 2.409)
+            const totalSpares = window.calcSpares(totalBlocks, 10, 2);
+            const totalBlocksWithSpares = totalBlocks + totalSpares;
+            const O25 = Math.ceil(totalBlocksWithSpares / 2.409);
+            const P25 = Math.ceil((O25 / 8.302) * 2);
+            edt110mQuantity = P25;
+          }
+        }
+
+        // Create and append the circuits display ONLY ONCE
+        if (edt110mQuantity > 0) {
+          const circuitsDiv = document.createElement('div');
+          circuitsDiv.id = 'circuits110Display';
+          circuitsDiv.innerHTML = `<strong>Number of 110v circuits needed: ${edt110mQuantity}</strong>`;
+          circuitsDiv.style.marginTop = '5px';
+          circuitsDiv.style.color = '#333';
+          totalPowerDiv.appendChild(circuitsDiv);
+        }
+      }
+    };
+
+    window.display208Circuits = function() {
+      const totalPowerDiv = document.getElementById('totalPower');
+      if (!totalPowerDiv) return;
+
+      // Remove any previous 208V circuits display
+      const existing208Div = document.querySelector('#circuits208Display');
+      if (existing208Div) existing208Div.remove();
+
+      // Only show when "Auto" is selected
+      const distro = document.getElementById('powerDistroType').value;
+      if (distro !== "Auto") return;
+
+      // Read blocksHor, blocksVer, numScreens
+      const blocksHor = parseInt(document.getElementById('blocksHor').value, 10) || 0;
+      const blocksVer = parseInt(document.getElementById('blocksVer').value, 10) || 0;
+      const numScreens = parseInt(document.getElementById('numScreens')?.value || "1", 10);
+
+      const totalTiles = blocksHor * blocksVer * numScreens;
+      if (totalTiles <= 0) return;
+
+      // Divide by 16, round up
+      const neededCircuits = Math.ceil(totalTiles / 16);
+
+      const circuitsDiv = document.createElement('div');
+      circuitsDiv.id = 'circuits208Display';
+      circuitsDiv.innerHTML = `<strong>Number of 208v circuits needed: ${neededCircuits}</strong>`;
+      circuitsDiv.style.marginTop = '5px';
+      circuitsDiv.style.color = '#333';
+
+      totalPowerDiv.appendChild(circuitsDiv);
+    };
+
+        // Zoom functions for canvas
     window.currentZoomLevel = 4; // Default zoom level
 
     window.zoomIn = function() {
