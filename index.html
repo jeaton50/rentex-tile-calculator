@@ -1008,51 +1008,16 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
 // Function to update the power-weight summary in the top section
 // Updated combined equipment function
 // Update the combined equipment function with improved consistent sorting
-// Global variables
-  window.screenConfigurations = [new ScreenConfig(1)];
-  window.activeScreenIndex = 0;
-  window.originalAddEquipmentRow = null;
-  window.equipmentCollector = [];
-  window.isCollectingEquipment = false;
-  window.multiScreenInitialized = false; // Flag to track if multi-screen has been initialized
+  // Multi-screen functions are exported from multiscreen.js module
 
-  // Initialize the multi-screen system when checkbox is checked
-    window.addScreenConfiguration = function() {
-      const newId = window.screenConfigurations.length + 1;
-      window.screenConfigurations.push(new ScreenConfig(newId));
-      updateScreenSelector();
-      switchToScreen(newId - 1);
-    };
-
-    window.removeActiveScreen = function() {
-      if (window.screenConfigurations.length > 1) {
-        window.screenConfigurations.splice(window.activeScreenIndex, 1);
-        window.screenConfigurations.forEach((config, idx) => {
-          config.id = idx + 1;
-        });
-        updateScreenSelector();
-        if (window.activeScreenIndex >= window.screenConfigurations.length) {
-          switchToScreen(0);
-        }
-      }
-    };
-
-    window.switchToScreen = function(index) {
-      index = parseInt(index);
-      if (index < 0 || index >= window.screenConfigurations.length) return;
-      
-      saveCurrentScreenConfig();
-      window.activeScreenIndex = index;
-      loadScreenConfig(window.screenConfigurations[window.activeScreenIndex]);
-      updateScreenTabs();
-      window.generateWall();
-    };
 
     // FIXED: Combined distro calculation function
     // FIXED: Apply combined distro function
     // Generate combined equipment list for all screens
     window.generateAllEquipment = function() {
-      saveCurrentScreenConfig();
+      if (typeof MultiScreenManager !== "undefined" && MultiScreenManager.saveCurrentScreenConfig) {
+        MultiScreenManager.saveCurrentScreenConfig();
+      }
       
       const controlsSection = document.getElementById('controls');
       const wallDimensionsSection = document.getElementById('wallDimensions');
@@ -1219,7 +1184,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         `;
         
         // ✅ ADD EQUIPMENT TOGGLES TO EACH SCREEN
-        addEquipmentTogglesToScreen(screenSection, config.id);
+        // addEquipmentTogglesToScreen(screenSection, config.id); // TODO: Function removed in Phase 3
         
         const screenTable = document.createElement('table');
         screenTable.className = 'equipment-table';
