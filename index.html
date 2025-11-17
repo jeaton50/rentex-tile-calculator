@@ -700,87 +700,6 @@ window.addEventListener("DOMContentLoaded", () => {
 // We need to establish and maintain the original ordering
 
 // Helper function to get equipment for a specific screen configuration
-async function captureEntireScreen() {
-  window.scrollTo(0, 0);
-
-  html2canvas(document.body, {
-    scale: 1,
-    allowTaint: true,
-    useCORS: true,
-    logging: true,
-    onclone: (clonedDoc) => {
-      const originalCanvasList = document.querySelectorAll('canvas');
-      const clonedCanvasList = clonedDoc.querySelectorAll('canvas');
-      clonedCanvasList.forEach((clonedCanvas, index) => {
-        const originalCanvas = originalCanvasList[index];
-        clonedCanvas.width = originalCanvas.width;
-        clonedCanvas.height = originalCanvas.height;
-        const context = clonedCanvas.getContext('2d');
-        context.drawImage(originalCanvas, 0, 0);
-      });
-    }
-  })
-  .then((canvas) => {
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        alert('Failed to create image blob.');
-        return;
-      }
-
-      // For iOS devices, download the screenshot.
-      // For non-iOS, try to copy to clipboard.
-      if (isIOS()) {
-        fallbackDownload(blob);
-      } else {
-        try {
-          const clipboardItem = new ClipboardItem({ [blob.type]: blob });
-          await navigator.clipboard.write([clipboardItem]);
-          alert("Screenshot Captured, please paste in email");
-        } catch (clipboardError) {
-          console.error('Clipboard copy error:', clipboardError);
-          fallbackDownload(blob);
-        }
-      }
-
-      // Fill out email information.
-      const blocksHor = parseInt(document.getElementById('blocksHor').value, 10);
-      const blocksVer = parseInt(document.getElementById('blocksVer').value, 10);
-      const totalTiles = blocksHor * blocksVer;
-      const orderNumber = document.getElementById('orderNumber').value || "Unknown";
-      const location = document.getElementById('location').value || "Not provided";
-      const orderDate = document.getElementById('orderDate').value || "Not provided";
-
-      const emailSubject = `LED Quote Approval - Order# ${orderNumber}`;
-      const emailBody = encodeURIComponent(
-        "Dates: " + orderDate + "\n\n" +
-        "Location: " + location + "\n\n" +
-        "LED Walls\n\n" +
-        "Make/Model: " +
-        document.getElementById("productType")
-          .options[document.getElementById("productType").selectedIndex]
-          .text +
-        "\n\n" +
-        "Can they use any other make/model: \n\n" +
-        "# tiles: " + totalTiles + "\n\n" +
-        "x tiles wide: " + blocksHor + "\n\n" +
-        "y tiles tall: " + blocksVer
-      );
-
-      // Open the email client with prefilled subject and body.
-      window.location.href = `mailto:LEDPanel@rentex.com?subject=${emailSubject}&body=${emailBody}`;
-    });
-  })
-  .catch((error) => {
-    console.error('Canvas capture error:', error);
-    alert('Screenshot capture failed. Check console for details.');
-  });
-}
-
-
-
-
-
-
       // Event Listeners for Initial Setup
       document.addEventListener('DOMContentLoaded', () => {
 
@@ -1485,79 +1404,32 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
 
     // Export to Excel function
     // Email capture function
-    async function captureEntireScreen() {
-      window.scrollTo(0, 0);
+    // Multi-screen functions are exported from multiscreen.js
 
-      html2canvas(document.body, {
-        scale: 1,
-        allowTaint: true,
-        useCORS: true,
-        logging: true,
-        onclone: (clonedDoc) => {
-          const originalCanvasList = document.querySelectorAll('canvas');
-          const clonedCanvasList = clonedDoc.querySelectorAll('canvas');
-          clonedCanvasList.forEach((clonedCanvas, index) => {
-            const originalCanvas = originalCanvasList[index];
-            clonedCanvas.width = originalCanvas.width;
-            clonedCanvas.height = originalCanvas.height;
-            const context = clonedCanvas.getContext('2d');
-            context.drawImage(originalCanvas, 0, 0);
-          });
-        }
-      })
-      .then((canvas) => {
-        canvas.toBlob(async (blob) => {
-          if (!blob) {
-            alert('Failed to create image blob.');
-            return;
-          }
+    // Zoom functions for canvas
+    let currentZoomLevel = 4; // Default zoom level
 
-          if (isIOS()) {
-            fallbackDownload(blob);
-          } else {
-            try {
-              const clipboardItem = new ClipboardItem({ [blob.type]: blob });
-              await navigator.clipboard.write([clipboardItem]);
-              alert("Screenshot Captured, please paste in email");
-            } catch (clipboardError) {
-              console.error('Clipboard copy error:', clipboardError);
-              fallbackDownload(blob);
-            }
-          }
-
-          const blocksHor = parseInt(document.getElementById('blocksHor').value, 10);
-          const blocksVer = parseInt(document.getElementById('blocksVer').value, 10);
-          const totalTiles = blocksHor * blocksVer;
-          const orderNumber = document.getElementById('orderNumber').value || "Unknown";
-          const location = document.getElementById('location').value || "Not provided";
-          const orderDate = document.getElementById('orderDate').value || "Not provided";
-
-          const emailSubject = `LED Quote Approval - Order# ${orderNumber}`;
-          const emailBody = encodeURIComponent(
-            "Dates: " + orderDate + "\n\n" +
-            "Location: " + location + "\n\n" +
-            "LED Walls\n\n" +
-            "Make/Model: " +
-            document.getElementById("productType")
-              .options[document.getElementById("productType").selectedIndex]
-              .text +
-            "\n\n" +
-            "Can they use any other make/model: \n\n" +
-            "# tiles: " + totalTiles + "\n\n" +
-            "x tiles wide: " + blocksHor + "\n\n" +
-            "y tiles tall: " + blocksVer
-          );
-
-          window.location.href = `mailto:LEDPanel@rentex.com?subject=${emailSubject}&body=${emailBody}`;
-        });
-      })
-      .catch((error) => {
-        console.error('Canvas capture error:', error);
-        alert('Screenshot capture failed. Check console for details.');
-      });
+    function zoomIn() {
+      currentZoomLevel = Math.min(currentZoomLevel + 1, 8);
+      if (typeof generateWall === 'function') {
+        generateWall();
+      }
     }
 
-    // Multi-screen functions are exported from multiscreen.js
+    function zoomOut() {
+      currentZoomLevel = Math.max(currentZoomLevel - 1, 1);
+      if (typeof generateWall === 'function') {
+        generateWall();
+      }
+    }
+
+    function resetScreen() {
+      currentZoomLevel = 4;
+      if (typeof generateWall === 'function') {
+        generateWall();
+      }
+    }
+
 
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
