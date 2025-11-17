@@ -1360,9 +1360,6 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         }
       }
 
-      // Add the "Combine Distro" button after a short delay
-      setTimeout(() => {
-
       return totalCombinedWeight;
     };
 
@@ -1373,33 +1370,39 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
     // Zoom functions for canvas
     window.currentZoomLevel = 4; // Default zoom level
 
-    function zoomIn() {
+    window.zoomIn = function() {
       window.currentZoomLevel = Math.min(window.currentZoomLevel + 1, 8);
       if (typeof generateWall === 'function') {
         generateWall();
       }
-    }
+    };
 
-    function zoomOut() {
+    window.zoomOut = function() {
       window.currentZoomLevel = Math.max(window.currentZoomLevel - 1, 1);
       if (typeof generateWall === 'function') {
         generateWall();
       }
-    }
+    };
 
-    function resetScreen() {
+    window.resetScreen = function() {
       window.currentZoomLevel = 4;
       if (typeof generateWall === 'function') {
         generateWall();
       }
-    }
+    };
 
 
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
       const multiScreenCheckbox = document.getElementById('multipleScreenManagementCheckbox');
       if (multiScreenCheckbox) {
-        multiScreenCheckbox.addEventListener('change', toggleMultiScreenManagement);
+        multiScreenCheckbox.addEventListener('change', function() {
+          if (typeof toggleMultiScreenManagement === 'function') {
+            toggleMultiScreenManagement();
+          } else {
+            console.error('toggleMultiScreenManagement is not defined');
+          }
+        });
       }
 
       const blockInputRadio = document.getElementById('blockInput');
