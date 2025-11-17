@@ -662,7 +662,7 @@ window.addEventListener("DOMContentLoaded", () => {
           displayEquipment(requestData);
         }
         if (typeof CanvasRenderer !== 'undefined' && CanvasRenderer.displayWallDimensions) {
-          CanvasRenderer.displayWallDimensions();
+          CanvasRenderer.displayWallDimensions(productType);
         }
         if (typeof CanvasRenderer !== 'undefined' && CanvasRenderer.drawWall) {
           const zoom = window.currentZoomLevel || 4;
