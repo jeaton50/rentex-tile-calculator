@@ -535,10 +535,8 @@ window.addEventListener("DOMContentLoaded", () => {
         alert('Error: Unable to load the block image. Please check the image path and try again.');
       };
 
-      // Helper Functions
-      function roundToDimension(value, increment, min) {
-        return Math.max(min, Math.round(value / increment) * increment);
-      }
+      // Helper Functions - Using modules where available
+      // roundToDimension is now in js/calculator.js
 
       function debounce(func, wait) {
         let timeout;
@@ -548,11 +546,25 @@ window.addEventListener("DOMContentLoaded", () => {
         };
       }
 
+      // Wrapper function - calls Calculator module
       function handleDimensionInput(input) {
-        const value = parseFloat(input.value);
+        const widthFeet = parseFloat(document.getElementById('widthFeet')?.value || 0);
+        const heightFeet = parseFloat(document.getElementById('heightFeet')?.value || 0);
 
-        calculateBlocks();
-        updateWarning();
+        if (typeof Calculator !== 'undefined' && Calculator.calculateBlocksFromDimensions) {
+          const blocks = Calculator.calculateBlocksFromDimensions(widthFeet, heightFeet);
+          const blocksHorInput = document.getElementById('blocksHor');
+          const blocksVerInput = document.getElementById('blocksVer');
+          if (blocksHorInput) blocksHorInput.value = blocks.horizontalBlocks;
+          if (blocksVerInput) blocksVerInput.value = blocks.verticalBlocks;
+        }
+
+        if (typeof UI !== 'undefined' && UI.updateWarning) {
+          UI.updateWarning();
+        }
+        if (typeof generateWall === 'function') {
+          generateWall();
+        }
       }
 
       function handleArrowKeys(e, input) {
@@ -563,13 +575,13 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      // Wrapper function - uses Calculator module
       function incrementDimension(input, increment) {
         const currentValue = parseFloat(input.value);
-        if (!isNaN(currentValue)) {
-          const newValue = roundToDimension(currentValue + increment, BLOCK_SIZE_FEET, BLOCK_SIZE_FEET);
+        if (!isNaN(currentValue) && typeof Calculator !== 'undefined') {
+          const newValue = Calculator.roundToDimension(currentValue + increment, BLOCK_SIZE_FEET, BLOCK_SIZE_FEET);
           input.value = newValue.toFixed(2);
-          calculateBlocks();
-          updateWarning();
+          handleDimensionInput(input);
         }
       }
 
