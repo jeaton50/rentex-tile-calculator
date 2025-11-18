@@ -167,7 +167,7 @@ header {
 /* ====== Controls Section ====== */
 #controls {
   position: absolute;
-  top: 102px;
+  top: 100px;
   left: 430px;
   width: 440px;
   flex: 0 0 800px;
