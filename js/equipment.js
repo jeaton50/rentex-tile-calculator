@@ -455,8 +455,8 @@ function addAbsenEquipment(config, tbody) {
   // Calculate total wall weight (tiles only)
   totalWeight = 20.61 * totalTiles;
 
-  // Calculate total pixels
-  const totalPixels = (horizontalBlocks * 192) * (verticalBlocks * 192);
+  // Calculate total pixels (Absen uses 200 pixels per tile)
+  const totalPixels = (horizontalBlocks * 200) * (verticalBlocks * 200);
   console.log('Absen - horizontalBlocks:', horizontalBlocks, 'verticalBlocks:', verticalBlocks, 'totalPixels:', totalPixels);
 
   // Tiles and cases
@@ -624,8 +624,8 @@ function addROEEquipment(config, tbody) {
   // Calculate total wall weight (tiles only)
   totalWeight = 20.61 * totalTiles;
 
-  // Calculate total pixels
-  const totalPixels = (horizontalBlocks * 192) * (verticalBlocks * 192);
+  // Calculate total pixels (ROE uses 176 pixels per tile)
+  const totalPixels = (horizontalBlocks * 176) * (verticalBlocks * 176);
   console.log('ROE - horizontalBlocks:', horizontalBlocks, 'verticalBlocks:', verticalBlocks, 'totalPixels:', totalPixels);
 
   // Calculate dummy tiles for case filling
@@ -826,6 +826,7 @@ function addTheatrixxEquipment(config, tbody) {
   addEquipmentRow('CATXLED', 'Case, Theatrixx Nomad tile 10x', 187, packageCount, tbody);
 
   // Processors - Novastar MX40 PRO (not Brompton)
+  // Calculate total pixels (Theatrixx uses 192 pixels per tile)
   const totalPixels = (horizontalBlocks * 192) * (verticalBlocks * 192);
   console.log('Theatrixx - horizontalBlocks:', horizontalBlocks, 'verticalBlocks:', verticalBlocks, 'totalPixels:', totalPixels);
   let mx40Count = Math.ceil((totalPixels / 9000000) * 1);
