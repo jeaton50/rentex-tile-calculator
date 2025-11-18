@@ -555,8 +555,14 @@ function addAbsenEquipment(config, tbody) {
     addEquipmentRow('L2130T1FB', 'L2130 floor box to 3x True1 with pass through', 7.5, powerDistro.L2130T1FB, tbody);
   }
 
-  // Calculate shipping weight
+  // Display wall weight and calculate shipping weight
   if (typeof totalWeight !== 'undefined' && typeof displayEstShippingWeight === 'function') {
+    // Display the pure wall/tile weight
+    if (typeof displayWallWeight === 'function') {
+      displayWallWeight(totalWeight);
+    }
+
+    // Calculate total shipping weight including equipment
     let caseWeight = totalWeight;
     caseWeight += 18.92 * totalSpareTiles;
     caseWeight += 161.12 * casesNeeded;
@@ -733,8 +739,14 @@ function addROEEquipment(config, tbody) {
     addEquipmentRow('SOCA6XTRU1', '19 Pin Socapex to 6x True1 Power Cable', 5, powerDistro.SOCA6XTRU1, tbody);
   }
 
-  // Calculate shipping weight
+  // Display wall weight and calculate shipping weight
   if (typeof totalWeight !== 'undefined' && typeof displayEstShippingWeight === 'function') {
+    // Display the pure wall/tile weight
+    if (typeof displayWallWeight === 'function') {
+      displayWallWeight(totalWeight);
+    }
+
+    // Calculate total shipping weight including equipment
     let caseWeight = totalWeight;
     caseWeight += 18.92 * totalSpareTiles;
     caseWeight += 161.12 * casesNeeded;
@@ -919,8 +931,14 @@ function addTheatrixxEquipment(config, tbody) {
     addEquipmentRow('TXT32SOCA', 'Theatrixx Nomad XVT3 to Socapex', 22, powerDistro.TXT32SOCA, tbody);
   }
 
-  // Calculate shipping weight
+  // Display wall weight and shipping weight
   if (typeof totalWeight !== 'undefined' && typeof displayEstShippingWeight === 'function') {
+    // Display the pure wall/tile weight
+    if (typeof displayWallWeight === 'function') {
+      displayWallWeight(totalWeight);
+    }
+
+    // Display total shipping weight (Theatrixx has no additional equipment weight)
     displayEstShippingWeight(totalWeight);
   }
 }
