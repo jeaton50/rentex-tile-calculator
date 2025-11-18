@@ -1390,7 +1390,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
     window.displayEstShippingWeight = function(weight) {
       const totalWeightDiv = document.getElementById('totalWeight');
       if (!totalWeightDiv) return;
-      totalWeightDiv.innerHTML = `<strong>EST Shipping Weight:</strong> ${weight.toFixed(2)} lbs`;
+      totalWeightDiv.innerHTML = `<strong>EST Shipping Weight:</strong><br>${weight.toFixed(2)} lbs`;
     };
 
     window.displayTotalPower = function(voltage, amps, watts) {
