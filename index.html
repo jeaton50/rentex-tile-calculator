@@ -500,6 +500,7 @@ window.addEventListener("DOMContentLoaded", () => {
         <canvas id="wallCanvas2D"></canvas>
         <div id="totalWallWeight"></div>
         <div id="totalWeight"></div>
+        <div id="totalPixels"></div>
         <div id="totalPower"></div>
 
 
@@ -1391,6 +1392,12 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       const totalWeightDiv = document.getElementById('totalWeight');
       if (!totalWeightDiv) return;
       totalWeightDiv.innerHTML = `<strong>EST Shipping Weight:</strong><br>${weight.toFixed(2)} lbs`;
+    };
+
+    window.displayTotalPixels = function(pixels) {
+      const totalPixelsDiv = document.getElementById('totalPixels');
+      if (!totalPixelsDiv) return;
+      totalPixelsDiv.innerHTML = `<strong>Total Pixels:</strong><br>${pixels.toLocaleString()} px`;
     };
 
     window.displayTotalPower = function(voltage, amps, watts) {

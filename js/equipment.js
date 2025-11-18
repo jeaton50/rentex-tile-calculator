@@ -433,6 +433,8 @@ function addAbsenEquipment(config, tbody) {
     totalSpareTiles,
     totalTilesWithSpares,
     casesNeeded,
+    horizontalBlocks,
+    verticalBlocks,
     processors,
     cables,
     sandbags,
@@ -452,6 +454,9 @@ function addAbsenEquipment(config, tbody) {
 
   // Calculate total wall weight (tiles only)
   totalWeight = 20.61 * totalTiles;
+
+  // Calculate total pixels
+  const totalPixels = (horizontalBlocks * 192) * (verticalBlocks * 192);
 
   // Tiles and cases
   addEquipmentRow('8PPL25', 'Absen PL2.5 8x tile package', 0, casesNeeded, tbody);
@@ -578,6 +583,11 @@ function addAbsenEquipment(config, tbody) {
     caseWeight += 63 * processors.SX40;
     caseWeight += 57 * processors.S8;
     displayEstShippingWeight(caseWeight);
+
+    // Display total pixels
+    if (typeof displayTotalPixels === 'function') {
+      displayTotalPixels(totalPixels);
+    }
   }
 }
 
@@ -606,11 +616,15 @@ function addROEEquipment(config, tbody) {
     wallType,
     powerDistro,
     blankRows,
-    horizontalBlocks
+    horizontalBlocks,
+    verticalBlocks
   } = config;
 
   // Calculate total wall weight (tiles only)
   totalWeight = 20.61 * totalTiles;
+
+  // Calculate total pixels
+  const totalPixels = (horizontalBlocks * 192) * (verticalBlocks * 192);
 
   // Calculate dummy tiles for case filling
   const dummyTilesNeeded = blankRows * horizontalBlocks;
@@ -764,6 +778,11 @@ function addROEEquipment(config, tbody) {
     caseWeight += 65 * processors.SX40;
     caseWeight += 57 * processors.S8;
     displayEstShippingWeight(caseWeight);
+
+    // Display total pixels
+    if (typeof displayTotalPixels === 'function') {
+      displayTotalPixels(totalPixels);
+    }
   }
 }
 
@@ -988,6 +1007,11 @@ function addTheatrixxEquipment(config, tbody) {
     shippingWeight += 22 * powerDistro.TXT32SOCA;
 
     displayEstShippingWeight(shippingWeight);
+
+    // Display total pixels
+    if (typeof displayTotalPixels === 'function') {
+      displayTotalPixels(totalPixels);
+    }
   }
 }
 
