@@ -21,10 +21,12 @@ function addEquipmentRow(ecode, name, weight, quantity, tbody) {
   const cell1 = row.insertCell(0);
   const cell2 = row.insertCell(1);
   const cell3 = row.insertCell(2);
+  const cell4 = row.insertCell(3);
 
   cell1.textContent = ecode;
   cell2.textContent = name;
   cell3.textContent = quantity;
+  cell4.textContent = weight ? weight.toFixed(2) : '0.00';
 }
 
 const EquipmentCalculator = {
