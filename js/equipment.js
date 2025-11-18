@@ -457,7 +457,6 @@ function addAbsenEquipment(config, tbody) {
 
   // Calculate total pixels (Absen uses 200 pixels per tile)
   const totalPixels = (horizontalBlocks * 200) * (verticalBlocks * 200);
-  console.log('Absen - horizontalBlocks:', horizontalBlocks, 'verticalBlocks:', verticalBlocks, 'totalPixels:', totalPixels);
 
   // Tiles and cases
   addEquipmentRow('8PPL25', 'Absen PL2.5 8x tile package', 0, casesNeeded, tbody);
@@ -626,7 +625,6 @@ function addROEEquipment(config, tbody) {
 
   // Calculate total pixels (ROE uses 176 pixels per tile)
   const totalPixels = (horizontalBlocks * 176) * (verticalBlocks * 176);
-  console.log('ROE - horizontalBlocks:', horizontalBlocks, 'verticalBlocks:', verticalBlocks, 'totalPixels:', totalPixels);
 
   // Calculate dummy tiles for case filling
   const dummyTilesNeeded = blankRows * horizontalBlocks;
@@ -828,7 +826,6 @@ function addTheatrixxEquipment(config, tbody) {
   // Processors - Novastar MX40 PRO (not Brompton)
   // Calculate total pixels (Theatrixx uses 192 pixels per tile)
   const totalPixels = (horizontalBlocks * 192) * (verticalBlocks * 192);
-  console.log('Theatrixx - horizontalBlocks:', horizontalBlocks, 'verticalBlocks:', verticalBlocks, 'totalPixels:', totalPixels);
   let mx40Count = Math.ceil((totalPixels / 9000000) * 1);
   if (redundancyType === "Fully Redundant") {
     mx40Count = mx40Count * 2;
