@@ -450,6 +450,9 @@ function addAbsenEquipment(config, tbody) {
     powerDistro
   } = config;
 
+  // Calculate total wall weight (tiles only)
+  totalWeight = 20.61 * totalTiles;
+
   // Tiles and cases
   addEquipmentRow('8PPL25', 'Absen PL2.5 8x tile package', 0, casesNeeded, tbody);
   addEquipmentRow('PL25', 'Absen PL2.5 tile', 20.61, totalTiles, tbody);
@@ -605,6 +608,9 @@ function addROEEquipment(config, tbody) {
     blankRows,
     horizontalBlocks
   } = config;
+
+  // Calculate total wall weight (tiles only)
+  totalWeight = 20.61 * totalTiles;
 
   // Calculate dummy tiles for case filling
   const dummyTilesNeeded = blankRows * horizontalBlocks;
@@ -785,6 +791,9 @@ function addTheatrixxEquipment(config, tbody) {
     voltage,
     powerDistro
   } = config;
+
+  // Calculate total wall weight (tiles only)
+  totalWeight = 17.6 * totalTiles;
 
   // Calculate package needs
   const packageCount = Math.round(totalTilesWithSpares / 10);
