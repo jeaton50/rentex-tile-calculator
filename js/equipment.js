@@ -583,11 +583,11 @@ function addAbsenEquipment(config, tbody) {
     caseWeight += 63 * processors.SX40;
     caseWeight += 57 * processors.S8;
     displayEstShippingWeight(caseWeight);
+  }
 
-    // Display total pixels
-    if (typeof displayTotalPixels === 'function') {
-      displayTotalPixels(totalPixels);
-    }
+  // Display total pixels
+  if (typeof displayTotalPixels === 'function') {
+    displayTotalPixels(totalPixels);
   }
 }
 
@@ -778,11 +778,11 @@ function addROEEquipment(config, tbody) {
     caseWeight += 65 * processors.SX40;
     caseWeight += 57 * processors.S8;
     displayEstShippingWeight(caseWeight);
+  }
 
-    // Display total pixels
-    if (typeof displayTotalPixels === 'function') {
-      displayTotalPixels(totalPixels);
-    }
+  // Display total pixels
+  if (typeof displayTotalPixels === 'function') {
+    displayTotalPixels(totalPixels);
   }
 }
 
@@ -1007,11 +1007,11 @@ function addTheatrixxEquipment(config, tbody) {
     shippingWeight += 22 * powerDistro.TXT32SOCA;
 
     displayEstShippingWeight(shippingWeight);
+  }
 
-    // Display total pixels
-    if (typeof displayTotalPixels === 'function') {
-      displayTotalPixels(totalPixels);
-    }
+  // Display total pixels
+  if (typeof displayTotalPixels === 'function') {
+    displayTotalPixels(totalPixels);
   }
 }
 
