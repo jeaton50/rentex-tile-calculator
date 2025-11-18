@@ -300,7 +300,6 @@ const CanvasRenderer = {
         <strong>Wall Dimensions:</strong><br>
         ${totalWidthPixels} px (W) x ${totalHeightPixels} px (H)<br>
         ${totalWidthFeet}' (W) x ${totalHeightFeet}' (H) x ${depth} (D)<br>
-        Total Pixels: ${totalPixels}<br>
         Total Tiles: ${totalTiles}
       </div>
     `;
