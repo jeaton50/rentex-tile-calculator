@@ -258,3 +258,22 @@ if (typeof module !== 'undefined' && module.exports) {
     injectStyle
   };
 }
+
+// Export to window for browser use
+if (typeof window !== 'undefined') {
+  window.debounce = debounce;
+  window.roundToDimension = roundToDimension;
+  window.showError = showError;
+  window.hideError = hideError;
+  window.validateNumber = validateNumber;
+  window.validateRequired = validateRequired;
+  window.withErrorHandling = withErrorHandling;
+  window.formatNumber = formatNumber;
+  window.getElement = getElement;
+  window.getElementValue = getElementValue;
+  window.setElementValue = setElementValue;
+  window.waitForImageLoad = waitForImageLoad;
+  window.calculateSpares = calculateSpares;
+  window.deepClone = deepClone;
+  window.injectStyle = injectStyle;
+}

@@ -33,31 +33,60 @@ const CanvasRenderer = {
 
   /**
    * Preload all required images
+   * Priority: Load block image immediately, defer others
    */
   loadImages() {
-    // Single header image
-    this.images.singleHeader = new Image();
-    this.images.singleHeader.src = 'static/images/single_header.png';
-    this.images.singleHeader.onload = () => console.log('Single header image loaded');
-    this.images.singleHeader.onerror = () => console.error('Error loading single header image');
+    // Block image - Load immediately (high priority)
+    this.images.block = new Image();
+    this.images.block.src = 'static/images/block.png';
+    this.images.block.loading = 'eager';
+    this.images.block.onload = () => console.log('Block image loaded');
+    this.images.block.onerror = () => console.error('Error loading block image');
 
-    // Double header image
-    this.images.doubleHeader = new Image();
-    this.images.doubleHeader.src = 'static/images/double_header.png';
-    this.images.doubleHeader.onload = () => console.log('Double header image loaded');
-    this.images.doubleHeader.onerror = () => console.error('Error loading double header image');
+    // Defer loading of header/base images until needed
+    this.lazyLoadHeaderBaseImages();
+  },
 
-    // Single base image
-    this.images.singleBase = new Image();
-    this.images.singleBase.src = 'static/images/single_base.png';
-    this.images.singleBase.onload = () => console.log('Single base image loaded');
-    this.images.singleBase.onerror = () => console.error('Error loading single base image');
+  /**
+   * Lazy load header and base images
+   */
+  lazyLoadHeaderBaseImages() {
+    // Use requestIdleCallback if available, otherwise setTimeout
+    const loadFn = () => {
+      // Single header image
+      this.images.singleHeader = new Image();
+      this.images.singleHeader.src = 'static/images/single_header.png';
+      this.images.singleHeader.loading = 'lazy';
+      this.images.singleHeader.onload = () => console.log('Single header image loaded');
+      this.images.singleHeader.onerror = () => console.error('Error loading single header image');
 
-    // Double base image
-    this.images.doubleBase = new Image();
-    this.images.doubleBase.src = 'static/images/double_base.png';
-    this.images.doubleBase.onload = () => console.log('Double base image loaded');
-    this.images.doubleBase.onerror = () => console.error('Error loading double base image');
+      // Double header image
+      this.images.doubleHeader = new Image();
+      this.images.doubleHeader.src = 'static/images/double_header.png';
+      this.images.doubleHeader.loading = 'lazy';
+      this.images.doubleHeader.onload = () => console.log('Double header image loaded');
+      this.images.doubleHeader.onerror = () => console.error('Error loading double header image');
+
+      // Single base image
+      this.images.singleBase = new Image();
+      this.images.singleBase.src = 'static/images/single_base.png';
+      this.images.singleBase.loading = 'lazy';
+      this.images.singleBase.onload = () => console.log('Single base image loaded');
+      this.images.singleBase.onerror = () => console.error('Error loading single base image');
+
+      // Double base image
+      this.images.doubleBase = new Image();
+      this.images.doubleBase.src = 'static/images/double_base.png';
+      this.images.doubleBase.loading = 'lazy';
+      this.images.doubleBase.onerror = () => console.error('Error loading double base image');
+    };
+
+    // Use requestIdleCallback if available, otherwise setTimeout
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadFn);
+    } else {
+      setTimeout(loadFn, 1);
+    }
   },
 
   /**

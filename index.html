@@ -6,35 +6,51 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>LED Wall Configuration</title>
 
-  <!-- External CSS -->
+  <!-- Preload Critical CSS -->
+  <link rel="preload" href="css/main.css" as="style">
   <link rel="stylesheet" href="css/main.css">
 
-  <!-- jQuery and jQuery UI -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+  <link rel="preconnect" href="https://code.jquery.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
-  <!-- Font Awesome and html2canvas -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-  <!-- Application JavaScript -->
+  <!-- Critical JavaScript - Load synchronously -->
   <script src="js/constants.js?v=97d327e"></script>
   <script src="js/utils.js?v=97d327e"></script>
   <script src="js/state.js?v=97d327e"></script>
   <script src="js/app.js?v=97d327e"></script>
-  <script src="js/canvas.js?v=97d327e"></script>
-  <script src="js/equipment.js?v=97d327e"></script>
-  <script src="js/calculator.js?v=97d327e"></script>
-  <script src="js/ui.js?v=97d327e"></script>
-  <script src="js/export.js?v=97d327e"></script>
-  <script src="js/multiscreen.js?v=97d327e"></script>
+
+  <!-- Core Application JavaScript - Defer but maintain order -->
+  <script defer src="js/canvas.js?v=97d327e"></script>
+  <script defer src="js/equipment.js?v=97d327e"></script>
+  <script defer src="js/calculator.js?v=97d327e"></script>
+  <script defer src="js/ui.js?v=97d327e"></script>
+  <script defer src="js/export.js?v=97d327e"></script>
+  <script defer src="js/multiscreen.js?v=97d327e"></script>
+
+  <!-- jQuery - Required by application -->
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- Non-critical external libraries - Load async -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"></noscript>
+  <script defer src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+  <!-- Font Awesome - Load async with media trick -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+
+  <!-- Export libraries - Load async as they're only used on demand -->
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 </head>
 <body>
   <!-- Header Section -->
   <header>
-    <img id="rentexLogo" src="static/images/rentexLogo.png" alt="Rentex Logo" style="max-height:50px;">
+    <img id="rentexLogo" src="static/images/rentexLogo.png" alt="Rentex Logo" loading="lazy" width="200" height="64" style="max-height:50px;">
     <div id="orderNumberContainer">
       <label for="orderNumber">Order #:</label>
 <input type="text" id="orderNumber" placeholder="Enter order number" size="15"
