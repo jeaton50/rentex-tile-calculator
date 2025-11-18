@@ -940,15 +940,54 @@ function addTheatrixxEquipment(config, tbody) {
     addEquipmentRow('TXT32SOCA', 'Theatrixx Nomad XVT3 to Socapex', 22, powerDistro.TXT32SOCA, tbody);
   }
 
-  // Display wall weight and shipping weight
+  // Display wall weight and calculate shipping weight
   if (typeof totalWeight !== 'undefined' && typeof displayEstShippingWeight === 'function') {
     // Display the pure wall/tile weight
     if (typeof displayWallWeight === 'function') {
       displayWallWeight(totalWeight);
     }
 
-    // Display total shipping weight (Theatrixx has no additional equipment weight)
-    displayEstShippingWeight(totalWeight);
+    // Calculate total shipping weight including equipment
+    let shippingWeight = totalWeight;
+    shippingWeight += 17.6 * totalSpareTiles;
+    shippingWeight += 187 * packageCount;
+    shippingWeight += 17 * mx40Count;
+    shippingWeight += 27 * singleBases;
+    shippingWeight += 12 * doubleBases;
+    shippingWeight += 12 * skiFrames;
+    shippingWeight += 10 * stackingExtensions;
+    shippingWeight += 13 * ladderFrames;
+    shippingWeight += 0.25 * straightBrackets;
+    shippingWeight += 12 * verticalSupports;
+    shippingWeight += 1 * singleFeet;
+    shippingWeight += 0.75 * curvedBrackets;
+    shippingWeight += 25 * sandbags;
+    shippingWeight += 12 * doubleHeaders;
+    shippingWeight += 8 * singleHeaders;
+    shippingWeight += 2.4 * dataCableCount;
+    shippingWeight += 0.5 * totalTilesWithSpares; // XVT9 data cables
+    shippingWeight += 0.6 * totalTilesWithSpares; // XVT3 power cables
+    shippingWeight += 0.25 * dataCableCount; // XVT9 to EtherCon adapters
+
+    // Add power cables (voltage specific)
+    if (voltage === 110) {
+      const powerCalc1 = Math.ceil(totalTilesWithSpares / 2.409);
+      const powerCalc2 = Math.ceil((powerCalc1 / 8.302) * 2);
+      shippingWeight += 3.2 * powerCalc2; // XVT3 to Edison cables
+    } else {
+      const powerCalc1 = Math.ceil(totalTiles / 1.27403);
+      const powerCalc2 = Math.ceil(powerCalc1 / 11.5);
+      const powerCalc3 = (powerCalc2 > 0) ? (powerCalc2 + 2) : 0;
+      shippingWeight += 6 * powerCalc3; // XVT3 to True1 cables
+    }
+
+    // Add power distribution equipment
+    shippingWeight += 177 * powerDistro.CUBEDIST;
+    shippingWeight += 197 * powerDistro.TP1;
+    shippingWeight += 7.5 * powerDistro.L2130T1FB;
+    shippingWeight += 22 * powerDistro.TXT32SOCA;
+
+    displayEstShippingWeight(shippingWeight);
   }
 }
 
