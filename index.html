@@ -1384,7 +1384,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
     window.displayWallWeight = function(weight) {
       const totalWeightDiv = document.getElementById('totalWallWeight');
       if (!totalWeightDiv) return;
-      totalWeightDiv.innerHTML = `<strong>Wall Weight:</strong> ${weight.toFixed(2)} lbs`;
+      totalWeightDiv.innerHTML = `<strong>Wall Weight:</strong><br>${weight.toFixed(2)} lbs`;
     };
 
     window.displayEstShippingWeight = function(weight) {
