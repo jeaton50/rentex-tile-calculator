@@ -272,7 +272,7 @@ const CanvasRenderer = {
       if (baseImage && baseImage.complete && baseImage.naturalHeight !== 0) {
         ctx.drawImage(baseImage, posX, posY, imageWidth, imageHeight);
       } else {
-        ctx.fillStyle = 'green';
+        ctx.fillStyle = 'black';
         ctx.fillRect(posX, posY, imageWidth, imageHeight);
       }
     }
