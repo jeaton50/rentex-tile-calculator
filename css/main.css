@@ -102,7 +102,9 @@ header {
   flex: 0 0 350px;
   max-width: 350px;
   width: 350px;
+  height: 800px;
   overflow-x: hidden;
+  overflow-y: auto;
   margin-right: 20px;
   background-color: #fff;
   padding: 20px;
@@ -170,6 +172,8 @@ header {
   top: -20px;
   left: 430px;
   width: 440px;
+  height: 800px;
+  overflow-y: auto;
   margin-top: 100px;
   flex: 0 0 800px;
   max-width: 700px;
