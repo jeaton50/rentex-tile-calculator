@@ -1125,10 +1125,13 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         if (wallDimensionsSection) wallDimensionsSection.style.display = 'block';
         if (canvasContainer) canvasContainer.style.display = 'block';
 
+        // Reset topSection to original layout
         topSection.style.display = 'flex';
         topSection.style.alignItems = 'flex-start';
         topSection.style.gap = '500px';
         topSection.style.margin = '0px 0';
+        topSection.style.flexWrap = '';  // Clear the nowrap setting
+        topSection.style.justifyContent = '';  // Reset to CSS default (space-between)
 
         const screenEquipmentContainer = document.getElementById('screenEquipmentContainer');
         if (screenEquipmentContainer) {
