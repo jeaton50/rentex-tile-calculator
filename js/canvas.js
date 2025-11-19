@@ -210,6 +210,11 @@ const CanvasRenderer = {
         }
       }
 
+      // Draw wiring diagram if enabled
+      if (window.showWiring) {
+        this.drawWiringDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
+      }
+
       // Draw support structures
       if (wallData.flownSupport) {
         this.drawFlownSupports(ctx, wallData.blocksHor, blockSize, xOffset, supportHeight, zoomLevel);
@@ -224,6 +229,84 @@ const CanvasRenderer = {
     }
 
     console.log('Wall drawing completed');
+  },
+
+  /**
+   * Draw wiring diagram showing data connections between tiles
+   * @param {CanvasRenderingContext2D} ctx - Canvas context
+   * @param {Object} wallData - Wall configuration data
+   * @param {number} blockSize - Size of each block in pixels
+   * @param {number} xOffset - Horizontal offset for multi-screen
+   * @param {number} extraHeightTop - Extra height at top for supports
+   */
+  drawWiringDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop) {
+    // Get product type to determine daisy chain limit
+    const productType = document.getElementById('productType')?.value;
+    const daisyChainLimits = {
+      'Absen': 10,
+      'ROE': 13,
+      'Theatrixx': 10
+    };
+    const chainLimit = daisyChainLimits[productType] || 10;
+
+    // Get wiring direction
+    const direction = window.wiringDirection || 'horizontal';
+
+    // Calculate total tiles
+    const totalTiles = wallData.blocksHor * wallData.blocksVer;
+
+    // Set line style for wiring
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    let tilesInCurrentChain = 0;
+    let chainNumber = 0;
+
+    // Create array of tile positions based on wiring direction
+    const tiles = [];
+
+    if (direction === 'horizontal') {
+      // Start from bottom-left, go left-to-right, bottom-to-top
+      for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+        for (let col = 0; col < wallData.blocksHor; col++) {
+          tiles.push({ row, col });
+        }
+      }
+    } else {
+      // Vertical: Start from bottom-left, go bottom-to-top, left-to-right
+      for (let col = 0; col < wallData.blocksHor; col++) {
+        for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+          tiles.push({ row, col });
+        }
+      }
+    }
+
+    // Draw wiring lines
+    for (let i = 0; i < tiles.length; i++) {
+      const tile = tiles[i];
+      const posX = xOffset + tile.col * blockSize + blockSize / 2;
+      const posY = extraHeightTop + tile.row * blockSize + blockSize / 2;
+
+      if (tilesInCurrentChain === 0) {
+        // Start of a new chain - just move to position
+        ctx.beginPath();
+        ctx.moveTo(posX, posY);
+        tilesInCurrentChain = 1;
+      } else {
+        // Continue the chain
+        ctx.lineTo(posX, posY);
+        tilesInCurrentChain++;
+      }
+
+      // If we've reached the chain limit or the last tile, finish this chain
+      if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
+        ctx.stroke();
+        tilesInCurrentChain = 0;
+        chainNumber++;
+      }
+    }
   },
 
   /**

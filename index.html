@@ -403,6 +403,20 @@ window.addEventListener("DOMContentLoaded", () => {
         </div>
         <br>
 
+        <!-- Wiring Diagram Controls -->
+        <div class="input-group">
+          <input type="checkbox" id="toggleWiring" name="toggleWiring">
+          <label for="toggleWiring">Show Wiring Diagram</label>
+        </div>
+        <div class="input-group">
+          <label for="wiringDirection">Wiring Direction:</label>
+          <select id="wiringDirection" name="wiringDirection">
+            <option value="horizontal">Horizontal</option>
+            <option value="vertical">Vertical</option>
+          </select>
+        </div>
+        <br>
+
         <button type="button" onclick="captureEntireScreen()">Email</button>
         <button type="button" id="exportButton" onclick="exportToExcel()">Export to SL+</button>
         <button type="button" onclick="zoomIn()">Zoom In</button>
@@ -527,8 +541,10 @@ window.addEventListener("DOMContentLoaded", () => {
     <script>
       // Define initial zoom level and global variables
       let zoomLevel = 1;
-	 
+
       window.showNumbers = true;
+      window.showWiring = false;
+      window.wiringDirection = 'horizontal';
       var totalWeight = 0;
       let hasChecked = false;
 
@@ -1631,6 +1647,24 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         window.showNumbers = toggleNumbersCheckbox.checked;
         toggleNumbersCheckbox.addEventListener('change', () => {
           window.showNumbers = toggleNumbersCheckbox.checked;
+          generateWall();
+        });
+      }
+
+      // Wiring diagram controls
+      const toggleWiringCheckbox = document.getElementById('toggleWiring');
+      const wiringDirectionSelect = document.getElementById('wiringDirection');
+      if (toggleWiringCheckbox) {
+        window.showWiring = toggleWiringCheckbox.checked;
+        toggleWiringCheckbox.addEventListener('change', () => {
+          window.showWiring = toggleWiringCheckbox.checked;
+          generateWall();
+        });
+      }
+      if (wiringDirectionSelect) {
+        window.wiringDirection = wiringDirectionSelect.value;
+        wiringDirectionSelect.addEventListener('change', () => {
+          window.wiringDirection = wiringDirectionSelect.value;
           generateWall();
         });
       }
