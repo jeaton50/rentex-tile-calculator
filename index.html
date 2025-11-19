@@ -415,6 +415,15 @@ window.addEventListener("DOMContentLoaded", () => {
             <option value="vertical">Vertical</option>
           </select>
         </div>
+        <div class="input-group">
+          <label for="wiringStartPosition">Start Position:</label>
+          <select id="wiringStartPosition" name="wiringStartPosition">
+            <option value="bottom-left">Bottom Left</option>
+            <option value="bottom-right">Bottom Right</option>
+            <option value="top-left">Top Left</option>
+            <option value="top-right">Top Right</option>
+          </select>
+        </div>
         <br>
 
         <button type="button" onclick="captureEntireScreen()">Email</button>
@@ -545,6 +554,7 @@ window.addEventListener("DOMContentLoaded", () => {
       window.showNumbers = true;
       window.showWiring = false;
       window.wiringDirection = 'horizontal';
+      window.wiringStartPosition = 'bottom-left';
       var totalWeight = 0;
       let hasChecked = false;
 
@@ -1660,6 +1670,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       // Wiring diagram controls
       const toggleWiringCheckbox = document.getElementById('toggleWiring');
       const wiringDirectionSelect = document.getElementById('wiringDirection');
+      const wiringStartPositionSelect = document.getElementById('wiringStartPosition');
       if (toggleWiringCheckbox) {
         window.showWiring = toggleWiringCheckbox.checked;
         toggleWiringCheckbox.addEventListener('change', () => {
@@ -1671,6 +1682,13 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         window.wiringDirection = wiringDirectionSelect.value;
         wiringDirectionSelect.addEventListener('change', () => {
           window.wiringDirection = wiringDirectionSelect.value;
+          generateWall();
+        });
+      }
+      if (wiringStartPositionSelect) {
+        window.wiringStartPosition = wiringStartPositionSelect.value;
+        wiringStartPositionSelect.addEventListener('change', () => {
+          window.wiringStartPosition = wiringStartPositionSelect.value;
           generateWall();
         });
       }

@@ -251,8 +251,9 @@ const CanvasRenderer = {
     };
     const chainLimit = daisyChainLimits[productType] || 10;
 
-    // Get wiring direction
+    // Get wiring direction and start position
     const direction = window.wiringDirection || 'horizontal';
+    const startPosition = window.wiringStartPosition || 'bottom-left';
 
     // Array of colors for different chains (bright, visible colors)
     const chainColors = [
@@ -286,21 +287,69 @@ const CanvasRenderer = {
     let chainStartX = 0;
     let chainStartY = 0;
 
-    // Create array of tile positions based on wiring direction
+    // Create array of tile positions based on wiring direction and start position
     const tiles = [];
 
     if (direction === 'horizontal') {
-      // Start from bottom-left, go left-to-right, bottom-to-top
-      for (let row = wallData.blocksVer - 1; row >= 0; row--) {
-        for (let col = 0; col < wallData.blocksHor; col++) {
-          tiles.push({ row, col });
+      // Horizontal wiring
+      if (startPosition === 'bottom-left') {
+        // Bottom-left: go right, then up
+        for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+          for (let col = 0; col < wallData.blocksHor; col++) {
+            tiles.push({ row, col });
+          }
+        }
+      } else if (startPosition === 'bottom-right') {
+        // Bottom-right: go left, then up
+        for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+          for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+            tiles.push({ row, col });
+          }
+        }
+      } else if (startPosition === 'top-left') {
+        // Top-left: go right, then down
+        for (let row = 0; row < wallData.blocksVer; row++) {
+          for (let col = 0; col < wallData.blocksHor; col++) {
+            tiles.push({ row, col });
+          }
+        }
+      } else if (startPosition === 'top-right') {
+        // Top-right: go left, then down
+        for (let row = 0; row < wallData.blocksVer; row++) {
+          for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+            tiles.push({ row, col });
+          }
         }
       }
     } else {
-      // Vertical: Start from bottom-left, go bottom-to-top, left-to-right
-      for (let col = 0; col < wallData.blocksHor; col++) {
-        for (let row = wallData.blocksVer - 1; row >= 0; row--) {
-          tiles.push({ row, col });
+      // Vertical wiring
+      if (startPosition === 'bottom-left') {
+        // Bottom-left: go up, then right
+        for (let col = 0; col < wallData.blocksHor; col++) {
+          for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+            tiles.push({ row, col });
+          }
+        }
+      } else if (startPosition === 'bottom-right') {
+        // Bottom-right: go up, then left
+        for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+          for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+            tiles.push({ row, col });
+          }
+        }
+      } else if (startPosition === 'top-left') {
+        // Top-left: go down, then right
+        for (let col = 0; col < wallData.blocksHor; col++) {
+          for (let row = 0; row < wallData.blocksVer; row++) {
+            tiles.push({ row, col });
+          }
+        }
+      } else if (startPosition === 'top-right') {
+        // Top-right: go down, then left
+        for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+          for (let row = 0; row < wallData.blocksVer; row++) {
+            tiles.push({ row, col });
+          }
         }
       }
     }
