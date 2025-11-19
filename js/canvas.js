@@ -288,67 +288,136 @@ const CanvasRenderer = {
     let chainStartY = 0;
 
     // Create array of tile positions based on wiring direction and start position
+    // Using snake/serpentine pattern for continuous wiring
     const tiles = [];
 
     if (direction === 'horizontal') {
-      // Horizontal wiring
+      // Horizontal wiring (snake left-right on each row)
       if (startPosition === 'bottom-left') {
-        // Bottom-left: go right, then up
+        // Bottom-left: snake right/left, moving up
         for (let row = wallData.blocksVer - 1; row >= 0; row--) {
-          for (let col = 0; col < wallData.blocksHor; col++) {
-            tiles.push({ row, col });
+          const rowIndex = wallData.blocksVer - 1 - row; // 0, 1, 2, ...
+          if (rowIndex % 2 === 0) {
+            // Even rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
           }
         }
       } else if (startPosition === 'bottom-right') {
-        // Bottom-right: go left, then up
+        // Bottom-right: snake left/right, moving up
         for (let row = wallData.blocksVer - 1; row >= 0; row--) {
-          for (let col = wallData.blocksHor - 1; col >= 0; col--) {
-            tiles.push({ row, col });
+          const rowIndex = wallData.blocksVer - 1 - row;
+          if (rowIndex % 2 === 0) {
+            // Even rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
           }
         }
       } else if (startPosition === 'top-left') {
-        // Top-left: go right, then down
+        // Top-left: snake right/left, moving down
         for (let row = 0; row < wallData.blocksVer; row++) {
-          for (let col = 0; col < wallData.blocksHor; col++) {
-            tiles.push({ row, col });
+          if (row % 2 === 0) {
+            // Even rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
           }
         }
       } else if (startPosition === 'top-right') {
-        // Top-right: go left, then down
+        // Top-right: snake left/right, moving down
         for (let row = 0; row < wallData.blocksVer; row++) {
-          for (let col = wallData.blocksHor - 1; col >= 0; col--) {
-            tiles.push({ row, col });
+          if (row % 2 === 0) {
+            // Even rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
           }
         }
       }
     } else {
-      // Vertical wiring
+      // Vertical wiring (snake up/down on each column)
       if (startPosition === 'bottom-left') {
-        // Bottom-left: go up, then right
+        // Bottom-left: snake up/down, moving right
         for (let col = 0; col < wallData.blocksHor; col++) {
-          for (let row = wallData.blocksVer - 1; row >= 0; row--) {
-            tiles.push({ row, col });
+          if (col % 2 === 0) {
+            // Even columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
           }
         }
       } else if (startPosition === 'bottom-right') {
-        // Bottom-right: go up, then left
+        // Bottom-right: snake up/down, moving left
         for (let col = wallData.blocksHor - 1; col >= 0; col--) {
-          for (let row = wallData.blocksVer - 1; row >= 0; row--) {
-            tiles.push({ row, col });
+          const colIndex = wallData.blocksHor - 1 - col;
+          if (colIndex % 2 === 0) {
+            // Even columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
           }
         }
       } else if (startPosition === 'top-left') {
-        // Top-left: go down, then right
+        // Top-left: snake down/up, moving right
         for (let col = 0; col < wallData.blocksHor; col++) {
-          for (let row = 0; row < wallData.blocksVer; row++) {
-            tiles.push({ row, col });
+          if (col % 2 === 0) {
+            // Even columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
           }
         }
       } else if (startPosition === 'top-right') {
-        // Top-right: go down, then left
+        // Top-right: snake down/up, moving left
         for (let col = wallData.blocksHor - 1; col >= 0; col--) {
-          for (let row = 0; row < wallData.blocksVer; row++) {
-            tiles.push({ row, col });
+          const colIndex = wallData.blocksHor - 1 - col;
+          if (colIndex % 2 === 0) {
+            // Even columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
           }
         }
       }
