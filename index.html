@@ -1317,20 +1317,55 @@ function display208CircuitsNeeded() {
     ctx.rect(xOffset, 0, singleScreenWidth, canvas.height);
     ctx.clip();
 
-    // Draw the tiles for this screen
-    for (let y = 0; y < data.blocksVer; y++) {
-      for (let x = 0; x < data.blocksHor; x++) {
-        const posX = xOffset + x * blockSize;
-        const posY = extraHeightTop + y * blockSize;
-        ctx.drawImage(blockImage, posX, posY, blockSize, blockSize);
-        if (showNumbers) {
-          ctx.fillStyle = 'black';
-          ctx.font = `${Math.max(12, blockSize / 4)}px Arial`;
+    // Draw a single large image covering the entire wall area for this screen
+    const wallWidth = data.blocksHor * blockSize;
+    const wallHeight = data.blocksVer * blockSize;
+    const wallX = xOffset;
+    const wallY = extraHeightTop;
+
+    // Draw the single background image stretched across the entire wall
+    ctx.drawImage(blockImage, wallX, wallY, wallWidth, wallHeight);
+
+    // Draw grid lines to show block boundaries
+    ctx.strokeStyle = '#000000'; // Black grid lines (you can customize this)
+    ctx.lineWidth = 2; // Line thickness (you can customize this)
+
+    // Draw vertical grid lines
+    for (let x = 0; x <= data.blocksHor; x++) {
+      const lineX = xOffset + x * blockSize;
+      ctx.beginPath();
+      ctx.moveTo(lineX, wallY);
+      ctx.lineTo(lineX, wallY + wallHeight);
+      ctx.stroke();
+    }
+
+    // Draw horizontal grid lines
+    for (let y = 0; y <= data.blocksVer; y++) {
+      const lineY = wallY + y * blockSize;
+      ctx.beginPath();
+      ctx.moveTo(wallX, lineY);
+      ctx.lineTo(wallX + wallWidth, lineY);
+      ctx.stroke();
+    }
+
+    // Optionally draw block numbers
+    if (showNumbers) {
+      for (let y = 0; y < data.blocksVer; y++) {
+        for (let x = 0; x < data.blocksHor; x++) {
+          const posX = xOffset + x * blockSize;
+          const posY = extraHeightTop + y * blockSize;
+          ctx.fillStyle = 'white'; // White text with black outline for visibility
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 3;
+          ctx.font = `bold ${Math.max(12, blockSize / 4)}px Arial`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(count, posX + blockSize / 2, posY + blockSize / 2);
+          const textX = posX + blockSize / 2;
+          const textY = posY + blockSize / 2;
+          ctx.strokeText(count, textX, textY);
+          ctx.fillText(count, textX, textY);
+          count++;
         }
-        count++;
       }
     }
     // Draw supports and bases for this screen
