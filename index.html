@@ -895,6 +895,15 @@ window.addEventListener("DOMContentLoaded", () => {
         alert('Error: Unable to load the block image. Please check the image path and try again.');
       };
 
+      // Wall background image - this will be stretched across the entire wall
+      let wallBackgroundImage = new Image();
+      wallBackgroundImage.src = 'static/images/wall_background.png';
+      wallBackgroundImage.onload = () => { console.log('Wall background image loaded successfully.'); };
+      wallBackgroundImage.onerror = () => {
+        console.error('Failed to load the wall background image.');
+        console.log('Will use block image as fallback.');
+      };
+
       // Helper Functions
       function roundToDimension(value, increment, min) {
         return Math.max(min, Math.round(value / increment) * increment);
@@ -1323,8 +1332,12 @@ function display208CircuitsNeeded() {
     const wallX = xOffset;
     const wallY = extraHeightTop;
 
-    // Draw the single background image stretched across the entire wall
-    ctx.drawImage(blockImage, wallX, wallY, wallWidth, wallHeight);
+    // Draw the wall background image stretched across the entire wall
+    // Use wallBackgroundImage if loaded, otherwise fallback to blockImage
+    const imageToUse = (wallBackgroundImage.complete && wallBackgroundImage.naturalHeight !== 0)
+      ? wallBackgroundImage
+      : blockImage;
+    ctx.drawImage(imageToUse, wallX, wallY, wallWidth, wallHeight);
 
     // Draw grid lines to show block boundaries
     ctx.strokeStyle = '#000000'; // Black grid lines (you can customize this)
