@@ -252,17 +252,37 @@ const CanvasRenderer = {
     // Get wiring direction
     const direction = window.wiringDirection || 'horizontal';
 
+    // Array of colors for different chains (bright, visible colors)
+    const chainColors = [
+      '#FF3366', // Red-Pink
+      '#33FF66', // Green
+      '#3366FF', // Blue
+      '#FFFF33', // Yellow
+      '#FF9933', // Orange
+      '#CC33FF', // Purple
+      '#33FFFF', // Cyan
+      '#FF3399', // Magenta
+      '#99FF33', // Lime
+      '#FF6633', // Red-Orange
+      '#33FF99', // Teal
+      '#9933FF', // Violet
+      '#FFCC33', // Gold
+      '#33CCFF', // Sky Blue
+      '#FF33CC', // Hot Pink
+    ];
+
     // Calculate total tiles
     const totalTiles = wallData.blocksHor * wallData.blocksVer;
 
     // Set line style for wiring
-    ctx.strokeStyle = 'white';
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
     let tilesInCurrentChain = 0;
     let chainNumber = 0;
+    let chainStartX = 0;
+    let chainStartY = 0;
 
     // Create array of tile positions based on wiring direction
     const tiles = [];
@@ -290,7 +310,17 @@ const CanvasRenderer = {
       const posY = extraHeightTop + tile.row * blockSize + blockSize / 2;
 
       if (tilesInCurrentChain === 0) {
-        // Start of a new chain - just move to position
+        // Start of a new chain
+        chainNumber++;
+
+        // Set color for this chain (cycle through colors)
+        ctx.strokeStyle = chainColors[(chainNumber - 1) % chainColors.length];
+
+        // Save start position for label
+        chainStartX = posX;
+        chainStartY = posY;
+
+        // Begin path
         ctx.beginPath();
         ctx.moveTo(posX, posY);
         tilesInCurrentChain = 1;
@@ -303,8 +333,23 @@ const CanvasRenderer = {
       // If we've reached the chain limit or the last tile, finish this chain
       if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
         ctx.stroke();
+
+        // Draw port label at start of chain
+        const labelColor = chainColors[(chainNumber - 1) % chainColors.length];
+        ctx.fillStyle = labelColor;
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 3;
+        ctx.font = `bold ${Math.max(14, blockSize / 3)}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const labelText = `Port ${chainNumber}`;
+
+        // Draw text with black outline for visibility
+        ctx.strokeText(labelText, chainStartX, chainStartY);
+        ctx.fillText(labelText, chainStartX, chainStartY);
+
+        // Reset for next chain
         tilesInCurrentChain = 0;
-        chainNumber++;
       }
     }
   },
