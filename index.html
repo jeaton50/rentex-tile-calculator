@@ -549,6 +549,15 @@ window.addEventListener("DOMContentLoaded", () => {
         alert('Error: Unable to load the block image. Please check the image path and try again.');
       };
 
+      // Wall background image - this will be stretched across the entire wall
+      window.wallBackgroundImage = new Image();
+      window.wallBackgroundImage.src = 'static/images/wall_background.png';
+      window.wallBackgroundImage.onload = () => { console.log('Wall background image loaded successfully.'); };
+      window.wallBackgroundImage.onerror = () => {
+        console.error('Failed to load the wall background image.');
+        console.log('Will use block image as fallback.');
+      };
+
       // Helper Functions - Using modules where available
       // roundToDimension is now in js/calculator.js
 

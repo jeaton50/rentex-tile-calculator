@@ -141,33 +141,68 @@ const CanvasRenderer = {
       ctx.rect(xOffset, 0, singleScreenWidth, canvas.height);
       ctx.clip();
 
-      // Draw tiles
-      for (let row = 0; row < wallData.blocksVer; row++) {
-        for (let col = 0; col < wallData.blocksHor; col++) {
-          const posX = xOffset + col * blockSize;
-          const posY = extraHeightTop + row * blockSize;
+      // Draw wall background as a single stretched image
+      const wallWidth = wallData.blocksHor * blockSize;
+      const wallHeight = wallData.blocksVer * blockSize;
+      const wallX = xOffset;
+      const wallY = extraHeightTop;
 
-          // Draw tile image or fallback rectangle
-          if (tileImage && tileImage.complete && tileImage.naturalHeight !== 0) {
-            ctx.drawImage(tileImage, posX, posY, blockSize, blockSize);
-          } else {
-            // Fallback: draw colored rectangle
-            ctx.fillStyle = '#444';
-            ctx.fillRect(posX, posY, blockSize, blockSize);
-            ctx.strokeStyle = '#666';
-            ctx.strokeRect(posX, posY, blockSize, blockSize);
-          }
+      // Use wallBackgroundImage if available, otherwise fallback to tileImage
+      const imageToUse = (window.wallBackgroundImage && window.wallBackgroundImage.complete && window.wallBackgroundImage.naturalHeight !== 0)
+        ? window.wallBackgroundImage
+        : tileImage;
 
-          // Draw tile number if enabled
-          if (showNumbers) {
-            ctx.fillStyle = 'black';
-            ctx.font = `${Math.max(12, blockSize / 4)}px Arial`;
+      if (imageToUse && imageToUse.complete && imageToUse.naturalHeight !== 0) {
+        ctx.drawImage(imageToUse, wallX, wallY, wallWidth, wallHeight);
+      } else {
+        // Fallback: draw colored rectangle
+        ctx.fillStyle = '#444';
+        ctx.fillRect(wallX, wallY, wallWidth, wallHeight);
+      }
+
+      // Draw grid lines to show block boundaries
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+
+      // Draw vertical grid lines
+      for (let col = 0; col <= wallData.blocksHor; col++) {
+        const lineX = xOffset + col * blockSize;
+        ctx.beginPath();
+        ctx.moveTo(lineX, wallY);
+        ctx.lineTo(lineX, wallY + wallHeight);
+        ctx.stroke();
+      }
+
+      // Draw horizontal grid lines
+      for (let row = 0; row <= wallData.blocksVer; row++) {
+        const lineY = wallY + row * blockSize;
+        ctx.beginPath();
+        ctx.moveTo(wallX, lineY);
+        ctx.lineTo(wallX + wallWidth, lineY);
+        ctx.stroke();
+      }
+
+      // Draw tile numbers if enabled
+      if (showNumbers) {
+        for (let row = 0; row < wallData.blocksVer; row++) {
+          for (let col = 0; col < wallData.blocksHor; col++) {
+            const posX = xOffset + col * blockSize;
+            const posY = extraHeightTop + row * blockSize;
+
+            // White text with black outline for visibility
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 3;
+            ctx.font = `bold ${Math.max(12, blockSize / 4)}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(tileNumber, posX + blockSize / 2, posY + blockSize / 2);
-          }
+            const textX = posX + blockSize / 2;
+            const textY = posY + blockSize / 2;
+            ctx.strokeText(tileNumber, textX, textY);
+            ctx.fillText(tileNumber, textX, textY);
 
-          tileNumber++;
+            tileNumber++;
+          }
         }
       }
 
