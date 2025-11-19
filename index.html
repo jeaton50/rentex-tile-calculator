@@ -503,6 +503,7 @@ window.addEventListener("DOMContentLoaded", () => {
         <div id="totalWeight"></div>
         <div id="totalPixels"></div>
         <div id="totalPower"></div>
+        <div id="dataPortsNeeded"></div>
 
 
          <!-- NEW: Hidden message that we'll show for Absen/ROE/Theatrixx -->
@@ -1429,6 +1430,33 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       if (typeof display208Circuits === 'function') {
         display208Circuits();
       }
+    };
+
+    window.displayDataPortsNeeded = function(productType, totalTiles) {
+      const dataPortsDiv = document.getElementById('dataPortsNeeded');
+      if (!dataPortsDiv) return;
+
+      // Define daisy chain limits for each product type
+      const daisyChainLimits = {
+        'Absen': 10,
+        'ROE': 13,
+        'Theatrixx': 10
+      };
+
+      const limit = daisyChainLimits[productType];
+
+      if (!limit) {
+        dataPortsDiv.innerHTML = '';
+        return;
+      }
+
+      // Calculate number of data ports needed (round up)
+      const portsNeeded = Math.ceil(totalTiles / limit);
+
+      dataPortsDiv.innerHTML = `
+        <strong>Data Ports Needed:</strong><br>
+        ${portsNeeded} port${portsNeeded !== 1 ? 's' : ''} (${totalTiles} tiles ÷ ${limit} per chain)
+      `;
     };
 
     window.display110Circuits = function() {

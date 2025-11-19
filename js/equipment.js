@@ -589,6 +589,11 @@ function addAbsenEquipment(config, tbody) {
   if (typeof displayTotalPixels === 'function') {
     displayTotalPixels(totalPixels);
   }
+
+  // Display data ports needed
+  if (typeof displayDataPortsNeeded === 'function') {
+    displayDataPortsNeeded('Absen', totalTiles);
+  }
 }
 
 /**
@@ -783,6 +788,11 @@ function addROEEquipment(config, tbody) {
   // Display total pixels
   if (typeof displayTotalPixels === 'function') {
     displayTotalPixels(totalPixels);
+  }
+
+  // Display data ports needed
+  if (typeof displayDataPortsNeeded === 'function') {
+    displayDataPortsNeeded('ROE', totalTiles);
   }
 }
 
@@ -1014,6 +1024,11 @@ function addTheatrixxEquipment(config, tbody) {
   if (typeof displayTotalPixels === 'function') {
     displayTotalPixels(totalPixels);
   }
+
+  // Display data ports needed
+  if (typeof displayDataPortsNeeded === 'function') {
+    displayDataPortsNeeded('Theatrixx', totalTiles);
+  }
 }
 
 /**
@@ -1092,6 +1107,11 @@ function displayEquipment(data) {
     // Display power (call existing function if available)
     if (typeof displayTotalPower === 'function') {
       displayTotalPower(voltage, power.amps, power.watts);
+    }
+
+    // Display data ports needed (call existing function if available)
+    if (typeof displayDataPortsNeeded === 'function') {
+      displayDataPortsNeeded(productType, totalTiles);
     }
 
     // Calculate cables
