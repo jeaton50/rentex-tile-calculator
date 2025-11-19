@@ -243,9 +243,11 @@ const CanvasRenderer = {
     // Get product type to determine daisy chain limit
     const productType = document.getElementById('productType')?.value;
     const daisyChainLimits = {
-      'Absen': 10,
-      'ROE': 13,
-      'Theatrixx': 10
+      'absen': 10,
+      'BP2B1': 13,  // ROE Black Pearl 2 B1
+      'BP2B2': 13,  // ROE Black Pearl 2 B2
+      'BP2V2': 13,  // ROE Black Pearl 2V2
+      'theatrixx': 10
     };
     const chainLimit = daisyChainLimits[productType] || 10;
 
