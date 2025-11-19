@@ -408,14 +408,14 @@ window.addEventListener("DOMContentLoaded", () => {
           <input type="checkbox" id="toggleWiring" name="toggleWiring">
           <label for="toggleWiring">Show Wiring Diagram</label>
         </div>
-        <div class="input-group">
+        <div class="input-group" id="wiringDirectionGroup" style="display: none;">
           <label for="wiringDirection">Wiring Direction:</label>
           <select id="wiringDirection" name="wiringDirection">
             <option value="horizontal">Horizontal</option>
             <option value="vertical">Vertical</option>
           </select>
         </div>
-        <div class="input-group">
+        <div class="input-group" id="wiringStartPositionGroup" style="display: none;">
           <label for="wiringStartPosition">Start Position:</label>
           <select id="wiringStartPosition" name="wiringStartPosition">
             <option value="bottom-left">Bottom Left</option>
@@ -1671,10 +1671,26 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       const toggleWiringCheckbox = document.getElementById('toggleWiring');
       const wiringDirectionSelect = document.getElementById('wiringDirection');
       const wiringStartPositionSelect = document.getElementById('wiringStartPosition');
+      const wiringDirectionGroup = document.getElementById('wiringDirectionGroup');
+      const wiringStartPositionGroup = document.getElementById('wiringStartPositionGroup');
+
       if (toggleWiringCheckbox) {
         window.showWiring = toggleWiringCheckbox.checked;
+
+        // Function to toggle visibility of wiring options
+        const toggleWiringOptions = () => {
+          const isChecked = toggleWiringCheckbox.checked;
+          if (wiringDirectionGroup) {
+            wiringDirectionGroup.style.display = isChecked ? 'block' : 'none';
+          }
+          if (wiringStartPositionGroup) {
+            wiringStartPositionGroup.style.display = isChecked ? 'block' : 'none';
+          }
+        };
+
         toggleWiringCheckbox.addEventListener('change', () => {
           window.showWiring = toggleWiringCheckbox.checked;
+          toggleWiringOptions();
           generateWall();
         });
       }
