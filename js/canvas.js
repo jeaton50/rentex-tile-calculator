@@ -187,7 +187,17 @@ const CanvasRenderer = {
         ctx.stroke();
       }
 
-      // Draw tile numbers if enabled
+      // Draw wiring diagram if enabled
+      if (window.showWiring) {
+        this.drawWiringDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
+      }
+
+      // Draw power diagram if enabled
+      if (window.showPower) {
+        this.drawPowerDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
+      }
+
+      // Draw tile numbers if enabled (drawn after wiring diagrams so they appear on top)
       if (showNumbers) {
         for (let row = 0; row < wallData.blocksVer; row++) {
           for (let col = 0; col < wallData.blocksHor; col++) {
@@ -209,16 +219,6 @@ const CanvasRenderer = {
             tileNumber++;
           }
         }
-      }
-
-      // Draw wiring diagram if enabled
-      if (window.showWiring) {
-        this.drawWiringDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
-      }
-
-      // Draw power diagram if enabled
-      if (window.showPower) {
-        this.drawPowerDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
       }
 
       // Draw support structures
@@ -431,7 +431,6 @@ const CanvasRenderer = {
 
     // Draw wiring lines with outline effect for better visibility
     let chainPath = []; // Store path points for current chain
-    const tileChainMap = []; // Store which chain each tile belongs to
 
     for (let i = 0; i < tiles.length; i++) {
       const tile = tiles[i];
@@ -452,9 +451,6 @@ const CanvasRenderer = {
         chainPath.push({ x: posX, y: posY });
         tilesInCurrentChain++;
       }
-
-      // Store tile to chain mapping
-      tileChainMap.push({ tile, chainNumber, posX, posY });
 
       // If we've reached the chain limit or the last tile, finish this chain
       if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
@@ -497,25 +493,6 @@ const CanvasRenderer = {
         tilesInCurrentChain = 0;
         chainPath = [];
       }
-    }
-
-    // Draw port numbers on each tile (on top of the lines)
-    ctx.font = `bold ${Math.max(12, blockSize / 4)}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (let i = 0; i < tileChainMap.length; i++) {
-      const { chainNumber, posX, posY } = tileChainMap[i];
-      const chainColor = chainColors[(chainNumber - 1) % chainColors.length];
-
-      // Draw number with white background circle for visibility
-      ctx.fillStyle = 'white';
-      ctx.beginPath();
-      ctx.arc(posX, posY, Math.max(10, blockSize / 8), 0, 2 * Math.PI);
-      ctx.fill();
-
-      // Draw the port number
-      ctx.fillStyle = chainColor;
-      ctx.fillText(chainNumber.toString(), posX, posY);
     }
   },
 
@@ -719,7 +696,6 @@ const CanvasRenderer = {
 
     // Draw power wiring lines with outline effect for better visibility
     let chainPath = []; // Store path points for current chain
-    const tileChainMap = []; // Store which chain each tile belongs to
 
     for (let i = 0; i < tiles.length; i++) {
       const tile = tiles[i];
@@ -740,9 +716,6 @@ const CanvasRenderer = {
         chainPath.push({ x: posX, y: posY });
         tilesInCurrentChain++;
       }
-
-      // Store tile to chain mapping
-      tileChainMap.push({ tile, chainNumber, posX, posY });
 
       // If we've reached the chain limit or the last tile, finish this chain
       if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
@@ -792,25 +765,6 @@ const CanvasRenderer = {
 
     // Reset line dash after drawing
     ctx.setLineDash([]);
-
-    // Draw power connection numbers on each tile (on top of the lines)
-    ctx.font = `bold ${Math.max(12, blockSize / 4)}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (let i = 0; i < tileChainMap.length; i++) {
-      const { chainNumber, posX, posY } = tileChainMap[i];
-      const chainColor = chainColors[(chainNumber - 1) % chainColors.length];
-
-      // Draw number with white background circle for visibility
-      ctx.fillStyle = 'white';
-      ctx.beginPath();
-      ctx.arc(posX, posY, Math.max(10, blockSize / 8), 0, 2 * Math.PI);
-      ctx.fill();
-
-      // Draw the power connection number
-      ctx.fillStyle = chainColor;
-      ctx.fillText(chainNumber.toString(), posX, posY);
-    }
   },
 
   /**
