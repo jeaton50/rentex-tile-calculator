@@ -147,18 +147,21 @@ const CanvasRenderer = {
       const wallX = xOffset;
       const wallY = extraHeightTop;
 
-      // Use wallBackgroundImage if available, otherwise fallback to tileImage
-      const imageToUse = (window.wallBackgroundImage && window.wallBackgroundImage.complete && window.wallBackgroundImage.naturalHeight !== 0)
-        ? window.wallBackgroundImage
-        : tileImage;
+      // Only draw background image if wiring diagram is NOT shown
+      if (!window.showWiring) {
+        // Use wallBackgroundImage if available, otherwise fallback to tileImage
+        const imageToUse = (window.wallBackgroundImage && window.wallBackgroundImage.complete && window.wallBackgroundImage.naturalHeight !== 0)
+          ? window.wallBackgroundImage
+          : tileImage;
 
-      if (imageToUse && imageToUse.complete && imageToUse.naturalHeight !== 0) {
-        // Draw background image at full opacity
-        ctx.drawImage(imageToUse, wallX, wallY, wallWidth, wallHeight);
-      } else {
-        // Fallback: draw colored rectangle
-        ctx.fillStyle = '#444';
-        ctx.fillRect(wallX, wallY, wallWidth, wallHeight);
+        if (imageToUse && imageToUse.complete && imageToUse.naturalHeight !== 0) {
+          // Draw background image at full opacity
+          ctx.drawImage(imageToUse, wallX, wallY, wallWidth, wallHeight);
+        } else {
+          // Fallback: draw colored rectangle
+          ctx.fillStyle = '#444';
+          ctx.fillRect(wallX, wallY, wallWidth, wallHeight);
+        }
       }
 
       // Draw grid lines to show block boundaries
