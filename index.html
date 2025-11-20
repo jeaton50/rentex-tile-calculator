@@ -546,6 +546,9 @@ window.addEventListener("DOMContentLoaded", () => {
         </div>
         <div id="totalPixels"></div>
         <canvas id="wallCanvas2D"></canvas>
+        <div id="captureButtonContainer">
+          <button type="button" class="capture-diagram-button" id="captureWiringButton" style="display: none;">📸 Capture Wiring Diagram</button>
+        </div>
         <div id="totalWallWeight"></div>
         <div id="totalWeight"></div>
         <div id="totalPower"></div>
@@ -1880,6 +1883,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
           if (wiringStartPositionGroup) {
             wiringStartPositionGroup.style.display = isChecked ? 'block' : 'none';
           }
+          updateCaptureButtonVisibility();
         };
 
         toggleWiringCheckbox.addEventListener('change', () => {
@@ -1922,6 +1926,7 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
           if (powerStartPositionGroup) {
             powerStartPositionGroup.style.display = isChecked ? 'block' : 'none';
           }
+          updateCaptureButtonVisibility();
         };
 
         togglePowerCheckbox.addEventListener('change', () => {
@@ -1995,10 +2000,105 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         flownSupportTypeSelect.addEventListener('change', generateWall);
       }
 
+      // Capture button functionality
+      function updateCaptureButtonVisibility() {
+        const captureButton = document.getElementById('captureWiringButton');
+        const captureContainer = document.getElementById('captureButtonContainer');
+        const toggleWiring = document.getElementById('toggleWiring');
+        const togglePower = document.getElementById('togglePower');
+
+        if (captureButton && captureContainer) {
+          const showWiringDiagram = toggleWiring && toggleWiring.checked;
+          const showPowerDiagram = togglePower && togglePower.checked;
+
+          if (showWiringDiagram || showPowerDiagram) {
+            captureContainer.style.display = 'block';
+            captureButton.style.display = 'inline-block';
+
+            // Update button text based on what's shown
+            if (showWiringDiagram && showPowerDiagram) {
+              captureButton.textContent = '📸 Capture Wiring Diagrams';
+            } else if (showWiringDiagram) {
+              captureButton.textContent = '📸 Capture Data Wiring';
+            } else {
+              captureButton.textContent = '📸 Capture Power Wiring';
+            }
+          } else {
+            captureContainer.style.display = 'none';
+            captureButton.style.display = 'none';
+          }
+        }
+      }
+
+      function captureWiringDiagram() {
+        const canvas = document.getElementById('wallCanvas2D');
+        if (!canvas) return;
+
+        // Create a temporary canvas with extra height for info text
+        const tempCanvas = document.createElement('canvas');
+        const infoHeight = 80;
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height + infoHeight;
+        const ctx = tempCanvas.getContext('2d');
+
+        // Fill with white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+        // Copy original canvas content
+        ctx.drawImage(canvas, 0, 0);
+
+        // Add info text at the bottom
+        const productType = document.getElementById('productType')?.value || 'LED';
+        const blocksHor = document.getElementById('blocksHor')?.value || '10';
+        const blocksVer = document.getElementById('blocksVer')?.value || '6';
+        const toggleWiring = document.getElementById('toggleWiring');
+        const togglePower = document.getElementById('togglePower');
+
+        let diagramType = '';
+        if (toggleWiring && toggleWiring.checked && togglePower && togglePower.checked) {
+          diagramType = 'Data & Power Wiring';
+        } else if (toggleWiring && toggleWiring.checked) {
+          diagramType = 'Data Wiring';
+        } else if (togglePower && togglePower.checked) {
+          diagramType = 'Power Wiring';
+        }
+
+        // Draw info section background
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, canvas.height, tempCanvas.width, infoHeight);
+
+        // Draw text
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(diagramType, tempCanvas.width / 2, canvas.height + 30);
+
+        // Add product and dimensions info
+        ctx.font = '16px Arial';
+        ctx.fillText(`${productType.toUpperCase()} - ${blocksHor} × ${blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
+
+        // Convert to data URL and download
+        const dataURL = tempCanvas.toDataURL('image/png');
+        const link = document.createElement('a');
+
+        // Create filename
+        const diagramTypeClean = diagramType.replace(/\s+/g, '_').replace(/&/g, 'and');
+        link.download = `${productType.toUpperCase()}_${diagramTypeClean}_${blocksHor}x${blocksVer}.png`;
+        link.href = dataURL;
+        link.click();
+      }
+
+      // Add event listener for capture button
+      const captureWiringButton = document.getElementById('captureWiringButton');
+      if (captureWiringButton) {
+        captureWiringButton.addEventListener('click', captureWiringDiagram);
+      }
+
       // Initial generation
       generateWall();
-	  
-	  
+
+
     });
   </script>
 </body>
