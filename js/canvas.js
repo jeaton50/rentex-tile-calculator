@@ -153,11 +153,8 @@ const CanvasRenderer = {
         : tileImage;
 
       if (imageToUse && imageToUse.complete && imageToUse.naturalHeight !== 0) {
-        // Set opacity to 30% for the background image
-        ctx.globalAlpha = 0.3;
+        // Draw background image at full opacity
         ctx.drawImage(imageToUse, wallX, wallY, wallWidth, wallHeight);
-        // Reset opacity to 100% for other elements
-        ctx.globalAlpha = 1.0;
       } else {
         // Fallback: draw colored rectangle
         ctx.fillStyle = '#444';
