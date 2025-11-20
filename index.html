@@ -453,6 +453,7 @@ window.addEventListener("DOMContentLoaded", () => {
         <button type="button" onclick="zoomIn()">Zoom In</button>
         <button type="button" onclick="zoomOut()">Zoom Out</button>
         <button type="button" onclick="resetScreen()">Reset</button>
+        <button type="button" onclick="openScreenViews()" style="background-color: #0066cc; color: white; font-weight: bold;">Screen Views</button>
       </div>
 
       <!-- Equipment Requirements (MOVED TO CENTER) -->
@@ -1653,6 +1654,21 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       if (typeof generateWall === 'function') {
         generateWall();
       }
+    };
+
+    window.openScreenViews = function() {
+      // Get current screen parameters
+      const productType = document.getElementById('productType')?.value || 'absen';
+      const blocksHor = parseInt(document.getElementById('blocksHor')?.value) || 10;
+      const blocksVer = parseInt(document.getElementById('blocksVer')?.value) || 6;
+
+      // Save to localStorage as backup
+      localStorage.setItem('screenProduct', productType);
+      localStorage.setItem('screenBlocksHor', blocksHor);
+      localStorage.setItem('screenBlocksVer', blocksVer);
+
+      // Navigate to screen views page with URL parameters
+      window.location.href = `screen-views.html?product=${encodeURIComponent(productType)}&blocksHor=${blocksHor}&blocksVer=${blocksVer}`;
     };
 
 
