@@ -206,6 +206,24 @@
         minCurve: -5,
         maxCurve: 5,
         rangeText: '(-5° to 0°) | <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
+      },
+      bp2b1: {
+        displayName: 'ROE Black Pearl BP2B1',
+        minCurve: 0,
+        maxCurve: 5,
+        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
+      },
+      bp2b2: {
+        displayName: 'ROE Black Pearl BP2B2',
+        minCurve: 0,
+        maxCurve: 5,
+        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
+      },
+      bp2v2: {
+        displayName: 'ROE Black Pearl BP2V2',
+        minCurve: 0,
+        maxCurve: 5,
+        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
       }
     };
 
@@ -217,7 +235,8 @@
       `Screen Size: ${params.blocksHor} × ${params.blocksVer} tiles (${(params.blocksHor * params.blockWidth / 1000).toFixed(2)}m × ${(params.blocksVer * params.blockHeight / 1000).toFixed(2)}m)`;
 
     // Update range info text
-    document.getElementById('rangeInfo').innerHTML = `<strong>Convex:</strong> Negative angles ${config.rangeText}`;
+    const convexText = config.minCurve < 0 ? '<strong>Convex:</strong> Negative angles ' : '';
+    document.getElementById('rangeInfo').innerHTML = `${convexText}${config.rangeText}`;
 
     // Update back button to preserve calculator state
     const backButton = document.getElementById('backButton');
