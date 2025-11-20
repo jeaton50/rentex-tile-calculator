@@ -429,7 +429,9 @@ const CanvasRenderer = {
       }
     }
 
-    // Draw wiring lines
+    // Draw wiring lines with outline effect for better visibility
+    let chainPath = []; // Store path points for current chain
+
     for (let i = 0; i < tiles.length; i++) {
       const tile = tiles[i];
       const posX = xOffset + tile.col * blockSize + blockSize / 2;
@@ -438,31 +440,44 @@ const CanvasRenderer = {
       if (tilesInCurrentChain === 0) {
         // Start of a new chain
         chainNumber++;
-
-        // Set color for this chain (cycle through colors)
-        ctx.strokeStyle = chainColors[(chainNumber - 1) % chainColors.length];
+        chainPath = [{ x: posX, y: posY }];
 
         // Save start position for label
         chainStartX = posX;
         chainStartY = posY;
-
-        // Begin path
-        ctx.beginPath();
-        ctx.moveTo(posX, posY);
         tilesInCurrentChain = 1;
       } else {
         // Continue the chain
-        ctx.lineTo(posX, posY);
+        chainPath.push({ x: posX, y: posY });
         tilesInCurrentChain++;
       }
 
       // If we've reached the chain limit or the last tile, finish this chain
       if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
+        const chainColor = chainColors[(chainNumber - 1) % chainColors.length];
+
+        // Draw white outline first (thicker)
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(chainPath[0].x, chainPath[0].y);
+        for (let j = 1; j < chainPath.length; j++) {
+          ctx.lineTo(chainPath[j].x, chainPath[j].y);
+        }
+        ctx.stroke();
+
+        // Draw colored line on top (normal width)
+        ctx.strokeStyle = chainColor;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(chainPath[0].x, chainPath[0].y);
+        for (let j = 1; j < chainPath.length; j++) {
+          ctx.lineTo(chainPath[j].x, chainPath[j].y);
+        }
         ctx.stroke();
 
         // Draw port label at start of chain
-        const labelColor = chainColors[(chainNumber - 1) % chainColors.length];
-        ctx.fillStyle = labelColor;
+        ctx.fillStyle = chainColor;
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;
         ctx.font = `bold ${Math.max(14, blockSize / 3)}px Arial`;
@@ -476,6 +491,7 @@ const CanvasRenderer = {
 
         // Reset for next chain
         tilesInCurrentChain = 0;
+        chainPath = [];
       }
     }
   },
@@ -678,7 +694,9 @@ const CanvasRenderer = {
       }
     }
 
-    // Draw power wiring lines
+    // Draw power wiring lines with outline effect for better visibility
+    let chainPath = []; // Store path points for current chain
+
     for (let i = 0; i < tiles.length; i++) {
       const tile = tiles[i];
       const posX = xOffset + tile.col * blockSize + blockSize / 2;
@@ -687,34 +705,49 @@ const CanvasRenderer = {
       if (tilesInCurrentChain === 0) {
         // Start of a new chain
         chainNumber++;
-
-        // Set color for this chain (cycle through colors)
-        ctx.strokeStyle = chainColors[(chainNumber - 1) % chainColors.length];
+        chainPath = [{ x: posX, y: posY }];
 
         // Save start position for label
         chainStartX = posX;
         chainStartY = posY;
-
-        // Begin path
-        ctx.beginPath();
-        ctx.moveTo(posX, posY);
         tilesInCurrentChain = 1;
       } else {
         // Continue the chain
-        ctx.lineTo(posX, posY);
+        chainPath.push({ x: posX, y: posY });
         tilesInCurrentChain++;
       }
 
       // If we've reached the chain limit or the last tile, finish this chain
       if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
+        const chainColor = chainColors[(chainNumber - 1) % chainColors.length];
+
+        // Draw white outline first (thicker, dashed)
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 8;
+        ctx.setLineDash([10, 5]);
+        ctx.beginPath();
+        ctx.moveTo(chainPath[0].x, chainPath[0].y);
+        for (let j = 1; j < chainPath.length; j++) {
+          ctx.lineTo(chainPath[j].x, chainPath[j].y);
+        }
+        ctx.stroke();
+
+        // Draw colored line on top (normal width, dashed)
+        ctx.strokeStyle = chainColor;
+        ctx.lineWidth = 4;
+        ctx.setLineDash([10, 5]);
+        ctx.beginPath();
+        ctx.moveTo(chainPath[0].x, chainPath[0].y);
+        for (let j = 1; j < chainPath.length; j++) {
+          ctx.lineTo(chainPath[j].x, chainPath[j].y);
+        }
         ctx.stroke();
 
         // Draw power connection label at start of chain
-        const labelColor = chainColors[(chainNumber - 1) % chainColors.length];
-        ctx.fillStyle = labelColor;
+        ctx.setLineDash([]); // Solid for text
+        ctx.fillStyle = chainColor;
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;
-        ctx.setLineDash([]); // Solid for text
         ctx.font = `bold ${Math.max(14, blockSize / 3)}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -725,8 +758,8 @@ const CanvasRenderer = {
         ctx.fillText(labelText, chainStartX, chainStartY);
 
         // Reset for next chain
-        ctx.setLineDash([10, 5]); // Back to dashed
         tilesInCurrentChain = 0;
+        chainPath = [];
       }
     }
 
