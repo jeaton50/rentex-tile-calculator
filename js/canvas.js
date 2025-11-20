@@ -153,12 +153,16 @@ const CanvasRenderer = {
         : tileImage;
 
       if (imageToUse && imageToUse.complete && imageToUse.naturalHeight !== 0) {
-        // Draw background image at full opacity
+        // Draw background image at 20% opacity
+        ctx.globalAlpha = 0.2;
         ctx.drawImage(imageToUse, wallX, wallY, wallWidth, wallHeight);
+        ctx.globalAlpha = 1.0; // Reset to full opacity
       } else {
         // Fallback: draw colored rectangle
+        ctx.globalAlpha = 0.2;
         ctx.fillStyle = '#444';
         ctx.fillRect(wallX, wallY, wallWidth, wallHeight);
+        ctx.globalAlpha = 1.0; // Reset to full opacity
       }
 
       // Draw grid lines to show block boundaries
@@ -259,28 +263,28 @@ const CanvasRenderer = {
 
     // Array of colors for different chains (bright, visible colors)
     const chainColors = [
-      '#FF0066', // Hot Pink
-      '#00FF00', // Bright Green
-      '#0066FF', // Bright Blue
-      '#FFFF00', // Bright Yellow
-      '#FF6600', // Bright Orange
-      '#FF00FF', // Magenta
-      '#00FFFF', // Cyan
-      '#FF0099', // Pink
-      '#99FF00', // Lime Green
-      '#FF3300', // Red-Orange
-      '#00FF99', // Turquoise
-      '#9900FF', // Purple
-      '#FFCC00', // Gold
-      '#00CCFF', // Sky Blue
-      '#FF33FF', // Bright Pink
+      '#FF3366', // Red-Pink
+      '#33FF66', // Green
+      '#3366FF', // Blue
+      '#FFFF33', // Yellow
+      '#FF9933', // Orange
+      '#CC33FF', // Purple
+      '#33FFFF', // Cyan
+      '#FF3399', // Magenta
+      '#99FF33', // Lime
+      '#FF6633', // Red-Orange
+      '#33FF99', // Teal
+      '#9933FF', // Violet
+      '#FFCC33', // Gold
+      '#33CCFF', // Sky Blue
+      '#FF33CC', // Hot Pink
     ];
 
     // Calculate total tiles
     const totalTiles = wallData.blocksHor * wallData.blocksVer;
 
-    // Set line style for wiring (bold lines)
-    ctx.lineWidth = 8;
+    // Set line style for wiring
+    ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
@@ -505,30 +509,30 @@ const CanvasRenderer = {
     const direction = window.powerDirection || 'horizontal';
     const startPosition = window.powerStartPosition || 'bottom-left';
 
-    // Array of colors for different power chains (bright warmer tones to distinguish from data)
+    // Array of colors for different power chains (warmer tones to distinguish from data)
     const chainColors = [
-      '#FF4400', // Bright Red-Orange
-      '#FFAA00', // Bright Amber
-      '#FF0033', // Bright Red
-      '#FF8800', // Bright Orange
-      '#FFDD00', // Bright Yellow
-      '#FF3300', // Bright Deep Orange
-      '#FF6600', // Bright Orange
-      '#FF5500', // Bright Orange-Red
-      '#FF9900', // Bright Orange
-      '#FFBB00', // Bright Light Orange
-      '#FFCC00', // Bright Amber
-      '#FFCC00', // Bright Gold
-      '#FFEE00', // Bright Yellow
-      '#FF7700', // Bright Deep Orange
-      '#FF5500', // Bright Red-Orange
+      '#FF6B35', // Red-Orange
+      '#FFB627', // Amber
+      '#FF1744', // Red
+      '#FF9100', // Orange
+      '#FFD600', // Yellow
+      '#DD2C00', // Deep Orange
+      '#FF6F00', // Dark Orange
+      '#F4511E', // Deep Orange Red
+      '#FB8C00', // Orange
+      '#FFA726', // Light Orange
+      '#FFAB40', // Amber
+      '#FFC107', // Amber
+      '#FFD54F', // Yellow
+      '#FF7043', // Deep Orange
+      '#FF5722', // Red-Orange
     ];
 
     // Calculate total tiles
     const totalTiles = wallData.blocksHor * wallData.blocksVer;
 
-    // Set line style for power wiring (bold dashed to distinguish from data)
-    ctx.lineWidth = 8;
+    // Set line style for power wiring (dashed to distinguish from data)
+    ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.setLineDash([10, 5]); // Dashed line pattern
