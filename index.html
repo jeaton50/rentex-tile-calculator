@@ -406,18 +406,40 @@ window.addEventListener("DOMContentLoaded", () => {
         <!-- Wiring Diagram Controls -->
         <div class="input-group">
           <input type="checkbox" id="toggleWiring" name="toggleWiring">
-          <label for="toggleWiring">Show Wiring Diagram</label>
+          <label for="toggleWiring">Show Data Wiring Diagram</label>
         </div>
         <div class="input-group" id="wiringDirectionGroup" style="display: none;">
-          <label for="wiringDirection">Wiring Direction:</label>
+          <label for="wiringDirection">Data Wiring Direction:</label>
           <select id="wiringDirection" name="wiringDirection">
             <option value="horizontal">Horizontal</option>
             <option value="vertical">Vertical</option>
           </select>
         </div>
         <div class="input-group" id="wiringStartPositionGroup" style="display: none;">
-          <label for="wiringStartPosition">Start Position:</label>
+          <label for="wiringStartPosition">Data Start Position:</label>
           <select id="wiringStartPosition" name="wiringStartPosition">
+            <option value="bottom-left">Bottom Left</option>
+            <option value="bottom-right">Bottom Right</option>
+            <option value="top-left">Top Left</option>
+            <option value="top-right">Top Right</option>
+          </select>
+        </div>
+
+        <!-- Power Diagram Controls -->
+        <div class="input-group">
+          <input type="checkbox" id="togglePower" name="togglePower">
+          <label for="togglePower">Show Power Diagram</label>
+        </div>
+        <div class="input-group" id="powerDirectionGroup" style="display: none;">
+          <label for="powerDirection">Power Wiring Direction:</label>
+          <select id="powerDirection" name="powerDirection">
+            <option value="horizontal">Horizontal</option>
+            <option value="vertical">Vertical</option>
+          </select>
+        </div>
+        <div class="input-group" id="powerStartPositionGroup" style="display: none;">
+          <label for="powerStartPosition">Power Start Position:</label>
+          <select id="powerStartPosition" name="powerStartPosition">
             <option value="bottom-left">Bottom Left</option>
             <option value="bottom-right">Bottom Right</option>
             <option value="top-left">Top Left</option>
@@ -555,6 +577,9 @@ window.addEventListener("DOMContentLoaded", () => {
       window.showWiring = false;
       window.wiringDirection = 'horizontal';
       window.wiringStartPosition = 'bottom-left';
+      window.showPower = false;
+      window.powerDirection = 'horizontal';
+      window.powerStartPosition = 'bottom-left';
       var totalWeight = 0;
       let hasChecked = false;
 
@@ -1708,6 +1733,48 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         window.wiringStartPosition = wiringStartPositionSelect.value;
         wiringStartPositionSelect.addEventListener('change', () => {
           window.wiringStartPosition = wiringStartPositionSelect.value;
+          generateWall();
+        });
+      }
+
+      // Power diagram controls
+      const togglePowerCheckbox = document.getElementById('togglePower');
+      const powerDirectionSelect = document.getElementById('powerDirection');
+      const powerStartPositionSelect = document.getElementById('powerStartPosition');
+      const powerDirectionGroup = document.getElementById('powerDirectionGroup');
+      const powerStartPositionGroup = document.getElementById('powerStartPositionGroup');
+
+      if (togglePowerCheckbox) {
+        window.showPower = togglePowerCheckbox.checked;
+
+        // Function to toggle visibility of power options
+        const togglePowerOptions = () => {
+          const isChecked = togglePowerCheckbox.checked;
+          if (powerDirectionGroup) {
+            powerDirectionGroup.style.display = isChecked ? 'block' : 'none';
+          }
+          if (powerStartPositionGroup) {
+            powerStartPositionGroup.style.display = isChecked ? 'block' : 'none';
+          }
+        };
+
+        togglePowerCheckbox.addEventListener('change', () => {
+          window.showPower = togglePowerCheckbox.checked;
+          togglePowerOptions();
+          generateWall();
+        });
+      }
+      if (powerDirectionSelect) {
+        window.powerDirection = powerDirectionSelect.value;
+        powerDirectionSelect.addEventListener('change', () => {
+          window.powerDirection = powerDirectionSelect.value;
+          generateWall();
+        });
+      }
+      if (powerStartPositionSelect) {
+        window.powerStartPosition = powerStartPositionSelect.value;
+        powerStartPositionSelect.addEventListener('change', () => {
+          window.powerStartPosition = powerStartPositionSelect.value;
           generateWall();
         });
       }

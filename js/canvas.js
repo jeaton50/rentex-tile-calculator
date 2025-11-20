@@ -212,6 +212,11 @@ const CanvasRenderer = {
         this.drawWiringDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
       }
 
+      // Draw power diagram if enabled
+      if (window.showPower) {
+        this.drawPowerDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
+      }
+
       // Draw support structures
       if (wallData.flownSupport) {
         this.drawFlownSupports(ctx, wallData.blocksHor, blockSize, xOffset, supportHeight, zoomLevel);
@@ -469,6 +474,260 @@ const CanvasRenderer = {
         tilesInCurrentChain = 0;
       }
     }
+  },
+
+  /**
+   * Draw power diagram showing power distribution with voltage-dependent tile limits
+   * @param {CanvasRenderingContext2D} ctx - Canvas context
+   * @param {Object} wallData - Wall configuration data
+   * @param {number} blockSize - Size of each block in pixels
+   * @param {number} xOffset - Horizontal offset for multi-screen
+   * @param {number} extraHeightTop - Extra height at top for supports
+   */
+  drawPowerDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop) {
+    // Get product type and voltage to determine power tile limit
+    const productType = document.getElementById('productType')?.value;
+    const powerDistroType = document.getElementById('powerDistroType')?.value;
+    const voltage = (powerDistroType == '110') ? 110 : 208;
+
+    // Power tile limits based on voltage and product type
+    const powerTileLimits = {
+      'absen': { 110: 10, 208: 30 },
+      'BP2B1': { 110: 11, 208: 32 },  // ROE Black Pearl 2 B1
+      'BP2B2': { 110: 11, 208: 32 },  // ROE Black Pearl 2 B2
+      'BP2V2': { 110: 11, 208: 32 },  // ROE Black Pearl 2V2
+      'theatrixx': { 110: 10, 208: 30 }
+    };
+
+    const chainLimit = powerTileLimits[productType]?.[voltage] || 10;
+
+    // Get power wiring direction and start position
+    const direction = window.powerDirection || 'horizontal';
+    const startPosition = window.powerStartPosition || 'bottom-left';
+
+    // Array of colors for different power chains (warmer tones to distinguish from data)
+    const chainColors = [
+      '#FF6B35', // Red-Orange
+      '#FFB627', // Amber
+      '#FF1744', // Red
+      '#FF9100', // Orange
+      '#FFD600', // Yellow
+      '#DD2C00', // Deep Orange
+      '#FF6F00', // Dark Orange
+      '#F4511E', // Deep Orange Red
+      '#FB8C00', // Orange
+      '#FFA726', // Light Orange
+      '#FFAB40', // Amber
+      '#FFC107', // Amber
+      '#FFD54F', // Yellow
+      '#FF7043', // Deep Orange
+      '#FF5722', // Red-Orange
+    ];
+
+    // Calculate total tiles
+    const totalTiles = wallData.blocksHor * wallData.blocksVer;
+
+    // Set line style for power wiring (dashed to distinguish from data)
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.setLineDash([10, 5]); // Dashed line pattern
+
+    let tilesInCurrentChain = 0;
+    let chainNumber = 0;
+    let chainStartX = 0;
+    let chainStartY = 0;
+
+    // Create array of tile positions based on wiring direction and start position
+    // Using snake/serpentine pattern for continuous wiring
+    const tiles = [];
+
+    if (direction === 'horizontal') {
+      // Horizontal wiring (snake left-right on each row)
+      if (startPosition === 'bottom-left') {
+        // Bottom-left: snake right/left, moving up
+        for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+          const rowIndex = wallData.blocksVer - 1 - row; // 0, 1, 2, ...
+          if (rowIndex % 2 === 0) {
+            // Even rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      } else if (startPosition === 'bottom-right') {
+        // Bottom-right: snake left/right, moving up
+        for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+          const rowIndex = wallData.blocksVer - 1 - row;
+          if (rowIndex % 2 === 0) {
+            // Even rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      } else if (startPosition === 'top-left') {
+        // Top-left: snake right/left, moving down
+        for (let row = 0; row < wallData.blocksVer; row++) {
+          if (row % 2 === 0) {
+            // Even rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      } else if (startPosition === 'top-right') {
+        // Top-right: snake left/right, moving down
+        for (let row = 0; row < wallData.blocksVer; row++) {
+          if (row % 2 === 0) {
+            // Even rows: go left
+            for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd rows: go right
+            for (let col = 0; col < wallData.blocksHor; col++) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      }
+    } else {
+      // Vertical wiring (snake up/down on each column)
+      if (startPosition === 'bottom-left') {
+        // Bottom-left: snake up/down, moving right
+        for (let col = 0; col < wallData.blocksHor; col++) {
+          if (col % 2 === 0) {
+            // Even columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      } else if (startPosition === 'bottom-right') {
+        // Bottom-right: snake up/down, moving left
+        for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+          const colIndex = wallData.blocksHor - 1 - col;
+          if (colIndex % 2 === 0) {
+            // Even columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      } else if (startPosition === 'top-left') {
+        // Top-left: snake down/up, moving right
+        for (let col = 0; col < wallData.blocksHor; col++) {
+          if (col % 2 === 0) {
+            // Even columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      } else if (startPosition === 'top-right') {
+        // Top-right: snake down/up, moving left
+        for (let col = wallData.blocksHor - 1; col >= 0; col--) {
+          const colIndex = wallData.blocksHor - 1 - col;
+          if (colIndex % 2 === 0) {
+            // Even columns: go down
+            for (let row = 0; row < wallData.blocksVer; row++) {
+              tiles.push({ row, col });
+            }
+          } else {
+            // Odd columns: go up
+            for (let row = wallData.blocksVer - 1; row >= 0; row--) {
+              tiles.push({ row, col });
+            }
+          }
+        }
+      }
+    }
+
+    // Draw power wiring lines
+    for (let i = 0; i < tiles.length; i++) {
+      const tile = tiles[i];
+      const posX = xOffset + tile.col * blockSize + blockSize / 2;
+      const posY = extraHeightTop + tile.row * blockSize + blockSize / 2;
+
+      if (tilesInCurrentChain === 0) {
+        // Start of a new chain
+        chainNumber++;
+
+        // Set color for this chain (cycle through colors)
+        ctx.strokeStyle = chainColors[(chainNumber - 1) % chainColors.length];
+
+        // Save start position for label
+        chainStartX = posX;
+        chainStartY = posY;
+
+        // Begin path
+        ctx.beginPath();
+        ctx.moveTo(posX, posY);
+        tilesInCurrentChain = 1;
+      } else {
+        // Continue the chain
+        ctx.lineTo(posX, posY);
+        tilesInCurrentChain++;
+      }
+
+      // If we've reached the chain limit or the last tile, finish this chain
+      if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
+        ctx.stroke();
+
+        // Draw power connection label at start of chain
+        const labelColor = chainColors[(chainNumber - 1) % chainColors.length];
+        ctx.fillStyle = labelColor;
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([]); // Solid for text
+        ctx.font = `bold ${Math.max(14, blockSize / 3)}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const labelText = `Pwr ${chainNumber}`;
+
+        // Draw text with black outline for visibility
+        ctx.strokeText(labelText, chainStartX, chainStartY);
+        ctx.fillText(labelText, chainStartX, chainStartY);
+
+        // Reset for next chain
+        ctx.setLineDash([10, 5]); // Back to dashed
+        tilesInCurrentChain = 0;
+      }
+    }
+
+    // Reset line dash after drawing
+    ctx.setLineDash([]);
   },
 
   /**
