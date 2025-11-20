@@ -173,6 +173,22 @@
       align-items: center;
     }
 
+    .capture-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #17a2b8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .capture-button:hover {
+      background: #138496;
+    }
+
     .info-text {
       text-align: center;
       color: #666;
@@ -208,6 +224,9 @@
         <div class="canvas-wrapper">
           <canvas id="frontViewCanvas" width="1000" height="600"></canvas>
         </div>
+        <div style="text-align: center;">
+          <button type="button" class="capture-button" id="captureFrontButton">📸 Capture Front View</button>
+        </div>
       </div>
 
       <div class="view-section">
@@ -217,8 +236,11 @@
         </div>
         <div class="zoom-controls">
           <button type="button" class="zoom-button" id="zoomOutButton">Zoom Out</button>
-          <div class="zoom-level" id="zoomLevel">100%</div>
+          <div class="zoom-level" id="zoomLevel">50%</div>
           <button type="button" class="zoom-button" id="zoomInButton">Zoom In</button>
+        </div>
+        <div style="text-align: center;">
+          <button type="button" class="capture-button" id="captureTopButton">📸 Capture Top View</button>
         </div>
       </div>
     </div>
@@ -312,7 +334,7 @@
     curveSlider.value = 0;
 
     // Zoom control for top view
-    let topViewZoomLevel = 1.0;
+    let topViewZoomLevel = 0.5;
     const zoomStep = 0.25;
     const minZoom = 0.5;
     const maxZoom = 3.0;
@@ -569,7 +591,7 @@
     // Reset function
     function resetView() {
       curveSlider.value = 0;
-      topViewZoomLevel = 1.0;
+      topViewZoomLevel = 0.5;
       updateZoomDisplay();
       updateViews();
     }
@@ -596,14 +618,45 @@
       document.getElementById('zoomLevel').textContent = `${zoomPercentage}%`;
     }
 
+    // Capture functions
+    function captureCanvas(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const dataURL = canvas.toDataURL('image/png');
+
+      // Create a download link
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = dataURL;
+      link.click();
+    }
+
+    function captureFrontView() {
+      const productName = config.displayName.replace(/\s+/g, '_');
+      const dimensions = `${params.blocksHor}x${params.blocksVer}`;
+      const filename = `${productName}_Front_View_${dimensions}.png`;
+      captureCanvas('frontViewCanvas', filename);
+    }
+
+    function captureTopView() {
+      const productName = config.displayName.replace(/\s+/g, '_');
+      const dimensions = `${params.blocksHor}x${params.blocksVer}`;
+      const curveAngle = parseFloat(curveSlider.value);
+      const curveText = curveAngle === 0 ? 'Flat' : `${curveAngle > 0 ? 'Concave' : 'Convex'}_${Math.abs(curveAngle)}deg`;
+      const filename = `${productName}_Top_View_${dimensions}_${curveText}.png`;
+      captureCanvas('topViewCanvas', filename);
+    }
+
     // Event listeners
     curveSlider.addEventListener('input', updateViews);
     document.getElementById('resetButton').addEventListener('click', resetView);
     document.getElementById('zoomInButton').addEventListener('click', zoomIn);
     document.getElementById('zoomOutButton').addEventListener('click', zoomOut);
+    document.getElementById('captureFrontButton').addEventListener('click', captureFrontView);
+    document.getElementById('captureTopButton').addEventListener('click', captureTopView);
 
     // Initial draw
     updateViews();
+    updateZoomDisplay();
   </script>
 </body>
 </html>
