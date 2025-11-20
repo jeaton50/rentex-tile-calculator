@@ -330,8 +330,8 @@
 
       } else {
         // Draw curved screen
-        const angleRad = (curveAngle * Math.PI) / 180;
-        const totalAngle = Math.abs(angleRad) * params.blocksHor;
+        const angleRad = Math.abs((curveAngle * Math.PI) / 180);
+        const totalAngle = angleRad * params.blocksHor;
 
         // Calculate radius
         // Arc length = radius * angle, so radius = arc length / angle
@@ -340,34 +340,45 @@
 
         // Determine curve direction
         const isConcave = curveAngle > 0;
-        const curveDirection = isConcave ? 1 : -1;
 
-        // Calculate center of arc
-        const arcCenterY = centerY + (radius * curveDirection);
+        // For concave: arc center below, for convex: arc center above
+        // Adjust positioning to keep arc visible
+        let arcCenterY;
+        let baseAngle;
+
+        if (isConcave) {
+          // Concave: curves toward viewer (arc center below screen)
+          arcCenterY = centerY + radius;
+          baseAngle = -Math.PI / 2; // Start from top pointing down
+        } else {
+          // Convex: curves away from viewer (arc center above screen)
+          arcCenterY = centerY - radius;
+          baseAngle = Math.PI / 2; // Start from bottom pointing up
+        }
 
         // Draw each tile segment
         for (let i = 0; i < params.blocksHor; i++) {
-          const startAngle = (-totalAngle / 2) + (i * Math.abs(angleRad));
-          const endAngle = startAngle + Math.abs(angleRad);
+          const startAngle = (-totalAngle / 2) + (i * angleRad);
+          const endAngle = startAngle + angleRad;
 
           // Draw outer arc
           ctx.beginPath();
-          ctx.arc(centerX, arcCenterY, radius + depth / 2, -Math.PI / 2 + startAngle, -Math.PI / 2 + endAngle);
+          ctx.arc(centerX, arcCenterY, radius + depth / 2, baseAngle + startAngle, baseAngle + endAngle);
           ctx.strokeStyle = '#000';
           ctx.lineWidth = 2;
           ctx.stroke();
 
           // Draw inner arc
           ctx.beginPath();
-          ctx.arc(centerX, arcCenterY, radius - depth / 2, -Math.PI / 2 + startAngle, -Math.PI / 2 + endAngle);
+          ctx.arc(centerX, arcCenterY, radius - depth / 2, baseAngle + startAngle, baseAngle + endAngle);
           ctx.strokeStyle = '#000';
           ctx.lineWidth = 2;
           ctx.stroke();
 
           // Draw tile segment
           ctx.beginPath();
-          ctx.arc(centerX, arcCenterY, radius + depth / 2, -Math.PI / 2 + startAngle, -Math.PI / 2 + endAngle);
-          ctx.arc(centerX, arcCenterY, radius - depth / 2, -Math.PI / 2 + endAngle, -Math.PI / 2 + startAngle, true);
+          ctx.arc(centerX, arcCenterY, radius + depth / 2, baseAngle + startAngle, baseAngle + endAngle);
+          ctx.arc(centerX, arcCenterY, radius - depth / 2, baseAngle + endAngle, baseAngle + startAngle, true);
           ctx.closePath();
           ctx.fillStyle = '#333';
           ctx.fill();
@@ -382,10 +393,10 @@
 
         // Left side
         ctx.beginPath();
-        const leftOuterX = centerX + (radius + depth / 2) * Math.sin(firstAngle);
-        const leftOuterY = arcCenterY - (radius + depth / 2) * Math.cos(firstAngle);
-        const leftInnerX = centerX + (radius - depth / 2) * Math.sin(firstAngle);
-        const leftInnerY = arcCenterY - (radius - depth / 2) * Math.cos(firstAngle);
+        const leftOuterX = centerX + (radius + depth / 2) * Math.sin(baseAngle + firstAngle);
+        const leftOuterY = arcCenterY - (radius + depth / 2) * Math.cos(baseAngle + firstAngle);
+        const leftInnerX = centerX + (radius - depth / 2) * Math.sin(baseAngle + firstAngle);
+        const leftInnerY = arcCenterY - (radius - depth / 2) * Math.cos(baseAngle + firstAngle);
         ctx.moveTo(leftOuterX, leftOuterY);
         ctx.lineTo(leftInnerX, leftInnerY);
         ctx.strokeStyle = '#000';
@@ -394,10 +405,10 @@
 
         // Right side
         ctx.beginPath();
-        const rightOuterX = centerX + (radius + depth / 2) * Math.sin(lastAngle);
-        const rightOuterY = arcCenterY - (radius + depth / 2) * Math.cos(lastAngle);
-        const rightInnerX = centerX + (radius - depth / 2) * Math.sin(lastAngle);
-        const rightInnerY = arcCenterY - (radius - depth / 2) * Math.cos(lastAngle);
+        const rightOuterX = centerX + (radius + depth / 2) * Math.sin(baseAngle + lastAngle);
+        const rightOuterY = arcCenterY - (radius + depth / 2) * Math.cos(baseAngle + lastAngle);
+        const rightInnerX = centerX + (radius - depth / 2) * Math.sin(baseAngle + lastAngle);
+        const rightInnerY = arcCenterY - (radius - depth / 2) * Math.cos(baseAngle + lastAngle);
         ctx.moveTo(rightOuterX, rightOuterY);
         ctx.lineTo(rightInnerX, rightInnerY);
         ctx.strokeStyle = '#000';
