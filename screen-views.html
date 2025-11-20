@@ -147,7 +147,7 @@
 
     <div class="controls">
       <label for="curveSlider">Curve Adjustment:</label>
-      <input type="range" id="curveSlider" min="-7.5" max="10" step="2.5" value="0">
+      <input type="range" id="curveSlider" min="-5" max="5" step="2.5" value="0">
       <div>
         <div class="curve-value" id="curveValue">0°</div>
         <div class="curve-type" id="curveType">Flat</div>
@@ -171,7 +171,7 @@
     </div>
 
     <div class="info-text">
-      <p><strong>Convex:</strong> Negative angles (-7.5° to 0°) | <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +10°)</p>
+      <p id="rangeInfo"><strong>Convex:</strong> Negative angles | <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles</p>
     </div>
   </div>
 
@@ -180,26 +180,54 @@
     function getScreenParameters() {
       const urlParams = new URLSearchParams(window.location.search);
 
+      const productType = (urlParams.get('product') || localStorage.getItem('screenProduct') || 'absen').toLowerCase();
+
       return {
-        productType: urlParams.get('product') || localStorage.getItem('screenProduct') || 'Absen',
+        productType: productType,
         blocksHor: parseInt(urlParams.get('blocksHor') || localStorage.getItem('screenBlocksHor') || '10'),
         blocksVer: parseInt(urlParams.get('blocksVer') || localStorage.getItem('screenBlocksVer') || '6'),
-        blockWidth: 500, // mm - Absen block width
-        blockHeight: 500 // mm - Absen block height
+        blockWidth: 500,  // mm - Both Absen and Theatrixx use 500mm blocks
+        blockHeight: 500  // mm - Both Absen and Theatrixx use 500mm blocks
       };
     }
 
     const params = getScreenParameters();
 
+    // Product-specific configuration
+    const productConfig = {
+      absen: {
+        displayName: 'Absen PL2.5',
+        minCurve: -7.5,
+        maxCurve: 10,
+        rangeText: '(-7.5° to 0°) | <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +10°)'
+      },
+      theatrixx: {
+        displayName: 'Theatrixx Nomad 2.6',
+        minCurve: -5,
+        maxCurve: 5,
+        rangeText: '(-5° to 0°) | <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
+      }
+    };
+
+    const config = productConfig[params.productType] || productConfig.absen;
+
     // Update info display
-    document.getElementById('productInfo').textContent = `Product: ${params.productType}`;
+    document.getElementById('productInfo').textContent = `Product: ${config.displayName}`;
     document.getElementById('dimensionsInfo').textContent =
       `Screen Size: ${params.blocksHor} × ${params.blocksVer} tiles (${(params.blocksHor * params.blockWidth / 1000).toFixed(2)}m × ${(params.blocksVer * params.blockHeight / 1000).toFixed(2)}m)`;
+
+    // Update range info text
+    document.getElementById('rangeInfo').innerHTML = `<strong>Convex:</strong> Negative angles ${config.rangeText}`;
 
     // Curve control
     const curveSlider = document.getElementById('curveSlider');
     const curveValue = document.getElementById('curveValue');
     const curveType = document.getElementById('curveType');
+
+    // Set slider range based on product type
+    curveSlider.min = config.minCurve;
+    curveSlider.max = config.maxCurve;
+    curveSlider.value = 0;
 
     function updateCurveDisplay(angle) {
       curveValue.textContent = `${angle > 0 ? '+' : ''}${angle}°`;
