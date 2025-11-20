@@ -153,13 +153,13 @@ const CanvasRenderer = {
         : tileImage;
 
       if (imageToUse && imageToUse.complete && imageToUse.naturalHeight !== 0) {
-        // Draw background image at 45% opacity
-        ctx.globalAlpha = 0.45;
+        // Draw background image at 55% opacity
+        ctx.globalAlpha = 0.55;
         ctx.drawImage(imageToUse, wallX, wallY, wallWidth, wallHeight);
         ctx.globalAlpha = 1.0; // Reset to full opacity
       } else {
         // Fallback: draw colored rectangle
-        ctx.globalAlpha = 0.45;
+        ctx.globalAlpha = 0.55;
         ctx.fillStyle = '#444';
         ctx.fillRect(wallX, wallY, wallWidth, wallHeight);
         ctx.globalAlpha = 1.0; // Reset to full opacity
