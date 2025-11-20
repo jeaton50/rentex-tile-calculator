@@ -136,7 +136,7 @@
 </head>
 <body>
   <div class="container">
-    <a href="index.html" class="back-button">← Back to Calculator</a>
+    <a href="index.html" class="back-button" id="backButton">← Back to Calculator</a>
 
     <h1>Screen Views</h1>
 
@@ -218,6 +218,10 @@
 
     // Update range info text
     document.getElementById('rangeInfo').innerHTML = `<strong>Convex:</strong> Negative angles ${config.rangeText}`;
+
+    // Update back button to preserve calculator state
+    const backButton = document.getElementById('backButton');
+    backButton.href = `index.html?product=${encodeURIComponent(params.productType)}&blocksHor=${params.blocksHor}&blocksVer=${params.blocksVer}`;
 
     // Curve control
     const curveSlider = document.getElementById('curveSlider');

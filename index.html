@@ -782,6 +782,41 @@ window.addEventListener("DOMContentLoaded", () => {
       // Event Listeners for Initial Setup
       document.addEventListener('DOMContentLoaded', () => {
 
+        // Restore calculator state from URL parameters (from Screen Views back button)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('product') || urlParams.has('blocksHor') || urlParams.has('blocksVer')) {
+          const productType = urlParams.get('product');
+          const blocksHor = urlParams.get('blocksHor');
+          const blocksVer = urlParams.get('blocksVer');
+
+          if (productType) {
+            const productSelect = document.getElementById('productType');
+            if (productSelect) {
+              productSelect.value = productType;
+              // Trigger change event to update UI
+              productSelect.dispatchEvent(new Event('change'));
+            }
+          }
+
+          if (blocksHor) {
+            const blocksHorInput = document.getElementById('blocksHor');
+            if (blocksHorInput) {
+              blocksHorInput.value = blocksHor;
+            }
+          }
+
+          if (blocksVer) {
+            const blocksVerInput = document.getElementById('blocksVer');
+            if (blocksVerInput) {
+              blocksVerInput.value = blocksVer;
+            }
+          }
+
+          // Trigger wall generation with restored values
+          if (typeof generateWall === 'function') {
+            setTimeout(() => generateWall(), 100);
+          }
+        }
 
         // Attach ground support type listener with alert logic:
         // Attach ground support type listener with alert logic for Absen only:
