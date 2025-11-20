@@ -143,6 +143,36 @@
       background: #5a6268;
     }
 
+    .zoom-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .zoom-button {
+      padding: 8px 16px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .zoom-button:hover {
+      background: #218838;
+    }
+
+    .zoom-level {
+      padding: 8px 16px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+
     .info-text {
       text-align: center;
       color: #666;
@@ -184,6 +214,11 @@
         <h3>Top View</h3>
         <div class="canvas-wrapper">
           <canvas id="topViewCanvas" width="1000" height="600"></canvas>
+        </div>
+        <div class="zoom-controls">
+          <button type="button" class="zoom-button" id="zoomOutButton">Zoom Out</button>
+          <div class="zoom-level" id="zoomLevel">100%</div>
+          <button type="button" class="zoom-button" id="zoomInButton">Zoom In</button>
         </div>
       </div>
     </div>
@@ -275,6 +310,12 @@
     curveSlider.max = config.maxCurve;
     curveSlider.step = config.step;
     curveSlider.value = 0;
+
+    // Zoom control for top view
+    let topViewZoomLevel = 1.0;
+    const zoomStep = 0.25;
+    const minZoom = 0.5;
+    const maxZoom = 3.0;
 
     function updateCurveDisplay(angle) {
       curveValue.textContent = `${angle > 0 ? '+' : ''}${angle}°`;
@@ -370,6 +411,12 @@
       const ctx = canvas.getContext('2d');
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Apply zoom transformation
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.scale(topViewZoomLevel, topViewZoomLevel);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
@@ -506,6 +553,9 @@
       ctx.lineTo(centerX, canvas.height - 50);
       ctx.stroke();
       ctx.setLineDash([]);
+
+      // Restore context after zoom transformation
+      ctx.restore();
     }
 
     // Update displays
@@ -519,12 +569,38 @@
     // Reset function
     function resetView() {
       curveSlider.value = 0;
+      topViewZoomLevel = 1.0;
+      updateZoomDisplay();
       updateViews();
+    }
+
+    // Zoom functions
+    function zoomIn() {
+      if (topViewZoomLevel < maxZoom) {
+        topViewZoomLevel += zoomStep;
+        updateZoomDisplay();
+        drawTopView(parseFloat(curveSlider.value));
+      }
+    }
+
+    function zoomOut() {
+      if (topViewZoomLevel > minZoom) {
+        topViewZoomLevel -= zoomStep;
+        updateZoomDisplay();
+        drawTopView(parseFloat(curveSlider.value));
+      }
+    }
+
+    function updateZoomDisplay() {
+      const zoomPercentage = Math.round(topViewZoomLevel * 100);
+      document.getElementById('zoomLevel').textContent = `${zoomPercentage}%`;
     }
 
     // Event listeners
     curveSlider.addEventListener('input', updateViews);
     document.getElementById('resetButton').addEventListener('click', resetView);
+    document.getElementById('zoomInButton').addEventListener('click', zoomIn);
+    document.getElementById('zoomOutButton').addEventListener('click', zoomOut);
 
     // Initial draw
     updateViews();
