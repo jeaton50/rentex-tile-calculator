@@ -199,31 +199,36 @@
         displayName: 'Absen PL2.5',
         minCurve: -7.5,
         maxCurve: 10,
+        step: 2.5,
         rangeText: '(-7.5° to 0°) | <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +10°)'
       },
       theatrixx: {
         displayName: 'Theatrixx Nomad 2.6',
         minCurve: -5,
         maxCurve: 5,
+        step: 2.5,
         rangeText: '(-5° to 0°) | <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
       },
       bp2b1: {
         displayName: 'ROE Black Pearl BP2B1',
         minCurve: 0,
         maxCurve: 5,
-        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
+        step: 5,
+        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> +5°'
       },
       bp2b2: {
         displayName: 'ROE Black Pearl BP2B2',
         minCurve: 0,
         maxCurve: 5,
-        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
+        step: 5,
+        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> +5°'
       },
       bp2v2: {
         displayName: 'ROE Black Pearl BP2V2',
         minCurve: 0,
         maxCurve: 5,
-        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> Positive angles (0° to +5°)'
+        step: 5,
+        rangeText: '| <strong>Flat:</strong> 0° | <strong>Concave:</strong> +5°'
       }
     };
 
@@ -250,6 +255,7 @@
     // Set slider range based on product type
     curveSlider.min = config.minCurve;
     curveSlider.max = config.maxCurve;
+    curveSlider.step = config.step;
     curveSlider.value = 0;
 
     function updateCurveDisplay(angle) {
