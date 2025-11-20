@@ -165,7 +165,7 @@ const CanvasRenderer = {
       }
 
       // Draw grid lines to show block boundaries
-      ctx.strokeStyle = '#000000';
+      ctx.strokeStyle = '#FFFFFF';  // White grid lines
       ctx.lineWidth = 2;
 
       // Draw vertical grid lines
