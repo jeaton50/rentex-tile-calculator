@@ -1685,7 +1685,122 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
     };
 
     window.resetScreen = function() {
+      // Reset zoom level
       window.currentZoomLevel = 4;
+
+      // Reset product type to first option (Absen)
+      const productTypeSelect = document.getElementById('productType');
+      if (productTypeSelect && productTypeSelect.options.length > 0) {
+        productTypeSelect.selectedIndex = 0;
+        productTypeSelect.dispatchEvent(new Event('change'));
+      }
+
+      // Reset block inputs to default (5x5)
+      const blocksHorInput = document.getElementById('blocksHor');
+      const blocksVerInput = document.getElementById('blocksVer');
+      if (blocksHorInput) blocksHorInput.value = '5';
+      if (blocksVerInput) blocksVerInput.value = '5';
+
+      // Reset to block input mode (not dimension input)
+      const blockInputRadio = document.getElementById('blockInput');
+      if (blockInputRadio) {
+        blockInputRadio.checked = true;
+        const blockInputsDiv = document.getElementById('blockInputs');
+        const dimensionInputsDiv = document.getElementById('dimensionInputs');
+        if (blockInputsDiv) blockInputsDiv.style.display = 'block';
+        if (dimensionInputsDiv) dimensionInputsDiv.style.display = 'none';
+      }
+
+      // Reset dimension inputs
+      const widthFeetInput = document.getElementById('widthFeet');
+      const heightFeetInput = document.getElementById('heightFeet');
+      if (widthFeetInput) widthFeetInput.value = '1';
+      if (heightFeetInput) heightFeetInput.value = '1';
+
+      // Uncheck multiple screen management
+      const multiScreenCheckbox = document.getElementById('multipleScreenManagementCheckbox');
+      if (multiScreenCheckbox) {
+        multiScreenCheckbox.checked = false;
+        multiScreenCheckbox.dispatchEvent(new Event('change'));
+      }
+
+      // Uncheck and hide advanced options
+      const advancedCheckbox = document.getElementById('advancedOptionsCheckbox');
+      if (advancedCheckbox) {
+        advancedCheckbox.checked = false;
+        const tileQuantityInput = document.getElementById('tileQuantityInput');
+        const possibleScreenSizes = document.getElementById('possibleScreenSizes');
+        if (tileQuantityInput) tileQuantityInput.style.display = 'none';
+        if (possibleScreenSizes) possibleScreenSizes.style.display = 'none';
+      }
+
+      // Reset power distro type to Auto
+      const powerDistroSelect = document.getElementById('powerDistroType');
+      if (powerDistroSelect) {
+        powerDistroSelect.value = 'Auto';
+        powerDistroSelect.dispatchEvent(new Event('change'));
+      }
+
+      // Reset redundancy to None
+      const redundancySelect = document.getElementById('redundancy');
+      if (redundancySelect) redundancySelect.value = 'None';
+
+      // Reset source signals to 1
+      const sourceSignalsInput = document.getElementById('sourceSignals');
+      if (sourceSignalsInput) sourceSignalsInput.value = '1';
+
+      // Uncheck and hide dummy tiles option
+      const dummyTilesCheckbox = document.getElementById('dummyTilesCheckbox');
+      if (dummyTilesCheckbox) {
+        dummyTilesCheckbox.checked = false;
+        const dummyTileOption = document.getElementById('dummyTileOption');
+        const dummyTileCountContainer = document.getElementById('dummyTileCountContainer');
+        if (dummyTileOption) dummyTileOption.style.display = 'none';
+        if (dummyTileCountContainer) dummyTileCountContainer.style.display = 'none';
+      }
+
+      // Reset wall type to Flat
+      const flatRadio = document.getElementById('flat');
+      if (flatRadio) flatRadio.checked = true;
+
+      // Reset to Ground Support
+      const groundSupportRadio = document.getElementById('groundSupport');
+      if (groundSupportRadio) {
+        groundSupportRadio.checked = true;
+        groundSupportRadio.dispatchEvent(new Event('change'));
+      }
+
+      // Reset ground support type to Single Base
+      const groundSupportTypeSelect = document.getElementById('groundSupportType');
+      if (groundSupportTypeSelect) {
+        groundSupportTypeSelect.value = 'Single Base';
+        groundSupportTypeSelect.dispatchEvent(new Event('change'));
+      }
+
+      // Reset flown support type to Double Header
+      const flownSupportTypeSelect = document.getElementById('flownSupportType');
+      if (flownSupportTypeSelect) flownSupportTypeSelect.value = 'Double Header';
+
+      // Check "Show Tile Numbers"
+      const toggleNumbersCheckbox = document.getElementById('toggleNumbers');
+      if (toggleNumbersCheckbox) toggleNumbersCheckbox.checked = true;
+
+      // Uncheck "Show Data Wiring Diagram"
+      const toggleWiringCheckbox = document.getElementById('toggleWiring');
+      if (toggleWiringCheckbox) {
+        toggleWiringCheckbox.checked = false;
+        toggleWiringCheckbox.dispatchEvent(new Event('change'));
+      }
+
+      // Clear order information
+      const orderNumberInput = document.getElementById('orderNumber');
+      const orderDateInput = document.getElementById('orderDate');
+      const locationInput = document.getElementById('location');
+      if (orderNumberInput) orderNumberInput.value = '';
+      if (orderDateInput) orderDateInput.value = '';
+      if (locationInput) locationInput.value = '';
+
+      // Regenerate the wall with reset values
       if (typeof generateWall === 'function') {
         generateWall();
       }
