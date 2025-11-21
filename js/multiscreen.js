@@ -608,7 +608,9 @@ const MultiScreenManager = {
    * Show combined processing dialog
    */
   showCombineProcessingDialog() {
+    console.log('showCombineProcessingDialog called');
     const processingReqs = this.calculateCombinedProcessing();
+    console.log('Processing requirements:', processingReqs);
 
     const dialog = document.createElement('div');
     dialog.style.cssText = `

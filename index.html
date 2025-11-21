@@ -1409,8 +1409,13 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         font-size: 14px;
       `;
       combineProcessingBtn.onclick = () => {
+        console.log('Combine Processing button clicked');
+        console.log('window.showCombineProcessingDialog:', typeof window.showCombineProcessingDialog);
         if (typeof window.showCombineProcessingDialog === 'function') {
+          console.log('Calling showCombineProcessingDialog...');
           window.showCombineProcessingDialog();
+        } else {
+          console.error('showCombineProcessingDialog is not a function!');
         }
       };
 
