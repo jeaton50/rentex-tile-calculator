@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: 2025-11-21-v2 - Center line removed -->
+<!-- Version: 2025-11-21-v3 - Side lines removed -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -535,34 +535,6 @@
           ctx.lineWidth = 1;
           ctx.stroke();
         }
-
-        // Draw side lines
-        const firstAngle = -totalAngle / 2;
-        const lastAngle = totalAngle / 2;
-
-        // Left side
-        ctx.beginPath();
-        const leftOuterX = centerX + (radius + depth / 2) * Math.sin(baseAngle + firstAngle);
-        const leftOuterY = arcCenterY - (radius + depth / 2) * Math.cos(baseAngle + firstAngle);
-        const leftInnerX = centerX + (radius - depth / 2) * Math.sin(baseAngle + firstAngle);
-        const leftInnerY = arcCenterY - (radius - depth / 2) * Math.cos(baseAngle + firstAngle);
-        ctx.moveTo(leftOuterX, leftOuterY);
-        ctx.lineTo(leftInnerX, leftInnerY);
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Right side
-        ctx.beginPath();
-        const rightOuterX = centerX + (radius + depth / 2) * Math.sin(baseAngle + lastAngle);
-        const rightOuterY = arcCenterY - (radius + depth / 2) * Math.cos(baseAngle + lastAngle);
-        const rightInnerX = centerX + (radius - depth / 2) * Math.sin(baseAngle + lastAngle);
-        const rightInnerY = arcCenterY - (radius - depth / 2) * Math.cos(baseAngle + lastAngle);
-        ctx.moveTo(rightOuterX, rightOuterY);
-        ctx.lineTo(rightInnerX, rightInnerY);
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
-        ctx.stroke();
       }
 
       // Add labels
