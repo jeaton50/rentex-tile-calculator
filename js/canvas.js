@@ -807,12 +807,9 @@ const CanvasRenderer = {
       posX += xOffset;
       const imageHeight = supportHeight;
 
-      // Draw header image or fallback rectangle
+      // Draw header image (only if loaded)
       if (headerImage && headerImage.complete && headerImage.naturalHeight !== 0) {
         ctx.drawImage(headerImage, posX, posY, imageWidth, imageHeight);
-      } else {
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(posX, posY, imageWidth, imageHeight);
       }
     }
   },
@@ -855,12 +852,9 @@ const CanvasRenderer = {
       posX += xOffset;
       const imageHeight = supportHeight;
 
-      // Draw base image or fallback rectangle
+      // Draw base image (only if loaded)
       if (baseImage && baseImage.complete && baseImage.naturalHeight !== 0) {
         ctx.drawImage(baseImage, posX, posY, imageWidth, imageHeight);
-      } else {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(posX, posY, imageWidth, imageHeight);
       }
     }
   },
