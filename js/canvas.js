@@ -789,12 +789,19 @@ const CanvasRenderer = {
       if (flownSupportType === 'Double Header') {
         // Double headers: every other position (skip odd indices)
         if (i % 2 !== 0) continue;
-        // Skip if double header would extend past the wall
-        if (i + 2 > horizontalBlocks) continue;
-        posX = i * blockSize;
-        posY = headerOffset;
-        imageWidth = 2 * blockSize;
-        headerImage = this.images.doubleHeader;
+        // Check if double header would extend past the wall
+        if (i + 2 > horizontalBlocks) {
+          // Use single header for the remaining odd tile
+          posX = i * blockSize;
+          posY = headerOffset;
+          imageWidth = blockSize;
+          headerImage = this.images.singleHeader;
+        } else {
+          posX = i * blockSize;
+          posY = headerOffset;
+          imageWidth = 2 * blockSize;
+          headerImage = this.images.doubleHeader;
+        }
       } else {
         // Single headers: every position
         posX = i * blockSize;
@@ -834,12 +841,19 @@ const CanvasRenderer = {
       if (groundSupportType === 'Double Base') {
         // Double bases: every other position (skip odd indices)
         if (i % 2 !== 0) continue;
-        // Skip if double base would extend past the wall
-        if (i + 2 > horizontalBlocks) continue;
-        posX = i * blockSize;
-        posY = (verticalBlocks * blockSize) - supportHeight + baseOffset;
-        imageWidth = 2 * blockSize;
-        baseImage = this.images.doubleBase;
+        // Check if double base would extend past the wall
+        if (i + 2 > horizontalBlocks) {
+          // Use single base for the remaining odd tile
+          posX = i * blockSize;
+          posY = (verticalBlocks * blockSize) - supportHeight + baseOffset;
+          imageWidth = blockSize;
+          baseImage = this.images.singleBase;
+        } else {
+          posX = i * blockSize;
+          posY = (verticalBlocks * blockSize) - supportHeight + baseOffset;
+          imageWidth = 2 * blockSize;
+          baseImage = this.images.doubleBase;
+        }
       } else {
         // Single bases: every position
         posX = i * blockSize;
