@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical View - LED Wall Calculator</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 95%;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .screen-info {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+    }
+
+    .screen-info h2 {
+      margin: 5px 0;
+      color: #555;
+      font-size: 18px;
+    }
+
+    .controls {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #e8f4f8;
+      border-radius: 5px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: inline-block;
+      min-width: 200px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .input-group input[type="checkbox"] {
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .input-group select {
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .canvas-wrapper {
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      background: #fff;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+      max-height: 800px;
+    }
+
+    canvas {
+      display: block;
+      max-width: 100%;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background: #0066cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .back-button:hover {
+      background: #0052a3;
+    }
+
+    .capture-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #17a2b8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .capture-button:hover {
+      background: #138496;
+    }
+
+    .capture-container {
+      text-align: center;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .zoom-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .zoom-button {
+      padding: 8px 16px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .zoom-button:hover {
+      background: #218838;
+    }
+
+    .zoom-level {
+      padding: 8px 16px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-button" id="backButton">← Back to Calculator</a>
+
+    <h1>Technical View - Wiring Diagrams</h1>
+
+    <div class="screen-info">
+      <h2 id="productInfo">Product: Loading...</h2>
+      <h2 id="dimensionsInfo">Screen Size: Loading...</h2>
+    </div>
+
+    <div class="controls">
+      <!-- Data Wiring Diagram Controls -->
+      <div class="input-group">
+        <input type="checkbox" id="toggleWiring" name="toggleWiring">
+        <label for="toggleWiring">Show Data Wiring Diagram</label>
+      </div>
+      <div class="input-group" id="wiringDirectionGroup" style="display: none;">
+        <label for="wiringDirection">Data Wiring Direction:</label>
+        <select id="wiringDirection" name="wiringDirection">
+          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Vertical</option>
+        </select>
+      </div>
+      <div class="input-group" id="wiringStartPositionGroup" style="display: none;">
+        <label for="wiringStartPosition">Data Start Position:</label>
+        <select id="wiringStartPosition" name="wiringStartPosition">
+          <option value="bottom-left">Bottom Left</option>
+          <option value="bottom-right">Bottom Right</option>
+          <option value="top-left">Top Left</option>
+          <option value="top-right">Top Right</option>
+        </select>
+      </div>
+
+      <!-- Power Diagram Controls -->
+      <div class="input-group">
+        <input type="checkbox" id="togglePower" name="togglePower">
+        <label for="togglePower">Show Power Diagram</label>
+      </div>
+      <div class="input-group" id="powerDirectionGroup" style="display: none;">
+        <label for="powerDirection">Power Wiring Direction:</label>
+        <select id="powerDirection" name="powerDirection">
+          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Vertical</option>
+        </select>
+      </div>
+      <div class="input-group" id="powerStartPositionGroup" style="display: none;">
+        <label for="powerStartPosition">Power Start Position:</label>
+        <select id="powerStartPosition" name="powerStartPosition">
+          <option value="bottom-left">Bottom Left</option>
+          <option value="bottom-right">Bottom Right</option>
+          <option value="top-left">Top Left</option>
+          <option value="top-right">Top Right</option>
+        </select>
+      </div>
+
+      <!-- Power Distribution Type (needed for voltage calculations) -->
+      <div class="input-group" id="powerDistroTypeGroup" style="display: none;">
+        <label for="powerDistroType">Power Voltage:</label>
+        <select id="powerDistroType" name="powerDistroType">
+          <option value="110">110V</option>
+          <option value="208">208V</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="wallCanvas2D"></canvas>
+    </div>
+
+    <div class="zoom-controls">
+      <button type="button" class="zoom-button" id="zoomOutButton">Zoom Out</button>
+      <div class="zoom-level" id="zoomLevel">Zoom: 4</div>
+      <button type="button" class="zoom-button" id="zoomInButton">Zoom In</button>
+    </div>
+
+    <div class="capture-container" id="captureButtonContainer">
+      <button type="button" class="capture-button" id="captureWiringButton">📸 Capture Wiring Diagram</button>
+    </div>
+  </div>
+
+  <script src="js/canvas.js"></script>
+  <script>
+    // Get screen parameters from URL
+    function getScreenParameters() {
+      const urlParams = new URLSearchParams(window.location.search);
+
+      return {
+        productType: urlParams.get('product') || 'absen',
+        blocksHor: parseInt(urlParams.get('blocksHor') || '10'),
+        blocksVer: parseInt(urlParams.get('blocksVer') || '6'),
+        powerDistroType: urlParams.get('powerDistroType') || '208'
+      };
+    }
+
+    const params = getScreenParameters();
+
+    // Product display names
+    const productNames = {
+      'absen': 'Absen PL2.5',
+      'theatrixx': 'Theatrixx Nomad 2.6',
+      'BP2B1': 'ROE Black Pearl BP2B1',
+      'BP2B2': 'ROE Black Pearl BP2B2',
+      'BP2V2': 'ROE Black Pearl BP2V2'
+    };
+
+    // Update info display
+    const displayName = productNames[params.productType] || params.productType.toUpperCase();
+    document.getElementById('productInfo').textContent = `Product: ${displayName}`;
+    document.getElementById('dimensionsInfo').textContent = `Screen Size: ${params.blocksHor} × ${params.blocksVer} tiles`;
+
+    // Update back button to preserve calculator state
+    const backButton = document.getElementById('backButton');
+    backButton.href = `index.html?product=${encodeURIComponent(params.productType)}&blocksHor=${params.blocksHor}&blocksVer=${params.blocksVer}`;
+
+    // Set power distro type
+    const powerDistroTypeSelect = document.getElementById('powerDistroType');
+    if (powerDistroTypeSelect) {
+      powerDistroTypeSelect.value = params.powerDistroType;
+    }
+
+    // Initialize canvas renderer
+    CanvasRenderer.init();
+
+    // Global state variables
+    window.showWiring = false;
+    window.showPower = false;
+    window.wiringDirection = 'horizontal';
+    window.wiringStartPosition = 'bottom-left';
+    window.powerDirection = 'horizontal';
+    window.powerStartPosition = 'bottom-left';
+    window.currentZoomLevel = 4;
+
+    // Wall data
+    const wallData = {
+      blocksHor: params.blocksHor,
+      blocksVer: params.blocksVer,
+      flownSupport: false,
+      groundSupport: false
+    };
+
+    // Function to render the wall
+    function renderWall() {
+      CanvasRenderer.drawWall(wallData, window.currentZoomLevel, false);
+      updateZoomDisplay();
+    }
+
+    // Zoom functions
+    function zoomIn() {
+      if (window.currentZoomLevel < 8) {
+        window.currentZoomLevel++;
+        renderWall();
+      }
+    }
+
+    function zoomOut() {
+      if (window.currentZoomLevel > 1) {
+        window.currentZoomLevel--;
+        renderWall();
+      }
+    }
+
+    function updateZoomDisplay() {
+      document.getElementById('zoomLevel').textContent = `Zoom: ${window.currentZoomLevel}`;
+    }
+
+    // Data wiring diagram controls
+    const toggleWiringCheckbox = document.getElementById('toggleWiring');
+    const wiringDirectionSelect = document.getElementById('wiringDirection');
+    const wiringStartPositionSelect = document.getElementById('wiringStartPosition');
+    const wiringDirectionGroup = document.getElementById('wiringDirectionGroup');
+    const wiringStartPositionGroup = document.getElementById('wiringStartPositionGroup');
+
+    if (toggleWiringCheckbox) {
+      const toggleWiringOptions = () => {
+        const isChecked = toggleWiringCheckbox.checked;
+        if (wiringDirectionGroup) {
+          wiringDirectionGroup.style.display = isChecked ? 'block' : 'none';
+        }
+        if (wiringStartPositionGroup) {
+          wiringStartPositionGroup.style.display = isChecked ? 'block' : 'none';
+        }
+        updateCaptureButtonVisibility();
+      };
+
+      toggleWiringCheckbox.addEventListener('change', () => {
+        window.showWiring = toggleWiringCheckbox.checked;
+        toggleWiringOptions();
+        renderWall();
+      });
+    }
+
+    if (wiringDirectionSelect) {
+      wiringDirectionSelect.addEventListener('change', () => {
+        window.wiringDirection = wiringDirectionSelect.value;
+        renderWall();
+      });
+    }
+
+    if (wiringStartPositionSelect) {
+      wiringStartPositionSelect.addEventListener('change', () => {
+        window.wiringStartPosition = wiringStartPositionSelect.value;
+        renderWall();
+      });
+    }
+
+    // Power diagram controls
+    const togglePowerCheckbox = document.getElementById('togglePower');
+    const powerDirectionSelect = document.getElementById('powerDirection');
+    const powerStartPositionSelect = document.getElementById('powerStartPosition');
+    const powerDirectionGroup = document.getElementById('powerDirectionGroup');
+    const powerStartPositionGroup = document.getElementById('powerStartPositionGroup');
+    const powerDistroTypeGroup = document.getElementById('powerDistroTypeGroup');
+
+    if (togglePowerCheckbox) {
+      const togglePowerOptions = () => {
+        const isChecked = togglePowerCheckbox.checked;
+        if (powerDirectionGroup) {
+          powerDirectionGroup.style.display = isChecked ? 'block' : 'none';
+        }
+        if (powerStartPositionGroup) {
+          powerStartPositionGroup.style.display = isChecked ? 'block' : 'none';
+        }
+        if (powerDistroTypeGroup) {
+          powerDistroTypeGroup.style.display = isChecked ? 'block' : 'none';
+        }
+        updateCaptureButtonVisibility();
+      };
+
+      togglePowerCheckbox.addEventListener('change', () => {
+        window.showPower = togglePowerCheckbox.checked;
+        togglePowerOptions();
+        renderWall();
+      });
+    }
+
+    if (powerDirectionSelect) {
+      powerDirectionSelect.addEventListener('change', () => {
+        window.powerDirection = powerDirectionSelect.value;
+        renderWall();
+      });
+    }
+
+    if (powerStartPositionSelect) {
+      powerStartPositionSelect.addEventListener('change', () => {
+        window.powerStartPosition = powerStartPositionSelect.value;
+        renderWall();
+      });
+    }
+
+    if (powerDistroTypeSelect) {
+      powerDistroTypeSelect.addEventListener('change', () => {
+        renderWall();
+      });
+    }
+
+    // Zoom controls
+    document.getElementById('zoomInButton').addEventListener('click', zoomIn);
+    document.getElementById('zoomOutButton').addEventListener('click', zoomOut);
+
+    // Capture button visibility
+    function updateCaptureButtonVisibility() {
+      const captureButton = document.getElementById('captureWiringButton');
+      const captureContainer = document.getElementById('captureButtonContainer');
+      const toggleWiring = document.getElementById('toggleWiring');
+      const togglePower = document.getElementById('togglePower');
+
+      if (captureButton && captureContainer) {
+        const showWiringDiagram = toggleWiring && toggleWiring.checked;
+        const showPowerDiagram = togglePower && togglePower.checked;
+
+        if (showWiringDiagram || showPowerDiagram) {
+          captureContainer.style.display = 'block';
+
+          // Update button text based on what's shown
+          if (showWiringDiagram && showPowerDiagram) {
+            captureButton.textContent = '📸 Capture Wiring Diagrams';
+          } else if (showWiringDiagram) {
+            captureButton.textContent = '📸 Capture Data Wiring';
+          } else {
+            captureButton.textContent = '📸 Capture Power Wiring';
+          }
+        } else {
+          captureContainer.style.display = 'none';
+        }
+      }
+    }
+
+    // Capture wiring diagram function
+    function captureWiringDiagram() {
+      const canvas = document.getElementById('wallCanvas2D');
+      if (!canvas) return;
+
+      // Create temporary canvas with extra height for info text
+      const tempCanvas = document.createElement('canvas');
+      const infoHeight = 80;
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height + infoHeight;
+      const ctx = tempCanvas.getContext('2d');
+
+      // Fill with white background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+      // Copy original canvas content
+      ctx.drawImage(canvas, 0, 0);
+
+      // Add info text with diagram type
+      const productType = params.productType || 'LED';
+      const blocksHor = params.blocksHor || '10';
+      const blocksVer = params.blocksVer || '6';
+      const toggleWiring = document.getElementById('toggleWiring');
+      const togglePower = document.getElementById('togglePower');
+
+      let diagramType = '';
+      if (toggleWiring && toggleWiring.checked && togglePower && togglePower.checked) {
+        diagramType = 'Data & Power Wiring';
+      } else if (toggleWiring && toggleWiring.checked) {
+        diagramType = 'Data Wiring';
+      } else if (togglePower && togglePower.checked) {
+        diagramType = 'Power Wiring';
+      }
+
+      // Draw info section background
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillRect(0, canvas.height, tempCanvas.width, infoHeight);
+
+      // Draw text
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(diagramType, tempCanvas.width / 2, canvas.height + 30);
+      ctx.font = '16px Arial';
+      ctx.fillText(`${displayName} - ${blocksHor} × ${blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
+
+      // Convert to data URL and download
+      const dataURL = tempCanvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      const diagramTypeClean = diagramType.replace(/\s+/g, '_').replace(/&/g, 'and');
+      link.download = `${productType.toUpperCase()}_${diagramTypeClean}_${blocksHor}x${blocksVer}.png`;
+      link.href = dataURL;
+      link.click();
+    }
+
+    // Capture button event listener
+    document.getElementById('captureWiringButton').addEventListener('click', captureWiringDiagram);
+
+    // Create a hidden select element for product type (needed by canvas.js)
+    const hiddenProductSelect = document.createElement('select');
+    hiddenProductSelect.id = 'productType';
+    hiddenProductSelect.style.display = 'none';
+    const option = document.createElement('option');
+    option.value = params.productType;
+    option.selected = true;
+    hiddenProductSelect.appendChild(option);
+    document.body.appendChild(hiddenProductSelect);
+
+    // Initial render
+    renderWall();
+  </script>
+</body>
+</html>

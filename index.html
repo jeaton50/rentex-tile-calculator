@@ -403,49 +403,8 @@ window.addEventListener("DOMContentLoaded", () => {
         </div>
         <br>
 
-        <!-- Wiring Diagram Controls -->
-        <div class="input-group">
-          <input type="checkbox" id="toggleWiring" name="toggleWiring">
-          <label for="toggleWiring">Show Data Wiring Diagram</label>
-        </div>
-        <div class="input-group" id="wiringDirectionGroup" style="display: none;">
-          <label for="wiringDirection">Data Wiring Direction:</label>
-          <select id="wiringDirection" name="wiringDirection">
-            <option value="horizontal">Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
-        </div>
-        <div class="input-group" id="wiringStartPositionGroup" style="display: none;">
-          <label for="wiringStartPosition">Data Start Position:</label>
-          <select id="wiringStartPosition" name="wiringStartPosition">
-            <option value="bottom-left">Bottom Left</option>
-            <option value="bottom-right">Bottom Right</option>
-            <option value="top-left">Top Left</option>
-            <option value="top-right">Top Right</option>
-          </select>
-        </div>
-
-        <!-- Power Diagram Controls -->
-        <div class="input-group">
-          <input type="checkbox" id="togglePower" name="togglePower">
-          <label for="togglePower">Show Power Diagram</label>
-        </div>
-        <div class="input-group" id="powerDirectionGroup" style="display: none;">
-          <label for="powerDirection">Power Wiring Direction:</label>
-          <select id="powerDirection" name="powerDirection">
-            <option value="horizontal">Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
-        </div>
-        <div class="input-group" id="powerStartPositionGroup" style="display: none;">
-          <label for="powerStartPosition">Power Start Position:</label>
-          <select id="powerStartPosition" name="powerStartPosition">
-            <option value="bottom-left">Bottom Left</option>
-            <option value="bottom-right">Bottom Right</option>
-            <option value="top-left">Top Left</option>
-            <option value="top-right">Top Right</option>
-          </select>
-        </div>
+        <!-- Wiring Diagram Controls - MOVED TO TECHNICAL VIEW PAGE -->
+        <!-- These controls are now hidden and available via the Technical button below -->
         <br>
 
         <button type="button" onclick="captureEntireScreen()">Email</button>
@@ -454,6 +413,7 @@ window.addEventListener("DOMContentLoaded", () => {
         <button type="button" onclick="zoomOut()">Zoom Out</button>
         <button type="button" onclick="resetScreen()">Reset</button>
         <button type="button" onclick="openScreenViews()" style="background-color: #0066cc; color: white; font-weight: bold;">Screen Views</button>
+        <button type="button" onclick="openTechnicalView()" style="background-color: #28a745; color: white; font-weight: bold;">Technical</button>
       </div>
 
       <!-- Equipment Requirements (MOVED TO CENTER) -->
@@ -1822,6 +1782,17 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
 
       // Navigate to screen views page with URL parameters
       window.location.href = `screen-views.html?product=${encodeURIComponent(productType)}&blocksHor=${blocksHor}&blocksVer=${blocksVer}`;
+    };
+
+    window.openTechnicalView = function() {
+      // Get current screen parameters
+      const productType = document.getElementById('productType')?.value || 'absen';
+      const blocksHor = parseInt(document.getElementById('blocksHor')?.value) || 10;
+      const blocksVer = parseInt(document.getElementById('blocksVer')?.value) || 6;
+      const powerDistroType = document.getElementById('powerDistroType')?.value || '208';
+
+      // Navigate to technical view page with URL parameters
+      window.location.href = `technical-view.html?product=${encodeURIComponent(productType)}&blocksHor=${blocksHor}&blocksVer=${blocksVer}&powerDistroType=${powerDistroType}`;
     };
 
 
