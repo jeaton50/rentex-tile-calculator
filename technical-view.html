@@ -62,15 +62,23 @@
       border-radius: 5px;
     }
 
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+    }
+
     .input-group {
-      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .input-group label {
-      display: inline-block;
-      min-width: 150px;
       font-weight: bold;
       font-size: 14px;
+      white-space: nowrap;
     }
 
     .input-group select {
@@ -197,21 +205,23 @@
       <h2>Data Wiring Diagram</h2>
 
       <div class="controls">
-        <div class="input-group">
-          <label for="wiringDirection">Wiring Direction:</label>
-          <select id="wiringDirection" name="wiringDirection">
-            <option value="horizontal">Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label for="wiringStartPosition">Start Position:</label>
-          <select id="wiringStartPosition" name="wiringStartPosition">
-            <option value="bottom-left">Bottom Left</option>
-            <option value="bottom-right">Bottom Right</option>
-            <option value="top-left">Top Left</option>
-            <option value="top-right">Top Right</option>
-          </select>
+        <div class="controls-row">
+          <div class="input-group">
+            <label for="wiringDirection">Wiring Direction:</label>
+            <select id="wiringDirection" name="wiringDirection">
+              <option value="horizontal">Horizontal</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="wiringStartPosition">Start Position:</label>
+            <select id="wiringStartPosition" name="wiringStartPosition">
+              <option value="bottom-left">Bottom Left</option>
+              <option value="bottom-right">Bottom Right</option>
+              <option value="top-left">Top Left</option>
+              <option value="top-right">Top Right</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -235,28 +245,30 @@
       <h2>Power Wiring Diagram</h2>
 
       <div class="controls">
-        <div class="input-group">
-          <label for="powerDirection">Wiring Direction:</label>
-          <select id="powerDirection" name="powerDirection">
-            <option value="horizontal">Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label for="powerStartPosition">Start Position:</label>
-          <select id="powerStartPosition" name="powerStartPosition">
-            <option value="bottom-left">Bottom Left</option>
-            <option value="bottom-right">Bottom Right</option>
-            <option value="top-left">Top Left</option>
-            <option value="top-right">Top Right</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label for="powerDistroType">Power Voltage:</label>
-          <select id="powerDistroType" name="powerDistroType">
-            <option value="110">110V</option>
-            <option value="208">208V</option>
-          </select>
+        <div class="controls-row">
+          <div class="input-group">
+            <label for="powerDirection">Wiring Direction:</label>
+            <select id="powerDirection" name="powerDirection">
+              <option value="horizontal">Horizontal</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="powerStartPosition">Start Position:</label>
+            <select id="powerStartPosition" name="powerStartPosition">
+              <option value="bottom-left">Bottom Left</option>
+              <option value="bottom-right">Bottom Right</option>
+              <option value="top-left">Top Left</option>
+              <option value="top-right">Top Right</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="powerDistroType">Power Voltage:</label>
+            <select id="powerDistroType" name="powerDistroType">
+              <option value="110">110V</option>
+              <option value="208">208V</option>
+            </select>
+          </div>
         </div>
       </div>
 
