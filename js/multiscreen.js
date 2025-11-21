@@ -555,6 +555,192 @@ const MultiScreenManager = {
   },
 
   /**
+   * Calculate combined processing requirements for all screens
+   * @returns {Object} Combined processing equipment requirements
+   */
+  calculateCombinedProcessing() {
+    let totalTiles = 0;
+    let totalDataPorts = 0;
+    const productTypes = new Set();
+    const processorRequirements = {
+      SX40: 0,
+      XD10: 0,
+      S8: 0,
+      MX40PRO: 0
+    };
+
+    // Calculate totals from all screens
+    window.screenConfigurations.forEach((config) => {
+      const screenTiles = config.blocksHor * config.blocksVer;
+      totalTiles += screenTiles;
+      productTypes.add(config.productType);
+
+      // Calculate data ports needed based on product type
+      let daisyChainLimit = 10; // Default for Absen and Theatrixx
+      if (['BP2B1', 'BP2B2', 'BP2V2'].includes(config.productType)) {
+        daisyChainLimit = 13;
+      }
+      const screenDataPorts = Math.ceil(screenTiles / daisyChainLimit);
+      totalDataPorts += screenDataPorts;
+    });
+
+    // Determine processor requirements based on total data ports
+    // SX40 can handle up to 16 outputs
+    // S8 can handle up to 8 outputs
+    if (totalDataPorts <= 8) {
+      processorRequirements.S8 = 1;
+    } else if (totalDataPorts <= 16) {
+      processorRequirements.SX40 = 1;
+    } else {
+      // Need multiple processors
+      processorRequirements.SX40 = Math.ceil(totalDataPorts / 16);
+    }
+
+    return {
+      totalTiles,
+      totalDataPorts,
+      productTypes: Array.from(productTypes),
+      processors: processorRequirements
+    };
+  },
+
+  /**
+   * Show combined processing dialog
+   */
+  showCombineProcessingDialog() {
+    const processingReqs = this.calculateCombinedProcessing();
+
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 10000;
+      max-width: 500px;
+      width: 90%;
+    `;
+
+    let processingHTML = '<h3>Combined Processing Requirements</h3>';
+    processingHTML += '<div style="margin-bottom: 15px;">';
+    processingHTML += `<p><strong>Total Tiles:</strong> ${processingReqs.totalTiles}</p>`;
+    processingHTML += `<p><strong>Total Data Ports Needed:</strong> ${processingReqs.totalDataPorts}</p>`;
+    processingHTML += `<p><strong>Product Types:</strong> ${processingReqs.productTypes.join(', ')}</p>`;
+    processingHTML += '</div>';
+
+    processingHTML += '<h4>Recommended Processing Equipment:</h4>';
+    processingHTML += '<table style="width: 100%; border-collapse: collapse;">';
+    processingHTML += '<tr><th style="border: 1px solid #ccc; padding: 8px;">Equipment</th><th style="border: 1px solid #ccc; padding: 8px;">Quantity</th></tr>';
+
+    if (processingReqs.processors.SX40 > 0) {
+      processingHTML += `<tr><td style="border: 1px solid #ccc; padding: 8px;">Brompton SX40 Processor</td><td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${processingReqs.processors.SX40}</td></tr>`;
+    }
+    if (processingReqs.processors.S8 > 0) {
+      processingHTML += `<tr><td style="border: 1px solid #ccc; padding: 8px;">Brompton S8 Processor</td><td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${processingReqs.processors.S8}</td></tr>`;
+    }
+    if (processingReqs.processors.XD10 > 0) {
+      processingHTML += `<tr><td style="border: 1px solid #ccc; padding: 8px;">Brompton XD10 Processor</td><td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${processingReqs.processors.XD10}</td></tr>`;
+    }
+    if (processingReqs.processors.MX40PRO > 0) {
+      processingHTML += `<tr><td style="border: 1px solid #ccc; padding: 8px;">Brompton MX40 Pro Processor</td><td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${processingReqs.processors.MX40PRO}</td></tr>`;
+    }
+
+    processingHTML += '</table>';
+    processingHTML += '<div style="margin-top: 20px; text-align: center;">';
+    processingHTML += '<button onclick="applyCombinedProcessing()" style="background-color: #28a745; color: white; padding: 8px 20px; border: none; border-radius: 4px; margin-right: 10px; cursor: pointer;">Apply to Equipment List</button>';
+    processingHTML += '<button onclick="closeCombineProcessingDialog()" style="background-color: #6c757d; color: white; padding: 8px 20px; border: none; border-radius: 4px; cursor: pointer;">Close</button>';
+    processingHTML += '</div>';
+
+    dialog.innerHTML = processingHTML;
+    dialog.id = 'combineProcessingDialog';
+
+    const backdrop = document.createElement('div');
+    backdrop.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+    `;
+    backdrop.id = 'combineProcessingBackdrop';
+    backdrop.onclick = () => this.closeCombineProcessingDialog();
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(dialog);
+  },
+
+  /**
+   * Close combined processing dialog
+   */
+  closeCombineProcessingDialog() {
+    const dialog = document.getElementById('combineProcessingDialog');
+    const backdrop = document.getElementById('combineProcessingBackdrop');
+    if (dialog) dialog.remove();
+    if (backdrop) backdrop.remove();
+  },
+
+  /**
+   * Apply combined processing equipment to equipment list
+   */
+  applyCombinedProcessing() {
+    const processingReqs = this.calculateCombinedProcessing();
+
+    const combinedTable = document.querySelector('.equipment-table:not(.screen-equipment-section .equipment-table)');
+    if (!combinedTable) {
+      alert('Please generate the combined equipment list first.');
+      this.closeCombineProcessingDialog();
+      return;
+    }
+
+    const tbody = combinedTable.querySelector('tbody');
+    const totalRow = tbody.querySelector('.total-row');
+
+    // Remove existing processing items
+    const rows = Array.from(tbody.querySelectorAll('tr:not(.total-row)'));
+    rows.forEach(row => {
+      if (row.cells.length >= 2) {
+        const ecode = row.cells[0].textContent.trim();
+        const name = row.cells[1].textContent.trim();
+        if (this.isProcessingEquipment(ecode, name)) {
+          row.remove();
+        }
+      }
+    });
+
+    // Add new combined processing equipment
+    const processingItems = [
+      { ecode: 'SX40', name: 'Brompton SX40 Processor', weight: 12, quantity: processingReqs.processors.SX40 },
+      { ecode: 'S8', name: 'Brompton S8 Processor', weight: 8, quantity: processingReqs.processors.S8 },
+      { ecode: 'XD10', name: 'Brompton XD10 Processor', weight: 10, quantity: processingReqs.processors.XD10 },
+      { ecode: 'MX40PRO', name: 'Brompton MX40 Pro Processor', weight: 15, quantity: processingReqs.processors.MX40PRO }
+    ];
+
+    processingItems.forEach(item => {
+      if (item.quantity > 0) {
+        const row = document.createElement('tr');
+        row.className = 'combined-processing-item';
+        row.innerHTML = `
+          <td>${item.ecode}</td>
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${(item.weight * item.quantity).toFixed(2)}</td>
+        `;
+        tbody.insertBefore(row, totalRow);
+      }
+    });
+
+    this.updateCombinedEquipment();
+    this.closeCombineProcessingDialog();
+    alert('Combined processing equipment has been applied to the equipment list.');
+  },
+
+  /**
    * Add equipment toggle checkboxes to screen section
    * @param {HTMLElement} screenSection - Screen section element
    * @param {number} screenId - Screen ID
@@ -802,6 +988,11 @@ if (typeof window !== 'undefined') {
   window.showCombineDistroDialog = () => MultiScreenManager.showCombineDistroDialog();
   window.closeCombineDistroDialog = () => MultiScreenManager.closeCombineDistroDialog();
   window.applyCombinedDistro = () => MultiScreenManager.applyCombinedDistro();
+
+  // Export processing functions
+  window.showCombineProcessingDialog = () => MultiScreenManager.showCombineProcessingDialog();
+  window.closeCombineProcessingDialog = () => MultiScreenManager.closeCombineProcessingDialog();
+  window.applyCombinedProcessing = () => MultiScreenManager.applyCombinedProcessing();
 
   // Export equipment visibility functions
   window.isPowerDistroEquipment = (ecode, name) => MultiScreenManager.isPowerDistroEquipment(ecode, name);

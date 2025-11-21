@@ -1368,6 +1368,56 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       `;
       screenEquipmentContainer.appendChild(combinedHeader);
 
+      // Add combine buttons (Combine Distro and Combine Processing)
+      const combineButtonsContainer = document.createElement('div');
+      combineButtonsContainer.style.cssText = `
+        margin-top: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      `;
+
+      const combineDistroBtn = document.createElement('button');
+      combineDistroBtn.type = 'button';
+      combineDistroBtn.textContent = 'Combine Distro';
+      combineDistroBtn.style.cssText = `
+        padding: 8px 16px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      `;
+      combineDistroBtn.onclick = () => {
+        if (typeof window.showCombineDistroDialog === 'function') {
+          window.showCombineDistroDialog();
+        }
+      };
+
+      const combineProcessingBtn = document.createElement('button');
+      combineProcessingBtn.type = 'button';
+      combineProcessingBtn.textContent = 'Combine Processing';
+      combineProcessingBtn.style.cssText = `
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      `;
+      combineProcessingBtn.onclick = () => {
+        if (typeof window.showCombineProcessingDialog === 'function') {
+          window.showCombineProcessingDialog();
+        }
+      };
+
+      combineButtonsContainer.appendChild(combineDistroBtn);
+      combineButtonsContainer.appendChild(combineProcessingBtn);
+      screenEquipmentContainer.appendChild(combineButtonsContainer);
+
       // Create combined table
       const combinedTable = document.createElement('table');
       combinedTable.className = 'equipment-table';
