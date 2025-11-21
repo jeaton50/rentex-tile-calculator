@@ -286,10 +286,10 @@
     </div>
   </div>
 
-  <!-- Hidden canvas used by CanvasRenderer -->
-  <canvas id="wallCanvas2D" style="display: none;"></canvas>
+  <!-- Hidden canvas used by CanvasRenderer (override main.css max-width) -->
+  <canvas id="wallCanvas2D" style="position: absolute; left: -9999px; top: -9999px; max-width: none !important;"></canvas>
 
-  <script src="js/canvas.js?v=20251121d"></script>
+  <script src="js/canvas.js?v=20251121e"></script>
   <script>
     // Get screen parameters from URL
     function getScreenParameters() {
