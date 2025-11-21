@@ -783,12 +783,14 @@ const CanvasRenderer = {
     const headerOffset = this.config.headerOffsetMultiplier * zoomLevel;
     const flownSupportType = document.getElementById('flownSupportType')?.value || 'Single Header';
 
-    for (let i = 0; i <= horizontalBlocks; i++) {
+    for (let i = 0; i < horizontalBlocks; i++) {
       let posX, posY, headerImage, imageWidth;
 
       if (flownSupportType === 'Double Header') {
-        // Double headers: every other position
+        // Double headers: every other position (skip odd indices)
         if (i % 2 !== 0) continue;
+        // Skip if double header would extend past the wall
+        if (i + 2 > horizontalBlocks) continue;
         posX = i * blockSize;
         posY = headerOffset;
         imageWidth = 2 * blockSize;
@@ -829,12 +831,14 @@ const CanvasRenderer = {
     const baseOffset = this.config.baseOffsetMultiplier * zoomLevel;
     const groundSupportType = document.getElementById('groundSupportType')?.value || 'Single Base';
 
-    for (let i = 0; i <= horizontalBlocks; i++) {
+    for (let i = 0; i < horizontalBlocks; i++) {
       let posX, posY, baseImage, imageWidth;
 
       if (groundSupportType === 'Double Base') {
-        // Double bases: every other position
+        // Double bases: every other position (skip odd indices)
         if (i % 2 !== 0) continue;
+        // Skip if double base would extend past the wall
+        if (i + 2 > horizontalBlocks) continue;
         posX = i * blockSize;
         posY = (verticalBlocks * blockSize) - supportHeight + baseOffset;
         imageWidth = 2 * blockSize;
