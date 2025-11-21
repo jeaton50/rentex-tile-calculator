@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Technical View - LED Wall Calculator</title>
-  <link rel="stylesheet" href="css/main.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -89,10 +88,6 @@
       background: #fff;
       border: 2px solid #ddd;
       border-radius: 5px;
-    }
-
-    canvas {
-      display: inline-block;
     }
 
     .back-button {
@@ -286,15 +281,14 @@
     </div>
   </div>
 
-  <!-- Hidden canvas used by CanvasRenderer (override main.css max-width) -->
-  <canvas id="wallCanvas2D" style="position: absolute; left: -9999px; top: -9999px; max-width: none !important;"></canvas>
-
-  <script src="js/canvas.js?v=20251121e"></script>
   <script>
+    // ============================================
+    // SELF-CONTAINED TECHNICAL VIEW - NO EXTERNAL DEPENDENCIES
+    // ============================================
+
     // Get screen parameters from URL
     function getScreenParameters() {
       const urlParams = new URLSearchParams(window.location.search);
-
       return {
         productType: urlParams.get('product') || 'absen',
         blocksHor: parseInt(urlParams.get('blocksHor') || '10'),
@@ -314,12 +308,30 @@
       'BP2V2': 'ROE Black Pearl BP2V2'
     };
 
+    // Daisy chain limits by product
+    const daisyChainLimits = {
+      'absen': 10,
+      'BP2B1': 13,
+      'BP2B2': 13,
+      'BP2V2': 13,
+      'theatrixx': 10
+    };
+
+    // Power tile limits by product and voltage
+    const powerTileLimits = {
+      'absen': { 110: 10, 208: 30 },
+      'BP2B1': { 110: 11, 208: 32 },
+      'BP2B2': { 110: 11, 208: 32 },
+      'BP2V2': { 110: 11, 208: 32 },
+      'theatrixx': { 110: 10, 208: 30 }
+    };
+
     // Update info display
     const displayName = productNames[params.productType] || params.productType.toUpperCase();
     document.getElementById('productInfo').textContent = `Product: ${displayName}`;
     document.getElementById('dimensionsInfo').textContent = `Screen Size: ${params.blocksHor} × ${params.blocksVer} tiles`;
 
-    // Update back button to preserve calculator state
+    // Update back button
     const backButton = document.getElementById('backButton');
     backButton.href = `index.html?product=${encodeURIComponent(params.productType)}&blocksHor=${params.blocksHor}&blocksVer=${params.blocksVer}`;
 
@@ -329,236 +341,284 @@
       powerDistroTypeSelect.value = params.powerDistroType;
     }
 
-    // Create hidden product type select for canvas.js
-    const hiddenProductSelect = document.createElement('select');
-    hiddenProductSelect.id = 'productType';
-    hiddenProductSelect.style.display = 'none';
-    const option = document.createElement('option');
-    option.value = params.productType;
-    option.selected = true;
-    hiddenProductSelect.appendChild(option);
-    document.body.appendChild(hiddenProductSelect);
-
-    // Initialize canvas renderer
-    CanvasRenderer.init();
-
-    // Global state variables
-    window.wiringDirection = 'horizontal';
-    window.wiringStartPosition = 'bottom-left';
-    window.powerDirection = 'horizontal';
-    window.powerStartPosition = 'bottom-left';
-
-    // Separate zoom levels for each diagram
+    // State variables
     let dataZoomLevel = 1;
     let powerZoomLevel = 1;
+    let wiringDirection = 'horizontal';
+    let wiringStartPosition = 'bottom-left';
+    let powerDirection = 'horizontal';
+    let powerStartPosition = 'bottom-left';
 
-    // Wall data
-    const wallData = {
-      blocksHor: params.blocksHor,
-      blocksVer: params.blocksVer,
-      flownSupport: false,
-      groundSupport: false
-    };
+    // Configuration
+    const baseBlockPixels = 200;
+    const padding = 10;
 
-    // Function to render data wiring diagram
+    // Chain colors for data wiring
+    const dataChainColors = [
+      '#FF3366', '#33FF66', '#3366FF', '#FFFF33', '#FF9933',
+      '#CC33FF', '#33FFFF', '#FF3399', '#99FF33', '#FF6633',
+      '#33FF99', '#9933FF', '#FFCC33', '#33CCFF', '#FF33CC'
+    ];
+
+    // Chain colors for power wiring (warmer tones)
+    const powerChainColors = [
+      '#FF6B35', '#FFB627', '#FF1744', '#FF9100', '#FFD600',
+      '#DD2C00', '#FF6F00', '#F4511E', '#FB8C00', '#FFA726',
+      '#FFAB40', '#FFC107', '#FFD54F', '#FF7043', '#FF5722'
+    ];
+
+    // Generate tile path based on direction and start position
+    function generateTilePath(blocksHor, blocksVer, direction, startPosition) {
+      const tiles = [];
+
+      if (direction === 'horizontal') {
+        if (startPosition === 'bottom-left') {
+          for (let row = blocksVer - 1; row >= 0; row--) {
+            const rowIndex = blocksVer - 1 - row;
+            if (rowIndex % 2 === 0) {
+              for (let col = 0; col < blocksHor; col++) tiles.push({ row, col });
+            } else {
+              for (let col = blocksHor - 1; col >= 0; col--) tiles.push({ row, col });
+            }
+          }
+        } else if (startPosition === 'bottom-right') {
+          for (let row = blocksVer - 1; row >= 0; row--) {
+            const rowIndex = blocksVer - 1 - row;
+            if (rowIndex % 2 === 0) {
+              for (let col = blocksHor - 1; col >= 0; col--) tiles.push({ row, col });
+            } else {
+              for (let col = 0; col < blocksHor; col++) tiles.push({ row, col });
+            }
+          }
+        } else if (startPosition === 'top-left') {
+          for (let row = 0; row < blocksVer; row++) {
+            if (row % 2 === 0) {
+              for (let col = 0; col < blocksHor; col++) tiles.push({ row, col });
+            } else {
+              for (let col = blocksHor - 1; col >= 0; col--) tiles.push({ row, col });
+            }
+          }
+        } else if (startPosition === 'top-right') {
+          for (let row = 0; row < blocksVer; row++) {
+            if (row % 2 === 0) {
+              for (let col = blocksHor - 1; col >= 0; col--) tiles.push({ row, col });
+            } else {
+              for (let col = 0; col < blocksHor; col++) tiles.push({ row, col });
+            }
+          }
+        }
+      } else {
+        // Vertical wiring
+        if (startPosition === 'bottom-left') {
+          for (let col = 0; col < blocksHor; col++) {
+            if (col % 2 === 0) {
+              for (let row = blocksVer - 1; row >= 0; row--) tiles.push({ row, col });
+            } else {
+              for (let row = 0; row < blocksVer; row++) tiles.push({ row, col });
+            }
+          }
+        } else if (startPosition === 'bottom-right') {
+          for (let col = blocksHor - 1; col >= 0; col--) {
+            const colIndex = blocksHor - 1 - col;
+            if (colIndex % 2 === 0) {
+              for (let row = blocksVer - 1; row >= 0; row--) tiles.push({ row, col });
+            } else {
+              for (let row = 0; row < blocksVer; row++) tiles.push({ row, col });
+            }
+          }
+        } else if (startPosition === 'top-left') {
+          for (let col = 0; col < blocksHor; col++) {
+            if (col % 2 === 0) {
+              for (let row = 0; row < blocksVer; row++) tiles.push({ row, col });
+            } else {
+              for (let row = blocksVer - 1; row >= 0; row--) tiles.push({ row, col });
+            }
+          }
+        } else if (startPosition === 'top-right') {
+          for (let col = blocksHor - 1; col >= 0; col--) {
+            const colIndex = blocksHor - 1 - col;
+            if (colIndex % 2 === 0) {
+              for (let row = 0; row < blocksVer; row++) tiles.push({ row, col });
+            } else {
+              for (let row = blocksVer - 1; row >= 0; row--) tiles.push({ row, col });
+            }
+          }
+        }
+      }
+
+      return tiles;
+    }
+
+    // Draw wiring diagram on canvas
+    function drawWiringDiagram(canvas, blocksHor, blocksVer, zoomLevel, chainLimit, colors, direction, startPosition, isDashed = false) {
+      const ctx = canvas.getContext('2d');
+      const blockSize = (baseBlockPixels / 4) * zoomLevel;
+
+      // Set canvas size
+      canvas.width = blocksHor * blockSize + padding * 2;
+      canvas.height = blocksVer * blockSize + padding * 2;
+
+      // Clear and fill background
+      ctx.fillStyle = '#333';
+      ctx.fillRect(padding, padding, blocksHor * blockSize, blocksVer * blockSize);
+
+      // Draw grid lines
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 2;
+
+      for (let col = 0; col <= blocksHor; col++) {
+        const x = padding + col * blockSize;
+        ctx.beginPath();
+        ctx.moveTo(x, padding);
+        ctx.lineTo(x, padding + blocksVer * blockSize);
+        ctx.stroke();
+      }
+
+      for (let row = 0; row <= blocksVer; row++) {
+        const y = padding + row * blockSize;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(padding + blocksHor * blockSize, y);
+        ctx.stroke();
+      }
+
+      // Generate tile path
+      const tiles = generateTilePath(blocksHor, blocksVer, direction, startPosition);
+
+      // Draw wiring
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      if (isDashed) ctx.setLineDash([10, 5]);
+
+      let tilesInCurrentChain = 0;
+      let chainNumber = 0;
+      let chainPath = [];
+      let chainStartX = 0;
+      let chainStartY = 0;
+
+      for (let i = 0; i < tiles.length; i++) {
+        const tile = tiles[i];
+        const posX = padding + tile.col * blockSize + blockSize / 2;
+        const posY = padding + tile.row * blockSize + blockSize / 2;
+
+        if (tilesInCurrentChain === 0) {
+          chainNumber++;
+          chainPath = [{ x: posX, y: posY }];
+          chainStartX = posX;
+          chainStartY = posY;
+          tilesInCurrentChain = 1;
+        } else {
+          chainPath.push({ x: posX, y: posY });
+          tilesInCurrentChain++;
+        }
+
+        if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
+          const chainColor = colors[(chainNumber - 1) % colors.length];
+
+          // Draw white outline
+          ctx.strokeStyle = 'white';
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.moveTo(chainPath[0].x, chainPath[0].y);
+          for (let j = 1; j < chainPath.length; j++) {
+            ctx.lineTo(chainPath[j].x, chainPath[j].y);
+          }
+          ctx.stroke();
+
+          // Draw colored line
+          ctx.strokeStyle = chainColor;
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(chainPath[0].x, chainPath[0].y);
+          for (let j = 1; j < chainPath.length; j++) {
+            ctx.lineTo(chainPath[j].x, chainPath[j].y);
+          }
+          ctx.stroke();
+
+          // Draw port label
+          ctx.fillStyle = chainColor;
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 3;
+          ctx.font = `bold ${Math.max(14, blockSize / 3)}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const labelText = isDashed ? `Pwr ${chainNumber}` : `Port ${chainNumber}`;
+          ctx.strokeText(labelText, chainStartX, chainStartY);
+          ctx.fillText(labelText, chainStartX, chainStartY);
+
+          tilesInCurrentChain = 0;
+          chainPath = [];
+        }
+      }
+
+      ctx.setLineDash([]);
+    }
+
+    // Render data wiring
     function renderDataWiring() {
-      window.showWiring = true;
-      window.showPower = false;
-
-      // Render to hidden canvas first
-      CanvasRenderer.drawWall(wallData, dataZoomLevel, false);
-
-      // Copy from hidden canvas to visible canvas
-      const hiddenCanvas = document.getElementById('wallCanvas2D');
-      const visibleCanvas = document.getElementById('dataWiringCanvas');
-
-      if (hiddenCanvas && visibleCanvas) {
-        visibleCanvas.width = hiddenCanvas.width;
-        visibleCanvas.height = hiddenCanvas.height;
-        const ctx = visibleCanvas.getContext('2d');
-        ctx.drawImage(hiddenCanvas, 0, 0);
-      }
-
-      updateDataZoomDisplay();
-    }
-
-    // Function to render power wiring diagram
-    function renderPowerWiring() {
-      window.showWiring = false;
-      window.showPower = true;
-
-      // Render to hidden canvas first
-      CanvasRenderer.drawWall(wallData, powerZoomLevel, false);
-
-      // Copy from hidden canvas to visible canvas
-      const hiddenCanvas = document.getElementById('wallCanvas2D');
-      const visibleCanvas = document.getElementById('powerWiringCanvas');
-
-      if (hiddenCanvas && visibleCanvas) {
-        visibleCanvas.width = hiddenCanvas.width;
-        visibleCanvas.height = hiddenCanvas.height;
-        const ctx = visibleCanvas.getContext('2d');
-        ctx.drawImage(hiddenCanvas, 0, 0);
-      }
-
-      updatePowerZoomDisplay();
-    }
-
-    // Data wiring zoom functions
-    function dataZoomIn() {
-      if (dataZoomLevel < 8) {
-        dataZoomLevel++;
-        renderDataWiring();
-      }
-    }
-
-    function dataZoomOut() {
-      if (dataZoomLevel > 1) {
-        dataZoomLevel--;
-        renderDataWiring();
-      }
-    }
-
-    function updateDataZoomDisplay() {
+      const canvas = document.getElementById('dataWiringCanvas');
+      const chainLimit = daisyChainLimits[params.productType] || 10;
+      drawWiringDiagram(canvas, params.blocksHor, params.blocksVer, dataZoomLevel, chainLimit, dataChainColors, wiringDirection, wiringStartPosition, false);
       document.getElementById('dataZoomLevel').textContent = `Zoom: ${dataZoomLevel}`;
     }
 
-    // Power wiring zoom functions
-    function powerZoomIn() {
-      if (powerZoomLevel < 8) {
-        powerZoomLevel++;
-        renderPowerWiring();
-      }
-    }
-
-    function powerZoomOut() {
-      if (powerZoomLevel > 1) {
-        powerZoomLevel--;
-        renderPowerWiring();
-      }
-    }
-
-    function updatePowerZoomDisplay() {
+    // Render power wiring
+    function renderPowerWiring() {
+      const canvas = document.getElementById('powerWiringCanvas');
+      const voltage = parseInt(powerDistroTypeSelect.value);
+      const chainLimit = powerTileLimits[params.productType]?.[voltage] || 10;
+      drawWiringDiagram(canvas, params.blocksHor, params.blocksVer, powerZoomLevel, chainLimit, powerChainColors, powerDirection, powerStartPosition, true);
       document.getElementById('powerZoomLevel').textContent = `Zoom: ${powerZoomLevel}`;
     }
 
-    // Data wiring controls
-    const wiringDirectionSelect = document.getElementById('wiringDirection');
-    const wiringStartPositionSelect = document.getElementById('wiringStartPosition');
+    // Zoom functions
+    function dataZoomIn() { if (dataZoomLevel < 8) { dataZoomLevel++; renderDataWiring(); } }
+    function dataZoomOut() { if (dataZoomLevel > 1) { dataZoomLevel--; renderDataWiring(); } }
+    function powerZoomIn() { if (powerZoomLevel < 8) { powerZoomLevel++; renderPowerWiring(); } }
+    function powerZoomOut() { if (powerZoomLevel > 1) { powerZoomLevel--; renderPowerWiring(); } }
 
-    if (wiringDirectionSelect) {
-      wiringDirectionSelect.addEventListener('change', () => {
-        window.wiringDirection = wiringDirectionSelect.value;
-        renderDataWiring();
-      });
+    // Capture functions
+    function captureCanvas(canvas, title, filename) {
+      const tempCanvas = document.createElement('canvas');
+      const infoHeight = 80;
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height + infoHeight;
+      const ctx = tempCanvas.getContext('2d');
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      ctx.drawImage(canvas, 0, 0);
+
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillRect(0, canvas.height, tempCanvas.width, infoHeight);
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(title, tempCanvas.width / 2, canvas.height + 30);
+      ctx.font = '16px Arial';
+      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
+
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = tempCanvas.toDataURL('image/png');
+      link.click();
     }
 
-    if (wiringStartPositionSelect) {
-      wiringStartPositionSelect.addEventListener('change', () => {
-        window.wiringStartPosition = wiringStartPositionSelect.value;
-        renderDataWiring();
-      });
-    }
-
-    // Power wiring controls
-    const powerDirectionSelect = document.getElementById('powerDirection');
-    const powerStartPositionSelect = document.getElementById('powerStartPosition');
-
-    if (powerDirectionSelect) {
-      powerDirectionSelect.addEventListener('change', () => {
-        window.powerDirection = powerDirectionSelect.value;
-        renderPowerWiring();
-      });
-    }
-
-    if (powerStartPositionSelect) {
-      powerStartPositionSelect.addEventListener('change', () => {
-        window.powerStartPosition = powerStartPositionSelect.value;
-        renderPowerWiring();
-      });
-    }
-
-    if (powerDistroTypeSelect) {
-      powerDistroTypeSelect.addEventListener('change', () => {
-        renderPowerWiring();
-      });
-    }
-
-    // Zoom controls
-    document.getElementById('dataZoomInButton').addEventListener('click', dataZoomIn);
-    document.getElementById('dataZoomOutButton').addEventListener('click', dataZoomOut);
-    document.getElementById('powerZoomInButton').addEventListener('click', powerZoomIn);
-    document.getElementById('powerZoomOutButton').addEventListener('click', powerZoomOut);
-
-    // Capture data wiring diagram
     function captureDataWiring() {
-      const canvas = document.getElementById('dataWiringCanvas');
-      if (!canvas) return;
-
-      const tempCanvas = document.createElement('canvas');
-      const infoHeight = 80;
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height + infoHeight;
-      const ctx = tempCanvas.getContext('2d');
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-      ctx.drawImage(canvas, 0, 0);
-
-      ctx.fillStyle = '#f0f0f0';
-      ctx.fillRect(0, canvas.height, tempCanvas.width, infoHeight);
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 20px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('Data Wiring Diagram', tempCanvas.width / 2, canvas.height + 30);
-      ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
-
-      const dataURL = tempCanvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = `${params.productType.toUpperCase()}_Data_Wiring_${params.blocksHor}x${params.blocksVer}.png`;
-      link.href = dataURL;
-      link.click();
+      captureCanvas(document.getElementById('dataWiringCanvas'), 'Data Wiring Diagram',
+        `${params.productType.toUpperCase()}_Data_Wiring_${params.blocksHor}x${params.blocksVer}.png`);
     }
 
-    // Capture power wiring diagram
     function capturePowerWiring() {
-      const canvas = document.getElementById('powerWiringCanvas');
-      if (!canvas) return;
-
-      const tempCanvas = document.createElement('canvas');
-      const infoHeight = 80;
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height + infoHeight;
-      const ctx = tempCanvas.getContext('2d');
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-      ctx.drawImage(canvas, 0, 0);
-
       const voltage = powerDistroTypeSelect.value;
-      ctx.fillStyle = '#f0f0f0';
-      ctx.fillRect(0, canvas.height, tempCanvas.width, infoHeight);
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 20px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(`Power Wiring Diagram (${voltage}V)`, tempCanvas.width / 2, canvas.height + 30);
-      ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
-
-      const dataURL = tempCanvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = `${params.productType.toUpperCase()}_Power_Wiring_${voltage}V_${params.blocksHor}x${params.blocksVer}.png`;
-      link.href = dataURL;
-      link.click();
+      captureCanvas(document.getElementById('powerWiringCanvas'), `Power Wiring Diagram (${voltage}V)`,
+        `${params.productType.toUpperCase()}_Power_Wiring_${voltage}V_${params.blocksHor}x${params.blocksVer}.png`);
     }
 
-    // Capture both diagrams
     function captureBothDiagrams() {
       const dataCanvas = document.getElementById('dataWiringCanvas');
       const powerCanvas = document.getElementById('powerWiringCanvas');
-      if (!dataCanvas || !powerCanvas) return;
-
       const infoHeight = 80;
       const spacing = 30;
 
@@ -571,52 +631,54 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-      let currentY = 0;
-      const dataX = (maxWidth - dataCanvas.width) / 2;
-      ctx.drawImage(dataCanvas, dataX, currentY);
-
-      currentY += dataCanvas.height;
+      let y = 0;
+      ctx.drawImage(dataCanvas, (maxWidth - dataCanvas.width) / 2, y);
+      y += dataCanvas.height;
       ctx.fillStyle = '#f0f0f0';
-      ctx.fillRect(0, currentY, tempCanvas.width, infoHeight);
+      ctx.fillRect(0, y, tempCanvas.width, infoHeight);
       ctx.fillStyle = '#000000';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('Data Wiring Diagram', tempCanvas.width / 2, currentY + 30);
+      ctx.fillText('Data Wiring Diagram', tempCanvas.width / 2, y + 30);
       ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, currentY + 55);
+      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, y + 55);
 
-      currentY += infoHeight + spacing;
-      const powerX = (maxWidth - powerCanvas.width) / 2;
-      ctx.drawImage(powerCanvas, powerX, currentY);
-
-      currentY += powerCanvas.height;
+      y += infoHeight + spacing;
+      ctx.drawImage(powerCanvas, (maxWidth - powerCanvas.width) / 2, y);
+      y += powerCanvas.height;
       ctx.fillStyle = '#f0f0f0';
-      ctx.fillRect(0, currentY, tempCanvas.width, infoHeight);
-      const voltage = powerDistroTypeSelect.value;
+      ctx.fillRect(0, y, tempCanvas.width, infoHeight);
       ctx.fillStyle = '#000000';
       ctx.font = 'bold 20px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(`Power Wiring Diagram (${voltage}V)`, tempCanvas.width / 2, currentY + 30);
+      ctx.fillText(`Power Wiring Diagram (${powerDistroTypeSelect.value}V)`, tempCanvas.width / 2, y + 30);
       ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, currentY + 55);
+      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, y + 55);
 
-      const dataURL = tempCanvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.download = `${params.productType.toUpperCase()}_Complete_Wiring_Diagrams_${params.blocksHor}x${params.blocksVer}.png`;
-      link.href = dataURL;
+      link.download = `${params.productType.toUpperCase()}_Complete_Wiring_${params.blocksHor}x${params.blocksVer}.png`;
+      link.href = tempCanvas.toDataURL('image/png');
       link.click();
     }
 
-    // Capture button event listeners
+    // Event listeners
+    document.getElementById('wiringDirection').addEventListener('change', (e) => { wiringDirection = e.target.value; renderDataWiring(); });
+    document.getElementById('wiringStartPosition').addEventListener('change', (e) => { wiringStartPosition = e.target.value; renderDataWiring(); });
+    document.getElementById('powerDirection').addEventListener('change', (e) => { powerDirection = e.target.value; renderPowerWiring(); });
+    document.getElementById('powerStartPosition').addEventListener('change', (e) => { powerStartPosition = e.target.value; renderPowerWiring(); });
+    document.getElementById('powerDistroType').addEventListener('change', () => { renderPowerWiring(); });
+
+    document.getElementById('dataZoomInButton').addEventListener('click', dataZoomIn);
+    document.getElementById('dataZoomOutButton').addEventListener('click', dataZoomOut);
+    document.getElementById('powerZoomInButton').addEventListener('click', powerZoomIn);
+    document.getElementById('powerZoomOutButton').addEventListener('click', powerZoomOut);
+
     document.getElementById('captureDataButton').addEventListener('click', captureDataWiring);
     document.getElementById('capturePowerButton').addEventListener('click', capturePowerWiring);
     document.getElementById('captureBothButton').addEventListener('click', captureBothDiagrams);
 
-    // Initial render - wait for page to fully load
-    window.addEventListener('load', () => {
-      renderDataWiring();
-      renderPowerWiring();
-    });
+    // Initial render
+    renderDataWiring();
+    renderPowerWiring();
   </script>
 </body>
 </html>
