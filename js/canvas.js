@@ -138,10 +138,10 @@ const CanvasRenderer = {
     for (let screenIndex = 0; screenIndex < numScreens; screenIndex++) {
       const xOffset = gridLinePadding + screenIndex * (singleScreenWidth + this.config.screenSpacing);
 
-      // Create clipping region for this screen
+      // Create clipping region for this screen (expanded to include grid lines at edges)
       ctx.save();
       ctx.beginPath();
-      ctx.rect(xOffset, gridLinePadding, singleScreenWidth, canvas.height - (gridLinePadding * 2));
+      ctx.rect(xOffset - gridLinePadding, 0, singleScreenWidth + (gridLinePadding * 2), canvas.height);
       ctx.clip();
 
       // Draw wall background as a single stretched image
