@@ -82,21 +82,17 @@
       cursor: pointer;
     }
 
-    .canvas-wrapper {
+    .canvas-container {
+      text-align: center;
+      overflow-x: auto;
+      padding: 10px;
+      background: #fff;
       border: 2px solid #ddd;
       border-radius: 5px;
-      background: #fff;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: auto;
-      max-height: 800px;
     }
 
     canvas {
-      display: block;
-      max-width: 100%;
+      display: inline-block;
     }
 
     .back-button {
@@ -224,7 +220,7 @@
         </div>
       </div>
 
-      <div class="canvas-wrapper">
+      <div class="canvas-container">
         <canvas id="dataWiringCanvas"></canvas>
       </div>
 
@@ -269,7 +265,7 @@
         </div>
       </div>
 
-      <div class="canvas-wrapper">
+      <div class="canvas-container">
         <canvas id="powerWiringCanvas"></canvas>
       </div>
 
@@ -290,7 +286,10 @@
     </div>
   </div>
 
-  <script src="js/canvas.js?v=20251121c"></script>
+  <!-- Hidden canvas used by CanvasRenderer -->
+  <canvas id="wallCanvas2D" style="display: none;"></canvas>
+
+  <script src="js/canvas.js?v=20251121d"></script>
   <script>
     // Get screen parameters from URL
     function getScreenParameters() {
@@ -330,6 +329,16 @@
       powerDistroTypeSelect.value = params.powerDistroType;
     }
 
+    // Create hidden product type select for canvas.js
+    const hiddenProductSelect = document.createElement('select');
+    hiddenProductSelect.id = 'productType';
+    hiddenProductSelect.style.display = 'none';
+    const option = document.createElement('option');
+    option.value = params.productType;
+    option.selected = true;
+    hiddenProductSelect.appendChild(option);
+    document.body.appendChild(hiddenProductSelect);
+
     // Initialize canvas renderer
     CanvasRenderer.init();
 
@@ -356,20 +365,18 @@
       window.showWiring = true;
       window.showPower = false;
 
-      // Temporarily change the canvas ID that CanvasRenderer uses
-      const originalCanvas = document.getElementById('wallCanvas2D');
-      const dataCanvas = document.getElementById('dataWiringCanvas');
+      // Render to hidden canvas first
+      CanvasRenderer.drawWall(wallData, dataZoomLevel, false);
 
-      // Copy ID to data canvas temporarily
-      if (dataCanvas) {
-        dataCanvas.id = 'wallCanvas2D';
-        if (originalCanvas) originalCanvas.id = 'wallCanvas2D_temp';
+      // Copy from hidden canvas to visible canvas
+      const hiddenCanvas = document.getElementById('wallCanvas2D');
+      const visibleCanvas = document.getElementById('dataWiringCanvas');
 
-        CanvasRenderer.drawWall(wallData, dataZoomLevel, false);
-
-        // Restore IDs
-        dataCanvas.id = 'dataWiringCanvas';
-        if (originalCanvas) originalCanvas.id = 'wallCanvas2D';
+      if (hiddenCanvas && visibleCanvas) {
+        visibleCanvas.width = hiddenCanvas.width;
+        visibleCanvas.height = hiddenCanvas.height;
+        const ctx = visibleCanvas.getContext('2d');
+        ctx.drawImage(hiddenCanvas, 0, 0);
       }
 
       updateDataZoomDisplay();
@@ -380,20 +387,18 @@
       window.showWiring = false;
       window.showPower = true;
 
-      // Temporarily change the canvas ID that CanvasRenderer uses
-      const originalCanvas = document.getElementById('wallCanvas2D');
-      const powerCanvas = document.getElementById('powerWiringCanvas');
+      // Render to hidden canvas first
+      CanvasRenderer.drawWall(wallData, powerZoomLevel, false);
 
-      // Copy ID to power canvas temporarily
-      if (powerCanvas) {
-        powerCanvas.id = 'wallCanvas2D';
-        if (originalCanvas) originalCanvas.id = 'wallCanvas2D_temp';
+      // Copy from hidden canvas to visible canvas
+      const hiddenCanvas = document.getElementById('wallCanvas2D');
+      const visibleCanvas = document.getElementById('powerWiringCanvas');
 
-        CanvasRenderer.drawWall(wallData, powerZoomLevel, false);
-
-        // Restore IDs
-        powerCanvas.id = 'powerWiringCanvas';
-        if (originalCanvas) originalCanvas.id = 'wallCanvas2D';
+      if (hiddenCanvas && visibleCanvas) {
+        visibleCanvas.width = hiddenCanvas.width;
+        visibleCanvas.height = hiddenCanvas.height;
+        const ctx = visibleCanvas.getContext('2d');
+        ctx.drawImage(hiddenCanvas, 0, 0);
       }
 
       updatePowerZoomDisplay();
@@ -490,41 +495,28 @@
       const canvas = document.getElementById('dataWiringCanvas');
       if (!canvas) return;
 
-      // Create temporary canvas with extra height for info text
       const tempCanvas = document.createElement('canvas');
       const infoHeight = 80;
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height + infoHeight;
       const ctx = tempCanvas.getContext('2d');
 
-      // Fill with white background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-      // Copy original canvas content
       ctx.drawImage(canvas, 0, 0);
 
-      // Add info text
-      const productType = params.productType || 'LED';
-      const blocksHor = params.blocksHor || '10';
-      const blocksVer = params.blocksVer || '6';
-
-      // Draw info section background
       ctx.fillStyle = '#f0f0f0';
       ctx.fillRect(0, canvas.height, tempCanvas.width, infoHeight);
-
-      // Draw text
       ctx.fillStyle = '#000000';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.fillText('Data Wiring Diagram', tempCanvas.width / 2, canvas.height + 30);
       ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${blocksHor} × ${blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
+      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
 
-      // Convert to data URL and download
       const dataURL = tempCanvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.download = `${productType.toUpperCase()}_Data_Wiring_${blocksHor}x${blocksVer}.png`;
+      link.download = `${params.productType.toUpperCase()}_Data_Wiring_${params.blocksHor}x${params.blocksVer}.png`;
       link.href = dataURL;
       link.click();
     }
@@ -534,42 +526,29 @@
       const canvas = document.getElementById('powerWiringCanvas');
       if (!canvas) return;
 
-      // Create temporary canvas with extra height for info text
       const tempCanvas = document.createElement('canvas');
       const infoHeight = 80;
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height + infoHeight;
       const ctx = tempCanvas.getContext('2d');
 
-      // Fill with white background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-      // Copy original canvas content
       ctx.drawImage(canvas, 0, 0);
 
-      // Add info text
-      const productType = params.productType || 'LED';
-      const blocksHor = params.blocksHor || '10';
-      const blocksVer = params.blocksVer || '6';
       const voltage = powerDistroTypeSelect.value;
-
-      // Draw info section background
       ctx.fillStyle = '#f0f0f0';
       ctx.fillRect(0, canvas.height, tempCanvas.width, infoHeight);
-
-      // Draw text
       ctx.fillStyle = '#000000';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.fillText(`Power Wiring Diagram (${voltage}V)`, tempCanvas.width / 2, canvas.height + 30);
       ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${blocksHor} × ${blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
+      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, canvas.height + 55);
 
-      // Convert to data URL and download
       const dataURL = tempCanvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.download = `${productType.toUpperCase()}_Power_Wiring_${voltage}V_${blocksHor}x${blocksVer}.png`;
+      link.download = `${params.productType.toUpperCase()}_Power_Wiring_${voltage}V_${params.blocksHor}x${params.blocksVer}.png`;
       link.href = dataURL;
       link.click();
     }
@@ -581,31 +560,24 @@
       if (!dataCanvas || !powerCanvas) return;
 
       const infoHeight = 80;
-      const spacing = 30; // Space between diagrams
+      const spacing = 30;
 
-      // Create temporary canvas to combine both diagrams
       const tempCanvas = document.createElement('canvas');
       const maxWidth = Math.max(dataCanvas.width, powerCanvas.width);
       tempCanvas.width = maxWidth;
       tempCanvas.height = dataCanvas.height + infoHeight + spacing + powerCanvas.height + infoHeight;
       const ctx = tempCanvas.getContext('2d');
 
-      // Fill with white background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-      // Position for data diagram (centered if narrower than max width)
       let currentY = 0;
       const dataX = (maxWidth - dataCanvas.width) / 2;
-
-      // Draw data wiring canvas
       ctx.drawImage(dataCanvas, dataX, currentY);
 
-      // Add info section for data wiring
       currentY += dataCanvas.height;
       ctx.fillStyle = '#f0f0f0';
       ctx.fillRect(0, currentY, tempCanvas.width, infoHeight);
-
       ctx.fillStyle = '#000000';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
@@ -613,18 +585,13 @@
       ctx.font = '16px Arial';
       ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, currentY + 55);
 
-      // Move to power diagram position with spacing
       currentY += infoHeight + spacing;
       const powerX = (maxWidth - powerCanvas.width) / 2;
-
-      // Draw power wiring canvas
       ctx.drawImage(powerCanvas, powerX, currentY);
 
-      // Add info section for power wiring
       currentY += powerCanvas.height;
       ctx.fillStyle = '#f0f0f0';
       ctx.fillRect(0, currentY, tempCanvas.width, infoHeight);
-
       const voltage = powerDistroTypeSelect.value;
       ctx.fillStyle = '#000000';
       ctx.font = 'bold 20px Arial';
@@ -633,11 +600,9 @@
       ctx.font = '16px Arial';
       ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, currentY + 55);
 
-      // Convert to data URL and download
       const dataURL = tempCanvas.toDataURL('image/png');
       const link = document.createElement('a');
-      const productType = params.productType || 'LED';
-      link.download = `${productType.toUpperCase()}_Complete_Wiring_Diagrams_${params.blocksHor}x${params.blocksVer}.png`;
+      link.download = `${params.productType.toUpperCase()}_Complete_Wiring_Diagrams_${params.blocksHor}x${params.blocksVer}.png`;
       link.href = dataURL;
       link.click();
     }
@@ -647,18 +612,8 @@
     document.getElementById('capturePowerButton').addEventListener('click', capturePowerWiring);
     document.getElementById('captureBothButton').addEventListener('click', captureBothDiagrams);
 
-    // Create a hidden select element for product type (needed by canvas.js)
-    const hiddenProductSelect = document.createElement('select');
-    hiddenProductSelect.id = 'productType';
-    hiddenProductSelect.style.display = 'none';
-    const option = document.createElement('option');
-    option.value = params.productType;
-    option.selected = true;
-    hiddenProductSelect.appendChild(option);
-    document.body.appendChild(hiddenProductSelect);
-
-    // Initial render of both diagrams (deferred to allow DOM layout to complete)
-    requestAnimationFrame(() => {
+    // Initial render - wait for page to fully load
+    window.addEventListener('load', () => {
       renderDataWiring();
       renderPowerWiring();
     });
