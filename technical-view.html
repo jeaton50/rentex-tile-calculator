@@ -362,10 +362,10 @@
     function getScreenParameters() {
       const urlParams = new URLSearchParams(window.location.search);
       return {
-        productType: urlParams.get('product') || 'absen',
-        blocksHor: parseInt(urlParams.get('blocksHor') || '10'),
-        blocksVer: parseInt(urlParams.get('blocksVer') || '6'),
-        powerDistroType: urlParams.get('powerDistroType') || '208'
+        productType: urlParams.get('product') || localStorage.getItem('screenProduct') || 'absen',
+        blocksHor: parseInt(urlParams.get('blocksHor') || localStorage.getItem('screenBlocksHor') || '10'),
+        blocksVer: parseInt(urlParams.get('blocksVer') || localStorage.getItem('screenBlocksVer') || '6'),
+        powerDistroType: urlParams.get('powerDistroType') || localStorage.getItem('screenPowerDistroType') || '208'
       };
     }
 
@@ -462,7 +462,7 @@
 
     // Update back button
     const backButton = document.getElementById('backButton');
-    backButton.href = `index.html?product=${encodeURIComponent(params.productType)}&blocksHor=${params.blocksHor}&blocksVer=${params.blocksVer}`;
+    backButton.href = `index.html?product=${encodeURIComponent(params.productType)}&blocksHor=${params.blocksHor}&blocksVer=${params.blocksVer}&powerDistroType=${params.powerDistroType}`;
 
     // Set power distro type
     const powerDistroTypeSelect = document.getElementById('powerDistroType');

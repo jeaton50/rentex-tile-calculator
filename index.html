@@ -775,6 +775,15 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }
 
+          // Restore powerDistroType if present
+          const powerDistroType = urlParams.get('powerDistroType');
+          if (powerDistroType) {
+            const powerDistroSelect = document.getElementById('powerDistroType');
+            if (powerDistroSelect) {
+              powerDistroSelect.value = powerDistroType;
+            }
+          }
+
           // Trigger wall generation with restored values
           if (typeof generateWall === 'function') {
             setTimeout(() => generateWall(), 100);
@@ -1774,14 +1783,16 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       const productType = document.getElementById('productType')?.value || 'absen';
       const blocksHor = parseInt(document.getElementById('blocksHor')?.value) || 10;
       const blocksVer = parseInt(document.getElementById('blocksVer')?.value) || 6;
+      const powerDistroType = document.getElementById('powerDistroType')?.value || '208';
 
       // Save to localStorage as backup
       localStorage.setItem('screenProduct', productType);
       localStorage.setItem('screenBlocksHor', blocksHor);
       localStorage.setItem('screenBlocksVer', blocksVer);
+      localStorage.setItem('screenPowerDistroType', powerDistroType);
 
       // Navigate to screen views page with URL parameters
-      window.location.href = `screen-views.html?product=${encodeURIComponent(productType)}&blocksHor=${blocksHor}&blocksVer=${blocksVer}`;
+      window.location.href = `screen-views.html?product=${encodeURIComponent(productType)}&blocksHor=${blocksHor}&blocksVer=${blocksVer}&powerDistroType=${powerDistroType}`;
     };
 
     window.openTechnicalView = function() {
@@ -1790,6 +1801,12 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       const blocksHor = parseInt(document.getElementById('blocksHor')?.value) || 10;
       const blocksVer = parseInt(document.getElementById('blocksVer')?.value) || 6;
       const powerDistroType = document.getElementById('powerDistroType')?.value || '208';
+
+      // Save to localStorage as backup
+      localStorage.setItem('screenProduct', productType);
+      localStorage.setItem('screenBlocksHor', blocksHor);
+      localStorage.setItem('screenBlocksVer', blocksVer);
+      localStorage.setItem('screenPowerDistroType', powerDistroType);
 
       // Navigate to technical view page with URL parameters
       window.location.href = `technical-view.html?product=${encodeURIComponent(productType)}&blocksHor=${blocksHor}&blocksVer=${blocksVer}&powerDistroType=${powerDistroType}`;
