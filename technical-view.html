@@ -748,40 +748,87 @@
     function captureBothDiagrams() {
       const dataCanvas = document.getElementById('dataWiringCanvas');
       const powerCanvas = document.getElementById('powerWiringCanvas');
-      const infoHeight = 80;
-      const spacing = 30;
+      const headerHeight = 140;
+      const labelHeight = 50;
+      const spacing = 20;
 
       const tempCanvas = document.createElement('canvas');
-      const maxWidth = Math.max(dataCanvas.width, powerCanvas.width);
+      const maxWidth = Math.max(dataCanvas.width, powerCanvas.width, 600);
       tempCanvas.width = maxWidth;
-      tempCanvas.height = dataCanvas.height + infoHeight + spacing + powerCanvas.height + infoHeight;
+      tempCanvas.height = headerHeight + dataCanvas.height + labelHeight + spacing + powerCanvas.height + labelHeight;
       const ctx = tempCanvas.getContext('2d');
 
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-      let y = 0;
+      // Draw header with screen info
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillRect(0, 0, tempCanvas.width, headerHeight);
+
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 22px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(displayName, tempCanvas.width / 2, 28);
+
+      // Info grid
+      ctx.font = '14px Arial';
+      ctx.textAlign = 'left';
+      const col1 = 20;
+      const col2 = maxWidth / 4 + 10;
+      const col3 = maxWidth / 2 + 10;
+      const col4 = (maxWidth * 3) / 4 + 10;
+
+      // Screen Size column
+      ctx.font = 'bold 14px Arial';
+      ctx.fillText('Screen Size', col1, 55);
+      ctx.font = '13px Arial';
+      ctx.fillText(`Tiles: ${params.blocksHor} × ${params.blocksVer}`, col1, 75);
+      ctx.fillText(`Size: ${widthFeet}' × ${heightFeet}'`, col1, 92);
+      ctx.fillText(`${widthMeters}m × ${heightMeters}m`, col1, 109);
+
+      // Pixels column
+      ctx.font = 'bold 14px Arial';
+      ctx.fillText('Pixels', col2, 55);
+      ctx.font = '13px Arial';
+      ctx.fillText(`Horizontal: ${horizontalPixels.toLocaleString()}`, col2, 75);
+      ctx.fillText(`Vertical: ${verticalPixels.toLocaleString()}`, col2, 92);
+      ctx.fillText(`Total: ${totalPixels.toLocaleString()}`, col2, 109);
+
+      // Tiles column
+      ctx.font = 'bold 14px Arial';
+      ctx.fillText('Tiles', col3, 55);
+      ctx.font = '13px Arial';
+      ctx.fillText(`Total: ${totalTiles}`, col3, 75);
+      ctx.fillText(`Weight: ${weight} lbs`, col3, 92);
+
+      // Power column
+      ctx.font = 'bold 14px Arial';
+      ctx.fillText('Power', col4, 55);
+      ctx.font = '13px Arial';
+      ctx.fillText(`Voltage: ${voltage}V`, col4, 75);
+      ctx.fillText(`Amperage: ${amps.toFixed(2)} A`, col4, 92);
+      ctx.fillText(`Watts: ${watts.toFixed(0)} W`, col4, 109);
+
+      // Data wiring diagram
+      let y = headerHeight;
       ctx.drawImage(dataCanvas, (maxWidth - dataCanvas.width) / 2, y);
       y += dataCanvas.height;
-      ctx.fillStyle = '#f0f0f0';
-      ctx.fillRect(0, y, tempCanvas.width, infoHeight);
+      ctx.fillStyle = '#e8f4f8';
+      ctx.fillRect(0, y, tempCanvas.width, labelHeight);
       ctx.fillStyle = '#000000';
-      ctx.font = 'bold 20px Arial';
+      ctx.font = 'bold 18px Arial';
       ctx.textAlign = 'center';
       ctx.fillText('Data Wiring Diagram', tempCanvas.width / 2, y + 30);
-      ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, y + 55);
 
-      y += infoHeight + spacing;
+      // Power wiring diagram
+      y += labelHeight + spacing;
       ctx.drawImage(powerCanvas, (maxWidth - powerCanvas.width) / 2, y);
       y += powerCanvas.height;
-      ctx.fillStyle = '#f0f0f0';
-      ctx.fillRect(0, y, tempCanvas.width, infoHeight);
+      ctx.fillStyle = '#e8f4f8';
+      ctx.fillRect(0, y, tempCanvas.width, labelHeight);
       ctx.fillStyle = '#000000';
-      ctx.font = 'bold 20px Arial';
+      ctx.font = 'bold 18px Arial';
       ctx.fillText(`Power Wiring Diagram (${powerDistroTypeSelect.value}V)`, tempCanvas.width / 2, y + 30);
-      ctx.font = '16px Arial';
-      ctx.fillText(`${displayName} - ${params.blocksHor} × ${params.blocksVer} tiles`, tempCanvas.width / 2, y + 55);
 
       const link = document.createElement('a');
       link.download = `${params.productType.toUpperCase()}_Complete_Wiring_${params.blocksHor}x${params.blocksVer}.png`;
