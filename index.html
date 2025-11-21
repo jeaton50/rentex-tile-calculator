@@ -398,7 +398,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         <!-- Checkbox for Toggling Block Numbers -->
         <div class="input-group">
-          <input type="checkbox" id="toggleNumbers" name="toggleNumbers" checked>
+          <input type="checkbox" id="toggleNumbers" name="toggleNumbers">
           <label for="toggleNumbers">Show Tile Numbers</label>
         </div>
         <br>
@@ -537,7 +537,7 @@ window.addEventListener("DOMContentLoaded", () => {
       // Define initial zoom level and global variables
       let zoomLevel = 1;
 
-      window.showNumbers = true;
+      window.showNumbers = false;
       window.showWiring = false;
       window.wiringDirection = 'horizontal';
       window.wiringStartPosition = 'bottom-left';
@@ -1753,9 +1753,9 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       const flownSupportTypeSelect = document.getElementById('flownSupportType');
       if (flownSupportTypeSelect) flownSupportTypeSelect.value = 'Double Header';
 
-      // Check "Show Tile Numbers"
+      // Uncheck "Show Tile Numbers"
       const toggleNumbersCheckbox = document.getElementById('toggleNumbers');
-      if (toggleNumbersCheckbox) toggleNumbersCheckbox.checked = true;
+      if (toggleNumbersCheckbox) toggleNumbersCheckbox.checked = false;
 
       // Uncheck "Show Data Wiring Diagram"
       const toggleWiringCheckbox = document.getElementById('toggleWiring');
