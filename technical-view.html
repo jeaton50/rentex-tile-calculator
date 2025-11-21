@@ -27,17 +27,51 @@
     }
 
     .screen-info {
-      text-align: center;
       margin-bottom: 30px;
-      padding: 15px;
+      padding: 20px;
       background: #f0f0f0;
       border-radius: 5px;
     }
 
-    .screen-info h2 {
+    .screen-info-header {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .screen-info-header h2 {
       margin: 5px 0;
       color: #555;
       font-size: 18px;
+    }
+
+    .screen-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .info-box {
+      background: #fff;
+      padding: 12px;
+      border-radius: 5px;
+      border-left: 4px solid #0066cc;
+    }
+
+    .info-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .info-box p {
+      margin: 3px 0;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .info-box .value {
+      font-weight: bold;
+      color: #000;
     }
 
     .diagram-section {
@@ -196,8 +230,34 @@
     <h1>Technical View - Wiring Diagrams</h1>
 
     <div class="screen-info">
-      <h2 id="productInfo">Product: Loading...</h2>
-      <h2 id="dimensionsInfo">Screen Size: Loading...</h2>
+      <div class="screen-info-header">
+        <h2 id="productInfo">Product: Loading...</h2>
+      </div>
+      <div class="screen-info-grid">
+        <div class="info-box">
+          <h3>Screen Size</h3>
+          <p>Tiles: <span class="value" id="tileDimensions">-</span></p>
+          <p>Size (ft): <span class="value" id="sizeFeet">-</span></p>
+          <p>Size (m): <span class="value" id="sizeMeters">-</span></p>
+        </div>
+        <div class="info-box">
+          <h3>Pixels</h3>
+          <p>Horizontal: <span class="value" id="pixelsHor">-</span></p>
+          <p>Vertical: <span class="value" id="pixelsVer">-</span></p>
+          <p>Total: <span class="value" id="pixelsTotal">-</span></p>
+        </div>
+        <div class="info-box">
+          <h3>Tiles</h3>
+          <p>Total Tiles: <span class="value" id="totalTiles">-</span></p>
+          <p>Weight: <span class="value" id="totalWeight">-</span></p>
+        </div>
+        <div class="info-box">
+          <h3>Power</h3>
+          <p>Voltage: <span class="value" id="powerVoltage">-</span></p>
+          <p>Amperage: <span class="value" id="powerAmps">-</span></p>
+          <p>Watts: <span class="value" id="powerWatts">-</span></p>
+        </div>
+      </div>
     </div>
 
     <!-- Data Wiring Section -->
@@ -338,10 +398,67 @@
       'theatrixx': { 110: 10, 208: 30 }
     };
 
+    // Pixels per tile by product
+    const pixelsPerTile = {
+      'absen': 200,
+      'theatrixx': 192,
+      'BP2B1': 176,
+      'BP2B2': 176,
+      'BP2V2': 176
+    };
+
+    // Weight per tile by product (lbs)
+    const weightPerTile = {
+      'absen': 20.61,
+      'theatrixx': 17.6,
+      'BP2B1': 20.61,
+      'BP2B2': 20.61,
+      'BP2V2': 20.61
+    };
+
+    // Power specs per tile by product (amps at different voltages)
+    const ampsPerTile = {
+      'absen': { 110: 1.75, 208: 0.923 },
+      'theatrixx': { 110: 2.41, 208: 1.27403 },
+      'BP2B1': { 110: 1.73, 208: 0.914 },
+      'BP2B2': { 110: 1.73, 208: 0.914 },
+      'BP2V2': { 110: 1.73, 208: 0.914 }
+    };
+
     // Update info display
     const displayName = productNames[params.productType] || params.productType.toUpperCase();
     document.getElementById('productInfo').textContent = `Product: ${displayName}`;
-    document.getElementById('dimensionsInfo').textContent = `Screen Size: ${params.blocksHor} × ${params.blocksVer} tiles`;
+
+    // Calculate all screen info
+    const totalTiles = params.blocksHor * params.blocksVer;
+    const pxPerTile = pixelsPerTile[params.productType] || 200;
+    const horizontalPixels = params.blocksHor * pxPerTile;
+    const verticalPixels = params.blocksVer * pxPerTile;
+    const totalPixels = horizontalPixels * verticalPixels;
+
+    const widthFeet = (params.blocksHor * 1.64).toFixed(2);
+    const heightFeet = (params.blocksVer * 1.64).toFixed(2);
+    const widthMeters = (params.blocksHor * 0.5).toFixed(2);
+    const heightMeters = (params.blocksVer * 0.5).toFixed(2);
+
+    const weight = (totalTiles * (weightPerTile[params.productType] || 20)).toFixed(1);
+
+    const voltage = params.powerDistroType === '110' ? 110 : 208;
+    const amps = totalTiles * (ampsPerTile[params.productType]?.[voltage] || 1);
+    const watts = amps * voltage;
+
+    // Display all info
+    document.getElementById('tileDimensions').textContent = `${params.blocksHor} × ${params.blocksVer}`;
+    document.getElementById('sizeFeet').textContent = `${widthFeet}' × ${heightFeet}'`;
+    document.getElementById('sizeMeters').textContent = `${widthMeters}m × ${heightMeters}m`;
+    document.getElementById('pixelsHor').textContent = horizontalPixels.toLocaleString();
+    document.getElementById('pixelsVer').textContent = verticalPixels.toLocaleString();
+    document.getElementById('pixelsTotal').textContent = totalPixels.toLocaleString();
+    document.getElementById('totalTiles').textContent = totalTiles;
+    document.getElementById('totalWeight').textContent = `${weight} lbs`;
+    document.getElementById('powerVoltage').textContent = `${voltage}V`;
+    document.getElementById('powerAmps').textContent = `${amps.toFixed(2)} A`;
+    document.getElementById('powerWatts').textContent = `${watts.toFixed(0)} W`;
 
     // Update back button
     const backButton = document.getElementById('backButton');
