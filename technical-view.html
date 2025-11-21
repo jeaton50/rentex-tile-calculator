@@ -471,11 +471,11 @@
       canvas.height = blocksVer * blockSize + padding * 2;
 
       // Clear and fill background
-      ctx.fillStyle = '#333';
+      ctx.fillStyle = '#fff';
       ctx.fillRect(padding, padding, blocksHor * blockSize, blocksVer * blockSize);
 
       // Draw grid lines
-      ctx.strokeStyle = '#FFFFFF';
+      ctx.strokeStyle = '#000000';
       ctx.lineWidth = 2;
 
       for (let col = 0; col <= blocksHor; col++) {
@@ -528,8 +528,8 @@
         if (tilesInCurrentChain === chainLimit || i === tiles.length - 1) {
           const chainColor = colors[(chainNumber - 1) % colors.length];
 
-          // Draw white outline
-          ctx.strokeStyle = 'white';
+          // Draw black outline
+          ctx.strokeStyle = 'black';
           ctx.lineWidth = 8;
           ctx.beginPath();
           ctx.moveTo(chainPath[0].x, chainPath[0].y);
