@@ -567,16 +567,6 @@
       ctx.textAlign = 'center';
       ctx.fillText('Audience View', centerX, 30);
 
-      // Draw center line for reference
-      ctx.strokeStyle = '#ccc';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(centerX, 50);
-      ctx.lineTo(centerX, canvas.height - 50);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
       // Restore context after zoom transformation
       ctx.restore();
     }
