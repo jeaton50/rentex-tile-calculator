@@ -1615,9 +1615,9 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
       const existing208Div = document.querySelector('#circuits208Display');
       if (existing208Div) existing208Div.remove();
 
-      // Only show when "Auto" is selected
+      // Show for Auto, CUBEDIST, and TP1
       const distro = document.getElementById('powerDistroType').value;
-      if (distro !== "Auto") return;
+      if (distro !== "Auto" && distro !== "CUBEDIST" && distro !== "TP1") return;
 
       // Read blocksHor, blocksVer, numScreens
       const blocksHor = parseInt(document.getElementById('blocksHor').value, 10) || 0;
