@@ -122,10 +122,13 @@ const CanvasRenderer = {
     const extraHeightTop = wallData.flownSupport ? supportHeight * 2 : 0;
     const extraHeightBottom = wallData.groundSupport ? supportHeight * 2 : 0;
 
+    // Add padding to account for grid line width (2px lines need 1px padding on each side)
+    const gridLinePadding = 2;
+
     // Calculate canvas dimensions
     const singleScreenWidth = wallData.blocksHor * blockSize;
-    canvas.width = (singleScreenWidth * numScreens) + (this.config.screenSpacing * (numScreens - 1));
-    canvas.height = wallData.blocksVer * blockSize + extraHeightTop + extraHeightBottom;
+    canvas.width = (singleScreenWidth * numScreens) + (this.config.screenSpacing * (numScreens - 1)) + (gridLinePadding * 2);
+    canvas.height = wallData.blocksVer * blockSize + extraHeightTop + extraHeightBottom + (gridLinePadding * 2);
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -133,19 +136,19 @@ const CanvasRenderer = {
     // Draw each screen
     let tileNumber = 1;
     for (let screenIndex = 0; screenIndex < numScreens; screenIndex++) {
-      const xOffset = screenIndex * (singleScreenWidth + this.config.screenSpacing);
+      const xOffset = gridLinePadding + screenIndex * (singleScreenWidth + this.config.screenSpacing);
 
       // Create clipping region for this screen
       ctx.save();
       ctx.beginPath();
-      ctx.rect(xOffset, 0, singleScreenWidth, canvas.height);
+      ctx.rect(xOffset, gridLinePadding, singleScreenWidth, canvas.height - (gridLinePadding * 2));
       ctx.clip();
 
       // Draw wall background as a single stretched image
       const wallWidth = wallData.blocksHor * blockSize;
       const wallHeight = wallData.blocksVer * blockSize;
       const wallX = xOffset;
-      const wallY = extraHeightTop;
+      const wallY = gridLinePadding + extraHeightTop;
 
       // Use wallBackgroundImage if available, otherwise fallback to tileImage
       const imageToUse = (window.wallBackgroundImage && window.wallBackgroundImage.complete && window.wallBackgroundImage.naturalHeight !== 0)
@@ -189,12 +192,12 @@ const CanvasRenderer = {
 
       // Draw wiring diagram if enabled
       if (window.showWiring) {
-        this.drawWiringDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
+        this.drawWiringDiagram(ctx, wallData, blockSize, xOffset, gridLinePadding + extraHeightTop);
       }
 
       // Draw power diagram if enabled
       if (window.showPower) {
-        this.drawPowerDiagram(ctx, wallData, blockSize, xOffset, extraHeightTop);
+        this.drawPowerDiagram(ctx, wallData, blockSize, xOffset, gridLinePadding + extraHeightTop);
       }
 
       // Draw tile numbers if enabled (drawn after wiring diagrams so they appear on top)
@@ -202,7 +205,7 @@ const CanvasRenderer = {
         for (let row = 0; row < wallData.blocksVer; row++) {
           for (let col = 0; col < wallData.blocksHor; col++) {
             const posX = xOffset + col * blockSize;
-            const posY = extraHeightTop + row * blockSize;
+            const posY = gridLinePadding + extraHeightTop + row * blockSize;
 
             // White text with black outline for visibility
             ctx.fillStyle = 'white';
