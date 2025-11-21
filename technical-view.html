@@ -657,9 +657,11 @@
     hiddenProductSelect.appendChild(option);
     document.body.appendChild(hiddenProductSelect);
 
-    // Initial render of both diagrams
-    renderDataWiring();
-    renderPowerWiring();
+    // Initial render of both diagrams (deferred to allow DOM layout to complete)
+    requestAnimationFrame(() => {
+      renderDataWiring();
+      renderPowerWiring();
+    });
   </script>
 </body>
 </html>
