@@ -122,8 +122,8 @@ const CanvasRenderer = {
     const extraHeightTop = wallData.flownSupport ? supportHeight * 2 : 0;
     const extraHeightBottom = wallData.groundSupport ? supportHeight * 2 : 0;
 
-    // Add padding to account for grid line width (2px lines need 1px padding on each side)
-    const gridLinePadding = 2;
+    // Add padding to account for grid line width and ensure edges aren't clipped
+    const gridLinePadding = 5;
 
     // Calculate canvas dimensions
     const singleScreenWidth = wallData.blocksHor * blockSize;
