@@ -307,10 +307,14 @@ const ExportManager = {
 
     // Capture page using html2canvas
     html2canvas(document.body, {
-      scale: 1,
+      scale: 2,
       allowTaint: true,
       useCORS: true,
-      logging: true,
+      logging: false,
+      letterRendering: true,
+      imageTimeout: 0,
+      removeContainer: true,
+      backgroundColor: '#ffffff',
       onclone: (clonedDoc) => {
         // Copy canvas elements to cloned document
         const originalCanvasList = document.querySelectorAll('canvas');
@@ -322,6 +326,11 @@ const ExportManager = {
           const context = clonedCanvas.getContext('2d');
           context.drawImage(originalCanvas, 0, 0);
         });
+
+        // Ensure all fonts are loaded in cloned document
+        const clonedBody = clonedDoc.body;
+        clonedBody.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+        clonedBody.style.webkitFontSmoothing = 'antialiased';
       }
     })
     .then((canvas) => {
