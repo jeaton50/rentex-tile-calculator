@@ -358,8 +358,8 @@ header:hover {
 /* ====== Controls Section ====== */
 #controls {
   position: absolute;
-  top: 160px;
-  left: 450px;
+  top: 156px;
+  left: 444px;
   width: 440px;
   -webkit-box-flex: 0;
   -ms-flex: 0 0 800px;
