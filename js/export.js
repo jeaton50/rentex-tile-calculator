@@ -305,87 +305,152 @@ const ExportManager = {
     // Scroll to top for consistent capture
     window.scrollTo(0, 0);
 
-    // Capture page using html2canvas
-    html2canvas(document.body, {
-      scale: 2,
-      allowTaint: true,
-      useCORS: true,
-      logging: false,
-      letterRendering: true,
-      imageTimeout: 0,
-      removeContainer: true,
-      backgroundColor: '#ffffff',
-      onclone: (clonedDoc) => {
-        // Copy canvas elements to cloned document
-        const originalCanvasList = document.querySelectorAll('canvas');
-        const clonedCanvasList = clonedDoc.querySelectorAll('canvas');
-        clonedCanvasList.forEach((clonedCanvas, index) => {
-          const originalCanvas = originalCanvasList[index];
-          clonedCanvas.width = originalCanvas.width;
-          clonedCanvas.height = originalCanvas.height;
-          const context = clonedCanvas.getContext('2d');
-          context.drawImage(originalCanvas, 0, 0);
-        });
+    // Create a temporary container with only the elements we want to capture
+    const captureContainer = document.createElement('div');
+    captureContainer.style.cssText = `
+      position: fixed;
+      top: -10000px;
+      left: 0;
+      width: 100%;
+      background: #ffffff;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    `;
 
-        // Ensure all fonts are loaded in cloned document
-        const clonedBody = clonedDoc.body;
-        clonedBody.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-        clonedBody.style.webkitFontSmoothing = 'antialiased';
+    // Clone header
+    const header = document.querySelector('header');
+    if (header) {
+      const headerClone = header.cloneNode(true);
+      captureContainer.appendChild(headerClone);
+    }
+
+    // Clone Equipment Requirements (#controls)
+    const controls = document.getElementById('controls');
+    if (controls) {
+      const controlsClone = controls.cloneNode(true);
+      controlsClone.style.position = 'relative';
+      controlsClone.style.top = 'auto';
+      controlsClone.style.left = 'auto';
+      controlsClone.style.marginBottom = '20px';
+      captureContainer.appendChild(controlsClone);
+    }
+
+    // Clone Canvas Container
+    const canvasContainer = document.getElementById('canvasContainer');
+    if (canvasContainer) {
+      const canvasClone = canvasContainer.cloneNode(true);
+      canvasClone.style.position = 'relative';
+      canvasClone.style.marginBottom = '20px';
+
+      // Copy canvas content
+      const originalCanvas = canvasContainer.querySelector('canvas');
+      const clonedCanvas = canvasClone.querySelector('canvas');
+      if (originalCanvas && clonedCanvas) {
+        clonedCanvas.width = originalCanvas.width;
+        clonedCanvas.height = originalCanvas.height;
+        const ctx = clonedCanvas.getContext('2d');
+        ctx.drawImage(originalCanvas, 0, 0);
       }
-    })
-    .then((canvas) => {
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          alert('Failed to create image blob.');
-          return;
-        }
 
-        // For iOS: download, for others: copy to clipboard
-        if (isIOS()) {
-          fallbackDownload(blob);
-        } else {
-          try {
-            const clipboardItem = new ClipboardItem({ [blob.type]: blob });
-            await navigator.clipboard.write([clipboardItem]);
-            alert('Screenshot Captured, please paste in email');
-          } catch (clipboardError) {
-            console.error('Clipboard copy error:', clipboardError);
-            fallbackDownload(blob);
+      captureContainer.appendChild(canvasClone);
+    }
+
+    // Append to body temporarily
+    document.body.appendChild(captureContainer);
+
+    // Wait for fonts and images to load
+    setTimeout(() => {
+      // Capture the container using html2canvas
+      html2canvas(captureContainer, {
+        scale: 2,
+        allowTaint: true,
+        useCORS: true,
+        logging: false,
+        letterRendering: true,
+        imageTimeout: 0,
+        removeContainer: true,
+        backgroundColor: '#ffffff',
+        width: captureContainer.scrollWidth,
+        height: captureContainer.scrollHeight,
+        windowWidth: captureContainer.scrollWidth,
+        windowHeight: captureContainer.scrollHeight,
+        onclone: (clonedDoc) => {
+          // Ensure proper text rendering in cloned document
+          const clonedContainer = clonedDoc.querySelector('div[style*="position: fixed"]');
+          if (clonedContainer) {
+            clonedContainer.style.position = 'relative';
+            clonedContainer.style.top = '0';
+
+            // Force text rendering
+            const allElements = clonedContainer.querySelectorAll('*');
+            allElements.forEach(el => {
+              el.style.webkitFontSmoothing = 'antialiased';
+              el.style.mozOsxFontSmoothing = 'grayscale';
+            });
           }
         }
+      })
+      .then((canvas) => {
+        // Remove temporary container
+        document.body.removeChild(captureContainer);
 
-        // Prepare email with quote information
-        const blocksHor = parseInt(document.getElementById('blocksHor')?.value || 0, 10);
-        const blocksVer = parseInt(document.getElementById('blocksVer')?.value || 0, 10);
-        const totalTiles = blocksHor * blocksVer;
-        const orderNumber = document.getElementById('orderNumber')?.value || 'Unknown';
-        const location = document.getElementById('location')?.value || 'Not provided';
-        const orderDate = document.getElementById('orderDate')?.value || 'Not provided';
-        const productTypeSelect = document.getElementById('productType');
-        const productTypeName = productTypeSelect ?
-                                productTypeSelect.options[productTypeSelect.selectedIndex].text :
-                                'Unknown';
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            alert('Failed to create image blob.');
+            return;
+          }
 
-        const emailSubject = `LED Quote Approval - Order# ${orderNumber}`;
-        const emailBody = encodeURIComponent(
-          'Dates: ' + orderDate + '\n\n' +
-          'Location: ' + location + '\n\n' +
-          'LED Walls\n\n' +
-          'Make/Model: ' + productTypeName + '\n\n' +
-          'Can they use any other make/model: \n\n' +
-          '# tiles: ' + totalTiles + '\n\n' +
-          'x tiles wide: ' + blocksHor + '\n\n' +
-          'y tiles tall: ' + blocksVer
-        );
+          // For iOS: download, for others: copy to clipboard
+          if (isIOS()) {
+            fallbackDownload(blob);
+          } else {
+            try {
+              const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+              await navigator.clipboard.write([clipboardItem]);
+              alert('Screenshot Captured, please paste in email');
+            } catch (clipboardError) {
+              console.error('Clipboard copy error:', clipboardError);
+              fallbackDownload(blob);
+            }
+          }
 
-        // Open email client
-        window.location.href = `mailto:LEDPanel@rentex.com?subject=${emailSubject}&body=${emailBody}`;
+          // Prepare email with quote information
+          const blocksHor = parseInt(document.getElementById('blocksHor')?.value || 0, 10);
+          const blocksVer = parseInt(document.getElementById('blocksVer')?.value || 0, 10);
+          const totalTiles = blocksHor * blocksVer;
+          const orderNumber = document.getElementById('orderNumber')?.value || 'Unknown';
+          const location = document.getElementById('location')?.value || 'Not provided';
+          const orderDate = document.getElementById('orderDate')?.value || 'Not provided';
+          const productTypeSelect = document.getElementById('productType');
+          const productTypeName = productTypeSelect ?
+                                  productTypeSelect.options[productTypeSelect.selectedIndex].text :
+                                  'Unknown';
+
+          const emailSubject = `LED Quote Approval - Order# ${orderNumber}`;
+          const emailBody = encodeURIComponent(
+            'Dates: ' + orderDate + '\n\n' +
+            'Location: ' + location + '\n\n' +
+            'LED Walls\n\n' +
+            'Make/Model: ' + productTypeName + '\n\n' +
+            'Can they use any other make/model: \n\n' +
+            '# tiles: ' + totalTiles + '\n\n' +
+            'x tiles wide: ' + blocksHor + '\n\n' +
+            'y tiles tall: ' + blocksVer
+          );
+
+          // Open email client
+          window.location.href = `mailto:LEDPanel@rentex.com?subject=${emailSubject}&body=${emailBody}`;
+        });
+      })
+      .catch((error) => {
+        // Remove temporary container on error
+        if (document.body.contains(captureContainer)) {
+          document.body.removeChild(captureContainer);
+        }
+        console.error('Canvas capture error:', error);
+        alert('Screenshot capture failed. Check console for details.');
       });
-    })
-    .catch((error) => {
-      console.error('Canvas capture error:', error);
-      alert('Screenshot capture failed. Check console for details.');
-    });
+    }, 500); // Wait 500ms for everything to render
   }
 };
 
