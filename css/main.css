@@ -253,9 +253,9 @@ header:hover {
   -webkit-box-flex: 0;
   -ms-flex: 0 0 auto;
   flex: 0 0 auto;
-  width: 450px;
-  max-width: 450px;
-  min-width: 400px;
+  width: 680px;
+  max-width: 680px;
+  min-width: 650px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
