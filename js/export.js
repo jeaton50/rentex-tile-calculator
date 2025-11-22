@@ -311,36 +311,76 @@ const ExportManager = {
       position: fixed;
       top: -10000px;
       left: 0;
-      width: 100%;
+      width: 1920px;
       background: #ffffff;
       padding: 20px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
     `;
 
     // Clone header
     const header = document.querySelector('header');
     if (header) {
       const headerClone = header.cloneNode(true);
+      headerClone.style.cssText = 'margin-bottom: 20px;';
       captureContainer.appendChild(headerClone);
     }
+
+    // Create side-by-side layout container
+    const contentWrapper = document.createElement('div');
+    contentWrapper.style.cssText = `
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      justify-content: space-between;
+    `;
 
     // Clone Equipment Requirements (#controls)
     const controls = document.getElementById('controls');
     if (controls) {
       const controlsClone = controls.cloneNode(true);
-      controlsClone.style.position = 'relative';
-      controlsClone.style.top = 'auto';
-      controlsClone.style.left = 'auto';
-      controlsClone.style.marginBottom = '20px';
-      captureContainer.appendChild(controlsClone);
+      controlsClone.style.cssText = `
+        position: relative;
+        flex: 0 0 auto;
+        width: 720px;
+        margin: 0;
+        box-sizing: border-box;
+      `;
+
+      // Force table to render with proper spacing
+      const table = controlsClone.querySelector('table');
+      if (table) {
+        table.style.cssText = `
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 14px;
+        `;
+
+        // Fix table cells
+        const cells = controlsClone.querySelectorAll('td, th');
+        cells.forEach(cell => {
+          cell.style.padding = '8px';
+          cell.style.borderBottom = '1px solid #ddd';
+          cell.style.textAlign = 'left';
+          cell.style.whiteSpace = 'normal';
+          cell.style.wordWrap = 'break-word';
+        });
+      }
+
+      contentWrapper.appendChild(controlsClone);
     }
 
     // Clone Canvas Container
     const canvasContainer = document.getElementById('canvasContainer');
     if (canvasContainer) {
       const canvasClone = canvasContainer.cloneNode(true);
-      canvasClone.style.position = 'relative';
-      canvasClone.style.marginBottom = '20px';
+      canvasClone.style.cssText = `
+        position: relative;
+        flex: 0 0 auto;
+        width: 1100px;
+        margin: 0;
+        box-sizing: border-box;
+      `;
 
       // Copy canvas content
       const originalCanvas = canvasContainer.querySelector('canvas');
@@ -352,40 +392,53 @@ const ExportManager = {
         ctx.drawImage(originalCanvas, 0, 0);
       }
 
-      captureContainer.appendChild(canvasClone);
+      // Fix text elements in canvas container
+      const textElements = canvasClone.querySelectorAll('div');
+      textElements.forEach(el => {
+        el.style.lineHeight = '1.5';
+        el.style.marginBottom = '10px';
+      });
+
+      contentWrapper.appendChild(canvasClone);
     }
+
+    captureContainer.appendChild(contentWrapper);
 
     // Append to body temporarily
     document.body.appendChild(captureContainer);
 
     // Wait for fonts and images to load
     setTimeout(() => {
-      // Capture the container using html2canvas
+      // Capture the container using html2canvas with higher quality settings
       html2canvas(captureContainer, {
-        scale: 2,
+        scale: 3,
         allowTaint: true,
         useCORS: true,
         logging: false,
-        letterRendering: true,
+        letterRendering: false,
         imageTimeout: 0,
-        removeContainer: true,
+        removeContainer: false,
         backgroundColor: '#ffffff',
-        width: captureContainer.scrollWidth,
+        width: 1920,
         height: captureContainer.scrollHeight,
-        windowWidth: captureContainer.scrollWidth,
+        windowWidth: 1920,
         windowHeight: captureContainer.scrollHeight,
+        foreignObjectRendering: false,
         onclone: (clonedDoc) => {
-          // Ensure proper text rendering in cloned document
           const clonedContainer = clonedDoc.querySelector('div[style*="position: fixed"]');
           if (clonedContainer) {
             clonedContainer.style.position = 'relative';
             clonedContainer.style.top = '0';
+            clonedContainer.style.left = '0';
 
-            // Force text rendering
-            const allElements = clonedContainer.querySelectorAll('*');
-            allElements.forEach(el => {
-              el.style.webkitFontSmoothing = 'antialiased';
-              el.style.mozOsxFontSmoothing = 'grayscale';
+            // Apply rendering fixes to all text elements
+            const allText = clonedContainer.querySelectorAll('*');
+            allText.forEach(el => {
+              if (el.textContent && el.textContent.trim()) {
+                el.style.webkitFontSmoothing = 'subpixel-antialiased';
+                el.style.fontSmooth = 'always';
+                el.style.textRendering = 'geometricPrecision';
+              }
             });
           }
         }
