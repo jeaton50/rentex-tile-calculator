@@ -309,13 +309,15 @@ const ExportManager = {
     const captureContainer = document.createElement('div');
     captureContainer.style.cssText = `
       position: fixed;
-      top: -10000px;
+      top: 0;
       left: 0;
-      width: 1920px;
+      width: 2400px;
       background: #ffffff;
-      padding: 20px;
-      font-family: Arial, sans-serif;
+      padding: 30px;
+      font-family: Arial, Helvetica, sans-serif;
       box-sizing: border-box;
+      z-index: 999999;
+      overflow: visible;
     `;
 
     // Clone header
@@ -330,9 +332,9 @@ const ExportManager = {
     const contentWrapper = document.createElement('div');
     contentWrapper.style.cssText = `
       display: flex;
-      gap: 20px;
+      gap: 40px;
       align-items: flex-start;
-      justify-content: space-between;
+      justify-content: flex-start;
     `;
 
     // Clone Equipment Requirements (#controls)
@@ -342,9 +344,11 @@ const ExportManager = {
       controlsClone.style.cssText = `
         position: relative;
         flex: 0 0 auto;
-        width: 720px;
+        width: 900px;
         margin: 0;
+        padding: 20px;
         box-sizing: border-box;
+        background: white;
       `;
 
       // Force table to render with proper spacing
@@ -352,18 +356,49 @@ const ExportManager = {
       if (table) {
         table.style.cssText = `
           width: 100%;
-          border-collapse: collapse;
-          font-size: 14px;
+          border-collapse: separate;
+          border-spacing: 0;
+          font-size: 16px;
+          font-family: Arial, Helvetica, sans-serif;
         `;
 
-        // Fix table cells
-        const cells = controlsClone.querySelectorAll('td, th');
-        cells.forEach(cell => {
-          cell.style.padding = '8px';
-          cell.style.borderBottom = '1px solid #ddd';
-          cell.style.textAlign = 'left';
-          cell.style.whiteSpace = 'normal';
-          cell.style.wordWrap = 'break-word';
+        // Fix header cells
+        const ths = controlsClone.querySelectorAll('th');
+        ths.forEach((th, index) => {
+          th.style.cssText = `
+            padding: 12px 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            background: #dc2626;
+            color: white;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: visible;
+          `;
+          // Set explicit widths for columns
+          if (index === 0) th.style.width = '120px'; // ECODE
+          if (index === 1) th.style.width = '400px'; // EQUIPMENT NAME
+          if (index === 2) th.style.width = '100px'; // QUANTITY
+          if (index === 3) th.style.width = '120px'; // WEIGHT
+        });
+
+        // Fix data cells
+        const tds = controlsClone.querySelectorAll('td');
+        tds.forEach((td, index) => {
+          td.style.cssText = `
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            white-space: normal;
+            word-wrap: break-word;
+            overflow: visible;
+            background: white;
+          `;
+          const colIndex = index % 4;
+          if (colIndex === 0) td.style.width = '120px'; // ECODE
+          if (colIndex === 1) td.style.width = '400px'; // EQUIPMENT NAME
+          if (colIndex === 2) td.style.width = '100px'; // QUANTITY
+          if (colIndex === 3) td.style.width = '120px'; // WEIGHT
         });
       }
 
@@ -377,9 +412,11 @@ const ExportManager = {
       canvasClone.style.cssText = `
         position: relative;
         flex: 0 0 auto;
-        width: 1100px;
+        width: 1300px;
         margin: 0;
+        padding: 20px;
         box-sizing: border-box;
+        background: white;
       `;
 
       // Copy canvas content
@@ -411,37 +448,17 @@ const ExportManager = {
     setTimeout(() => {
       // Capture the container using html2canvas with higher quality settings
       html2canvas(captureContainer, {
-        scale: 3,
+        scale: 2,
         allowTaint: true,
         useCORS: true,
-        logging: false,
-        letterRendering: false,
+        logging: true,
         imageTimeout: 0,
         removeContainer: false,
         backgroundColor: '#ffffff',
-        width: 1920,
+        width: 2400,
         height: captureContainer.scrollHeight,
-        windowWidth: 1920,
-        windowHeight: captureContainer.scrollHeight,
-        foreignObjectRendering: false,
-        onclone: (clonedDoc) => {
-          const clonedContainer = clonedDoc.querySelector('div[style*="position: fixed"]');
-          if (clonedContainer) {
-            clonedContainer.style.position = 'relative';
-            clonedContainer.style.top = '0';
-            clonedContainer.style.left = '0';
-
-            // Apply rendering fixes to all text elements
-            const allText = clonedContainer.querySelectorAll('*');
-            allText.forEach(el => {
-              if (el.textContent && el.textContent.trim()) {
-                el.style.webkitFontSmoothing = 'subpixel-antialiased';
-                el.style.fontSmooth = 'always';
-                el.style.textRendering = 'geometricPrecision';
-              }
-            });
-          }
-        }
+        windowWidth: 2400,
+        windowHeight: captureContainer.scrollHeight
       })
       .then((canvas) => {
         // Remove temporary container
