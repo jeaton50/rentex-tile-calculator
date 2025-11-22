@@ -337,11 +337,11 @@ header:hover {
 
 #wallDimensions {
   font-weight: 600;
-  margin-bottom: 15px;
-  padding: 6px 10px;
+  margin-bottom: 10px;
+  padding: 4px 8px;
   background-color: transparent;
   border: none;
-  font-size: 0.75em !important;
+  font-size: 0.7em !important;
   color: var(--text-dark);
   display: -webkit-box;
   display: -ms-flexbox;
@@ -356,8 +356,9 @@ header:hover {
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
-  width: auto !important;
-  max-width: 300px !important;
+  width: 200px !important;
+  max-width: 200px !important;
+  min-width: 200px !important;
   text-align: center;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -366,7 +367,7 @@ header:hover {
   margin-right: auto;
   word-wrap: break-word;
   white-space: normal;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 #wallDimensions i {
@@ -906,9 +907,11 @@ button:active {
   }
 
   #wallDimensions {
-    font-size: 0.7em !important;
-    padding: 6px 8px;
-    max-width: 250px !important;
+    font-size: 0.65em !important;
+    padding: 4px 6px;
+    width: 180px !important;
+    max-width: 180px !important;
+    min-width: 180px !important;
   }
 }
 
