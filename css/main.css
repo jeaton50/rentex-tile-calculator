@@ -352,12 +352,14 @@ header:hover {
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
-  width: 100%;
-  max-width: 100%;
+  width: 50%;
+  max-width: 50%;
   text-align: center;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #wallDimensions i {
