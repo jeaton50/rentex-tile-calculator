@@ -341,7 +341,7 @@ header:hover {
   padding: 10px 15px;
   background-color: transparent;
   border: none;
-  font-size: 1em;
+  font-size: 0.95em;
   color: var(--text-dark);
   display: -webkit-box;
   display: -ms-flexbox;
@@ -352,8 +352,8 @@ header:hover {
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
-  width: 50%;
-  max-width: 50%;
+  width: auto;
+  max-width: fit-content;
   text-align: center;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
