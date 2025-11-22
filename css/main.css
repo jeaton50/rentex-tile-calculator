@@ -250,10 +250,12 @@ header:hover {
 
 /* ====== Canvas Container ====== */
 #canvasContainer {
-  -webkit-box-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
-  min-width: 500px;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  width: 450px;
+  max-width: 450px;
+  min-width: 400px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
