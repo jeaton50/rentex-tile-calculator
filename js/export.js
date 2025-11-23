@@ -305,6 +305,20 @@ const ExportManager = {
       logging: false,
       letterRendering: true,
       onclone: (clonedDoc) => {
+        // Ensure cloned document has full height
+        clonedDoc.body.style.height = 'auto';
+        clonedDoc.body.style.minHeight = '100%';
+        clonedDoc.documentElement.style.height = 'auto';
+
+        // Ensure controls container is fully visible
+        const controlsContainer = clonedDoc.getElementById('controls');
+        if (controlsContainer) {
+          controlsContainer.style.height = 'auto';
+          controlsContainer.style.minHeight = 'fit-content';
+          controlsContainer.style.maxHeight = 'none';
+          controlsContainer.style.overflow = 'visible';
+        }
+
         // Force all text elements to use a reliable font
         const allElements = clonedDoc.querySelectorAll('*');
         allElements.forEach(el => {
