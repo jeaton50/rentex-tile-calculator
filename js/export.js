@@ -324,7 +324,25 @@ const ExportManager = {
     const header = document.querySelector('header');
     if (header) {
       const headerClone = header.cloneNode(true);
-      headerClone.style.cssText = 'margin-bottom: 20px;';
+      headerClone.style.cssText = `
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background: white;
+      `;
+
+      // Remove input fields from header, keep only logo
+      const inputs = headerClone.querySelectorAll('input, label');
+      inputs.forEach(input => input.remove());
+
+      // Style the logo
+      const logo = headerClone.querySelector('img');
+      if (logo) {
+        logo.style.cssText = 'max-height: 80px; height: auto;';
+      }
+
       captureContainer.appendChild(headerClone);
     }
 
