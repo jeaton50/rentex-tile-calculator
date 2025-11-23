@@ -320,31 +320,54 @@ const ExportManager = {
       overflow: visible;
     `;
 
-    // Clone header
+    // Create custom header with logo and order info
+    const headerContainer = document.createElement('div');
+    headerContainer.style.cssText = `
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-bottom: 2px solid #dc2626;
+    `;
+
+    // Add logo at top center
     const header = document.querySelector('header');
     if (header) {
-      const headerClone = header.cloneNode(true);
-      headerClone.style.cssText = `
-        margin-bottom: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        background: white;
-      `;
-
-      // Remove input fields from header, keep only logo
-      const inputs = headerClone.querySelectorAll('input, label');
-      inputs.forEach(input => input.remove());
-
-      // Style the logo
-      const logo = headerClone.querySelector('img');
+      const logo = header.querySelector('img');
       if (logo) {
-        logo.style.cssText = 'max-height: 80px; height: auto;';
+        const logoClone = logo.cloneNode(true);
+        logoClone.style.cssText = `
+          display: block;
+          margin: 0 auto 20px auto;
+          max-height: 80px;
+          height: auto;
+        `;
+        headerContainer.appendChild(logoClone);
       }
-
-      captureContainer.appendChild(headerClone);
     }
+
+    // Add order information as formatted text
+    const orderNumber = document.getElementById('orderNumber')?.value || 'N/A';
+    const orderDate = document.getElementById('orderDate')?.value || 'N/A';
+    const location = document.getElementById('location')?.value || 'N/A';
+
+    const orderInfo = document.createElement('div');
+    orderInfo.style.cssText = `
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      font-size: 16px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #2d3748;
+    `;
+
+    orderInfo.innerHTML = `
+      <div><strong>Order #:</strong> ${orderNumber}</div>
+      <div><strong>Date:</strong> ${orderDate}</div>
+      <div><strong>Location:</strong> ${location}</div>
+    `;
+
+    headerContainer.appendChild(orderInfo);
+    captureContainer.appendChild(headerContainer);
 
     // Create side-by-side layout container
     const contentWrapper = document.createElement('div');
