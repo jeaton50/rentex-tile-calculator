@@ -308,7 +308,7 @@ const ExportManager = {
 
     // Capture page using html2canvas with explicit dimensions
     html2canvas(document.body, {
-      scale: 3,
+      scale: 2,
       allowTaint: true,
       useCORS: true,
       logging: true,
