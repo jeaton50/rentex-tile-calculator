@@ -313,6 +313,22 @@ const ExportManager = {
           el.style.wordSpacing = '0.1em';
         });
 
+        // Fix Configuration Settings inputs and selects to prevent text cutoff
+        const configContainer = clonedDoc.getElementById('configContainer');
+        if (configContainer) {
+          const inputs = configContainer.querySelectorAll('input[type="text"], input[type="number"], select');
+          inputs.forEach(input => {
+            input.style.minWidth = '200px';
+            input.style.width = 'auto';
+            input.style.maxWidth = '100%';
+            input.style.padding = '8px';
+            input.style.fontSize = '14px';
+            input.style.overflow = 'visible';
+            input.style.textOverflow = 'clip';
+            input.style.whiteSpace = 'normal';
+          });
+        }
+
         // Copy canvas elements to cloned document
         const originalCanvasList = document.querySelectorAll('canvas');
         const clonedCanvasList = clonedDoc.querySelectorAll('canvas');
