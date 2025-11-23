@@ -366,7 +366,7 @@ const ExportManager = {
             textSpan.textContent = textValue || '';
             textSpan.style.cssText = `
               display: inline-block;
-              padding: 8px 12px;
+              padding: 0px 8px;
               border: 1px solid #ddd;
               border-radius: 4px;
               background: white;
