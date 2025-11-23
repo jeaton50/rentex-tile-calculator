@@ -79,11 +79,10 @@ header {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  gap: 60px;
-  padding: 20px 30px;
+  -webkit-box-pack: space-between;
+  -ms-flex-pack: space-between;
+  justify-content: space-between;
+  padding: 25px 40px;
   margin-bottom: 30px;
   background: var(--card-gradient);
   -webkit-border-radius: var(--border-radius);
@@ -111,51 +110,72 @@ header:hover {
 }
 
 #rentexLogo {
-  position: static;
-  margin-left: auto;
   height: 60px;
   width: auto;
   max-height: 50px;
+  -webkit-transition: var(--transition-base);
+  -moz-transition: var(--transition-base);
+  -o-transition: var(--transition-base);
+  transition: var(--transition-base);
+}
+
+#rentexLogo:hover {
+  -webkit-transform: scale(1.05);
+  -moz-transform: scale(1.05);
+  -ms-transform: scale(1.05);
+  -o-transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 #orderNumberContainer {
-  position: absolute;
-  top: 10px;
-  left: 30px;
-  margin: 0;
-  padding: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 20px;
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
 }
 
 #orderNumberContainer label {
-  margin: 0;
-  padding: 0;
-}
-
-#orderNumberContainer input {
-  margin: 0;
-  padding: 0;
-}
-
-.order-input {
-  margin-left: -120px;
-  margin-top: 20px;
+  font-weight: 600;
+  color: var(--text-dark);
   font-size: 14px;
-  padding: 5px;
+  white-space: nowrap;
 }
 
-.date-input {
-  margin-left: 10px;
-  margin-top: 20px;
+#orderNumberContainer input[type="text"],
+#orderNumberContainer input[type="date"] {
+  padding: 10px 15px;
+  border: 2px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  -webkit-transition: var(--transition-base);
+  -moz-transition: var(--transition-base);
+  -o-transition: var(--transition-base);
+  transition: var(--transition-base);
+  background: white;
+  color: var(--text-dark);
+}
+
+#orderNumberContainer input[type="text"]:focus,
+#orderNumberContainer input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  -webkit-box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  -moz-box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.order-input, .date-input, .location-input {
+  margin: 0 !important;
 }
 
 .location-label {
-  margin-left: 10px;
-  margin-top: 20px;
-}
-
-.location-input {
-  margin-left: -110px;
-  margin-top: 20px;
+  margin: 0 !important;
 }
 
 /* ====== Layout Sections ====== */
@@ -163,13 +183,13 @@ header:hover {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
   -webkit-box-align: start;
   -ms-flex-align: start;
   align-items: flex-start;
-  gap: 500px;
+  gap: 30px;
   margin: 0px 0;
   margin-bottom: 20px;
 }
