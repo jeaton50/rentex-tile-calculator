@@ -189,7 +189,7 @@ header:hover {
   -webkit-box-align: start;
   -ms-flex-align: start;
   align-items: flex-start;
-  gap: 30px;
+  gap: 20px;
   margin: 0px 0;
   margin-bottom: 20px;
 }
