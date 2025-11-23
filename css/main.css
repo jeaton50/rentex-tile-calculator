@@ -82,8 +82,8 @@ header {
   -webkit-box-pack: space-between;
   -ms-flex-pack: space-between;
   justify-content: space-between;
-  padding: 25px 40px;
-  margin-bottom: 30px;
+  padding: 15px 30px;
+  margin-bottom: 20px;
   background: var(--card-gradient);
   -webkit-border-radius: var(--border-radius);
   -moz-border-radius: var(--border-radius);
