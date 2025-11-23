@@ -297,6 +297,15 @@ const ExportManager = {
     // Scroll to top for consistent capture
     window.scrollTo(0, 0);
 
+    // Calculate full page height including all content
+    const fullHeight = Math.max(
+      document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.documentElement.offsetHeight
+    );
+
     // Capture page using html2canvas
     html2canvas(document.body, {
       scale: 3,
@@ -304,8 +313,8 @@ const ExportManager = {
       useCORS: true,
       logging: false,
       letterRendering: true,
-      height: document.documentElement.scrollHeight,
-      windowHeight: document.documentElement.scrollHeight,
+      height: fullHeight + 100,
+      windowHeight: fullHeight + 100,
       onclone: (clonedDoc) => {
         // Force all text elements to use a reliable font
         const allElements = clonedDoc.querySelectorAll('*');
