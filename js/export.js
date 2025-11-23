@@ -300,17 +300,18 @@ const ExportManager = {
     // Wait a bit for any layout to settle
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Capture page using html2canvas - let it auto-detect full height
-    html2canvas(document.documentElement, {
-      scale: 3,
+    // Capture page using html2canvas with large height to ensure full capture
+    html2canvas(document.body, {
+      scale: 2,
       allowTaint: true,
       useCORS: true,
       logging: false,
       letterRendering: true,
-      scrollY: -window.scrollY,
-      scrollX: -window.scrollX,
-      windowWidth: document.documentElement.scrollWidth,
-      windowHeight: document.documentElement.scrollHeight,
+      scrollY: 0,
+      scrollX: 0,
+      y: 0,
+      height: Math.max(document.body.scrollHeight, 5000),
+      windowHeight: Math.max(document.documentElement.scrollHeight, 5000),
       onclone: (clonedDoc) => {
         // Force all text elements to use a reliable font
         const allElements = clonedDoc.querySelectorAll('*');
