@@ -316,24 +316,31 @@ const ExportManager = {
       windowHeight: contentHeight,
       height: contentHeight,
       onclone: (clonedDoc) => {
-        // Ensure cloned document has full height
-        clonedDoc.body.style.height = contentHeight + 'px';
+        // Ensure cloned document has full height and no overflow
+        clonedDoc.body.style.height = 'auto';
         clonedDoc.body.style.minHeight = contentHeight + 'px';
-        clonedDoc.documentElement.style.height = contentHeight + 'px';
+        clonedDoc.body.style.overflow = 'visible';
+        clonedDoc.documentElement.style.height = 'auto';
         clonedDoc.documentElement.style.minHeight = contentHeight + 'px';
+        clonedDoc.documentElement.style.overflow = 'visible';
 
-        // Ensure controls container is fully visible
-        const controlsContainer = clonedDoc.getElementById('controls');
-        if (controlsContainer) {
-          controlsContainer.style.height = 'auto';
-          controlsContainer.style.minHeight = 'fit-content';
-          controlsContainer.style.maxHeight = 'none';
-          controlsContainer.style.overflow = 'visible';
-        }
-
-        // Force all text elements to use a reliable font
+        // Force all containers to be fully visible without scrolling
         const allElements = clonedDoc.querySelectorAll('*');
         allElements.forEach(el => {
+          // Remove any overflow hidden/scroll constraints
+          if (el.style.overflow === 'hidden' || el.style.overflow === 'scroll' || el.style.overflow === 'auto') {
+            el.style.overflow = 'visible';
+          }
+          // Remove max-height constraints
+          if (el.style.maxHeight && el.style.maxHeight !== 'none') {
+            el.style.maxHeight = 'none';
+          }
+          // Ensure auto height
+          if (el.id === 'controls' || el.id === 'topSection' || el.id === 'fullPage') {
+            el.style.height = 'auto';
+            el.style.minHeight = 'fit-content';
+          }
+          // Font styling
           el.style.fontFamily = 'Arial, Helvetica, sans-serif';
           el.style.letterSpacing = '0.02em';
           el.style.wordSpacing = '0.1em';
