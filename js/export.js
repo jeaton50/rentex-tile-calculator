@@ -299,11 +299,20 @@ const ExportManager = {
 
     // Capture page using html2canvas
     html2canvas(document.body, {
-      scale: 2,
+      scale: 3,
       allowTaint: true,
       useCORS: true,
       logging: false,
+      letterRendering: true,
       onclone: (clonedDoc) => {
+        // Force all text elements to use a reliable font
+        const allElements = clonedDoc.querySelectorAll('*');
+        allElements.forEach(el => {
+          el.style.fontFamily = 'Arial, Helvetica, sans-serif';
+          el.style.letterSpacing = '0.02em';
+          el.style.wordSpacing = '0.1em';
+        });
+
         // Copy canvas elements to cloned document
         const originalCanvasList = document.querySelectorAll('canvas');
         const clonedCanvasList = clonedDoc.querySelectorAll('canvas');
