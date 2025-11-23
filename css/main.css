@@ -389,13 +389,11 @@ header:hover {
 
 /* ====== Controls Section ====== */
 #controls {
-  position: absolute;
-  top: 144px;
-  left: 440px;
-  width: 600px;
+  position: relative;
   -webkit-box-flex: 0;
-  -ms-flex: 0 0 800px;
-  flex: 0 0 800px;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  width: 600px;
   max-width: 700px;
   background: var(--card-gradient);
   padding: 30px;
