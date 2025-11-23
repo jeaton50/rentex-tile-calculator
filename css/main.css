@@ -110,9 +110,9 @@ header:hover {
 }
 
 #rentexLogo {
-  height: 60px;
+  height: 40px;
   width: auto;
-  max-height: 50px;
+  max-height: 40px;
   -webkit-transition: var(--transition-base);
   -moz-transition: var(--transition-base);
   -o-transition: var(--transition-base);
