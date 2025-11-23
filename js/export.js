@@ -313,19 +313,30 @@ const ExportManager = {
           el.style.wordSpacing = '0.1em';
         });
 
-        // Fix Configuration Settings inputs and selects to prevent text cutoff
+        // Replace form elements with text for better rendering
         const configContainer = clonedDoc.getElementById('configContainer');
         if (configContainer) {
-          const inputs = configContainer.querySelectorAll('input[type="text"], input[type="number"], select');
-          inputs.forEach(input => {
-            input.style.minWidth = '200px';
-            input.style.width = 'auto';
-            input.style.maxWidth = '100%';
-            input.style.padding = '8px';
-            input.style.fontSize = '14px';
-            input.style.overflow = 'visible';
-            input.style.textOverflow = 'clip';
-            input.style.whiteSpace = 'normal';
+          // Replace all inputs and selects with plain text
+          const formElements = configContainer.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], select');
+          formElements.forEach(element => {
+            const textValue = element.tagName === 'SELECT'
+              ? element.options[element.selectedIndex]?.text || element.value
+              : element.value;
+
+            const textSpan = clonedDoc.createElement('span');
+            textSpan.textContent = textValue || '';
+            textSpan.style.cssText = `
+              display: inline-block;
+              padding: 8px 12px;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              background: white;
+              min-width: 150px;
+              font-size: 14px;
+              font-family: Arial, Helvetica, sans-serif;
+            `;
+
+            element.parentNode.replaceChild(textSpan, element);
           });
         }
 
