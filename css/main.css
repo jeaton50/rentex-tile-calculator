@@ -204,7 +204,7 @@ header:hover {
   overflow-x: hidden;
   margin-right: 6px;
   background: var(--card-gradient);
-  padding: 15px 30px 30px 30px;
+  padding: 10px 30px 30px 30px;
   -webkit-border-radius: var(--border-radius);
   -moz-border-radius: var(--border-radius);
   border-radius: var(--border-radius);
