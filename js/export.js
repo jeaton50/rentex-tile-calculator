@@ -297,21 +297,13 @@ const ExportManager = {
     // Scroll to top for consistent capture
     window.scrollTo(0, 0);
 
-    // Wait a bit for any layout to settle
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    // Capture page using html2canvas with large height to ensure full capture
+    // Capture page using html2canvas
     html2canvas(document.body, {
-      scale: 2,
+      scale: 3,
       allowTaint: true,
       useCORS: true,
       logging: false,
       letterRendering: true,
-      scrollY: 0,
-      scrollX: 0,
-      y: 0,
-      height: Math.max(document.body.scrollHeight, 5000),
-      windowHeight: Math.max(document.documentElement.scrollHeight, 5000),
       onclone: (clonedDoc) => {
         // Force all text elements to use a reliable font
         const allElements = clonedDoc.querySelectorAll('*');
