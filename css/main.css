@@ -202,7 +202,7 @@ header:hover {
   max-width: 350px;
   width: 350px;
   overflow-x: hidden;
-  margin-right: 40px;
+  margin-right: 10px;
   background: var(--card-gradient);
   padding: 30px;
   -webkit-border-radius: var(--border-radius);
