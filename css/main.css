@@ -395,6 +395,8 @@ header:hover {
   flex: 0 0 auto;
   width: 600px;
   max-width: 700px;
+  min-height: fit-content;
+  height: auto;
   background: var(--card-gradient);
   padding: 0px 30px 30px 30px;
   -webkit-border-radius: var(--border-radius);
