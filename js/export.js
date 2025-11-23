@@ -316,6 +316,12 @@ const ExportManager = {
       windowHeight: contentHeight,
       height: contentHeight,
       onclone: (clonedDoc) => {
+        // Hide header to save space for equipment table
+        const header = clonedDoc.querySelector('header');
+        if (header) {
+          header.style.display = 'none';
+        }
+
         // Ensure cloned document has full height and no overflow
         clonedDoc.body.style.height = 'auto';
         clonedDoc.body.style.minHeight = contentHeight + 'px';
