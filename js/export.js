@@ -304,6 +304,8 @@ const ExportManager = {
       useCORS: true,
       logging: false,
       letterRendering: true,
+      height: document.documentElement.scrollHeight,
+      windowHeight: document.documentElement.scrollHeight,
       onclone: (clonedDoc) => {
         // Force all text elements to use a reliable font
         const allElements = clonedDoc.querySelectorAll('*');
