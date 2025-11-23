@@ -327,6 +327,7 @@ const ExportManager = {
       padding: 20px;
       background: white;
       border-bottom: 2px solid #dc2626;
+      text-align: center;
     `;
 
     // Add logo at top center
@@ -336,10 +337,11 @@ const ExportManager = {
       if (logo) {
         const logoClone = logo.cloneNode(true);
         logoClone.style.cssText = `
-          display: block;
+          display: inline-block;
           margin: 0 auto 20px auto;
           max-height: 80px;
           height: auto;
+          width: auto;
         `;
         headerContainer.appendChild(logoClone);
       }
