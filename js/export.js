@@ -297,24 +297,20 @@ const ExportManager = {
     // Scroll to top for consistent capture
     window.scrollTo(0, 0);
 
-    // Calculate full page height including all content
-    const fullHeight = Math.max(
-      document.body.scrollHeight,
-      document.body.offsetHeight,
-      document.documentElement.clientHeight,
-      document.documentElement.scrollHeight,
-      document.documentElement.offsetHeight
-    );
+    // Wait a bit for any layout to settle
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Capture page using html2canvas
-    html2canvas(document.body, {
+    // Capture page using html2canvas - let it auto-detect full height
+    html2canvas(document.documentElement, {
       scale: 3,
       allowTaint: true,
       useCORS: true,
       logging: false,
       letterRendering: true,
-      height: fullHeight + 100,
-      windowHeight: fullHeight + 100,
+      scrollY: -window.scrollY,
+      scrollX: -window.scrollX,
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight,
       onclone: (clonedDoc) => {
         // Force all text elements to use a reliable font
         const allElements = clonedDoc.querySelectorAll('*');
