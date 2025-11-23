@@ -387,12 +387,26 @@ const ExportManager = {
       controlsClone.style.cssText = `
         position: relative;
         flex: 0 0 auto;
-        width: 900px;
+        width: 1000px;
         margin: 0;
         padding: 20px;
         box-sizing: border-box;
         background: white;
+        overflow: visible;
       `;
+
+      // Style the heading
+      const heading = controlsClone.querySelector('h2');
+      if (heading) {
+        heading.style.cssText = `
+          margin: 0 0 20px 0;
+          font-size: 20px;
+          color: #2d3748;
+          white-space: normal;
+          overflow: visible;
+          text-align: left;
+        `;
+      }
 
       // Force table to render with proper spacing
       const table = controlsClone.querySelector('table');
@@ -455,11 +469,12 @@ const ExportManager = {
       canvasClone.style.cssText = `
         position: relative;
         flex: 0 0 auto;
-        width: 1300px;
+        width: 1200px;
         margin: 0;
         padding: 20px;
         box-sizing: border-box;
         background: white;
+        overflow: visible;
       `;
 
       // Copy canvas content
