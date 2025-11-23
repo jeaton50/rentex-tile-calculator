@@ -297,17 +297,56 @@ const ExportManager = {
     // Scroll to top for consistent capture
     window.scrollTo(0, 0);
 
-    // Capture page using html2canvas
+    // Get the actual content height
+    const contentHeight = Math.max(
+      document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.documentElement.offsetHeight
+    );
+
+    // Capture page using html2canvas with explicit dimensions
     html2canvas(document.body, {
       scale: 3,
       allowTaint: true,
       useCORS: true,
-      logging: false,
+      logging: true,
       letterRendering: true,
+      windowHeight: contentHeight,
+      height: contentHeight,
       onclone: (clonedDoc) => {
-        // Force all text elements to use a reliable font
+        // Hide header to save space for equipment table
+        const header = clonedDoc.querySelector('header');
+        if (header) {
+          header.style.display = 'none';
+        }
+
+        // Ensure cloned document has full height and no overflow
+        clonedDoc.body.style.height = 'auto';
+        clonedDoc.body.style.minHeight = contentHeight + 'px';
+        clonedDoc.body.style.overflow = 'visible';
+        clonedDoc.documentElement.style.height = 'auto';
+        clonedDoc.documentElement.style.minHeight = contentHeight + 'px';
+        clonedDoc.documentElement.style.overflow = 'visible';
+
+        // Force all containers to be fully visible without scrolling
         const allElements = clonedDoc.querySelectorAll('*');
         allElements.forEach(el => {
+          // Remove any overflow hidden/scroll constraints
+          if (el.style.overflow === 'hidden' || el.style.overflow === 'scroll' || el.style.overflow === 'auto') {
+            el.style.overflow = 'visible';
+          }
+          // Remove max-height constraints
+          if (el.style.maxHeight && el.style.maxHeight !== 'none') {
+            el.style.maxHeight = 'none';
+          }
+          // Ensure auto height
+          if (el.id === 'controls' || el.id === 'topSection' || el.id === 'fullPage') {
+            el.style.height = 'auto';
+            el.style.minHeight = 'fit-content';
+          }
+          // Font styling
           el.style.fontFamily = 'Arial, Helvetica, sans-serif';
           el.style.letterSpacing = '0.02em';
           el.style.wordSpacing = '0.1em';
@@ -327,7 +366,7 @@ const ExportManager = {
             textSpan.textContent = textValue || '';
             textSpan.style.cssText = `
               display: inline-block;
-              padding: 8px 12px;
+              padding: 0px 8px;
               border: 1px solid #ddd;
               border-radius: 4px;
               background: white;
