@@ -297,18 +297,30 @@ const ExportManager = {
     // Scroll to top for consistent capture
     window.scrollTo(0, 0);
 
-    // Capture page using html2canvas
+    // Get the actual content height
+    const contentHeight = Math.max(
+      document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.documentElement.offsetHeight
+    );
+
+    // Capture page using html2canvas with explicit dimensions
     html2canvas(document.body, {
       scale: 3,
       allowTaint: true,
       useCORS: true,
-      logging: false,
+      logging: true,
       letterRendering: true,
+      windowHeight: contentHeight,
+      height: contentHeight,
       onclone: (clonedDoc) => {
         // Ensure cloned document has full height
-        clonedDoc.body.style.height = 'auto';
-        clonedDoc.body.style.minHeight = '100%';
-        clonedDoc.documentElement.style.height = 'auto';
+        clonedDoc.body.style.height = contentHeight + 'px';
+        clonedDoc.body.style.minHeight = contentHeight + 'px';
+        clonedDoc.documentElement.style.height = contentHeight + 'px';
+        clonedDoc.documentElement.style.minHeight = contentHeight + 'px';
 
         // Ensure controls container is fully visible
         const controlsContainer = clonedDoc.getElementById('controls');
