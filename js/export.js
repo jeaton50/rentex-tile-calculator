@@ -294,6 +294,14 @@ const ExportManager = {
       document.body.removeChild(a);
     }
 
+    // Save current zoom level and set to 100% for capture
+    const htmlElement = document.documentElement;
+    const originalZoom = htmlElement.style.zoom;
+    htmlElement.style.zoom = '100%';
+
+    // Wait for layout to adjust to new zoom
+    await new Promise(resolve => setTimeout(resolve, 300));
+
     // Scroll to top for consistent capture
     window.scrollTo(0, 0);
 
@@ -440,11 +448,17 @@ const ExportManager = {
 
         // Open email client
         window.location.href = `mailto:LEDPanel@rentex.com?subject=${emailSubject}&body=${emailBody}`;
+
+        // Restore original zoom level
+        htmlElement.style.zoom = originalZoom || '90%';
       });
     })
     .catch((error) => {
       console.error('Canvas capture error:', error);
       alert('Screenshot capture failed. Check console for details.');
+
+      // Restore original zoom level even on error
+      htmlElement.style.zoom = originalZoom || '90%';
     });
   }
 };
