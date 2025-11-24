@@ -4,33 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Technical View - LED Wall Calculator</title>
+
+  <!-- Link to main stylesheet for consistent design -->
+  <link rel="stylesheet" href="css/main.css">
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       margin: 20px;
-      background-color: #f5f5f5;
+      background: var(--bg-gradient);
+      padding: 20px;
     }
 
     .container {
       max-width: 95%;
       margin: 0 auto;
-      background: white;
+      background: var(--card-gradient);
       padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
     h1 {
       text-align: center;
-      color: #333;
+      color: var(--text-dark);
       margin-bottom: 10px;
     }
 
     .screen-info {
       margin-bottom: 30px;
       padding: 20px;
-      background: #f0f0f0;
-      border-radius: 5px;
+      background: rgba(220, 38, 38, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(220, 38, 38, 0.1);
     }
 
     .screen-info-header {
@@ -40,7 +47,7 @@
 
     .screen-info-header h2 {
       margin: 5px 0;
-      color: #555;
+      color: var(--text-dark);
       font-size: 18px;
     }
 
@@ -51,16 +58,24 @@
     }
 
     .info-box {
-      background: #fff;
+      background: white;
       padding: 12px;
-      border-radius: 5px;
-      border-left: 4px solid #0066cc;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-base);
+    }
+
+    .info-box:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
 
     .info-box h3 {
       margin: 0 0 8px 0;
       font-size: 14px;
-      color: #333;
+      color: var(--text-dark);
+      font-weight: 600;
     }
 
     .info-box p {
@@ -71,20 +86,21 @@
 
     .info-box .value {
       font-weight: bold;
-      color: #000;
+      color: var(--primary-color);
     }
 
     .diagram-section {
       margin-bottom: 50px;
       padding: 20px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      background: var(--card-gradient);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
     .diagram-section h2 {
       text-align: center;
-      color: #333;
+      color: var(--text-dark);
       margin-bottom: 20px;
       font-size: 22px;
     }
@@ -92,8 +108,9 @@
     .controls {
       margin-bottom: 20px;
       padding: 15px;
-      background: #e8f4f8;
-      border-radius: 5px;
+      background: rgba(220, 38, 38, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(220, 38, 38, 0.1);
     }
 
     .controls-row {
@@ -127,24 +144,29 @@
       text-align: center;
       overflow-x: auto;
       padding: 10px;
-      background: #fff;
-      border: 2px solid #ddd;
-      border-radius: 5px;
+      background: white;
+      border: 2px solid rgba(220, 38, 38, 0.2);
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
     }
 
     .back-button {
       display: inline-block;
       margin-bottom: 20px;
       padding: 10px 20px;
-      background: #0066cc;
+      background: var(--primary-color);
       color: white;
       text-decoration: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-weight: bold;
+      transition: var(--transition-base);
+      box-shadow: var(--shadow-sm);
     }
 
     .back-button:hover {
-      background: #0052a3;
+      background: #b91c1c;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
 
     .capture-button {
