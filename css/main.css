@@ -322,6 +322,12 @@ header:hover {
   display: inline-block !important;
 }
 
+#configContainer h2 {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
 /* ====== Canvas Container ====== */
 #canvasContainer {
   -webkit-box-flex: 0;
@@ -417,7 +423,7 @@ header:hover {
   padding: 10px 15px;
   background-color: transparent;
   border: none;
-  font-size: 1em;
+  font-size: 1.2rem;
   color: var(--text-dark);
   display: -webkit-box;
   display: -ms-flexbox;
