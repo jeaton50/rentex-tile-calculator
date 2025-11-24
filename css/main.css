@@ -419,8 +419,9 @@ header:hover {
 
 #wallDimensions {
   font-weight: 600;
+  margin-top: 0;
   margin-bottom: 15px;
-  padding: 10px 15px;
+  padding: 0px 15px 10px 15px;
   background-color: transparent;
   border: none;
   font-size: 1.2rem;
