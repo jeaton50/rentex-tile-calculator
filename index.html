@@ -59,8 +59,18 @@
       <input type="date" id="orderDate" style="margin-left: 10px; margin-top: 0px;">
       <label for="location" style="margin-left: 10px; margin-top: 0px;">Location:</label>
       <input type="text" id="location" placeholder="Enter location" style="margin-left: -110px; margin-top: 0px;">
+    </div>
 
-
+    <!-- Action Buttons -->
+    <div id="headerButtons" style="display: flex; gap: 8px; margin-left: 20px;">
+      <button type="button" onclick="captureEntireScreen()">Email</button>
+      <button type="button" id="exportButton" onclick="exportToExcel()">Export to SL+</button>
+      <button type="button" onclick="zoomIn()">Zoom In</button>
+      <button type="button" onclick="zoomOut()">Zoom Out</button>
+      <button type="button" onclick="resetScreen()">Reset</button>
+      <button type="button" onclick="openScreenViews()" style="background-color: #0066cc; color: white; font-weight: bold;">Screen Views</button>
+      <button type="button" onclick="openTechnicalView()" style="background-color: #dc3545; color: white; font-weight: bold;">Technical</button>
+    </div>
   </header>
 
 
@@ -405,15 +415,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         <!-- Wiring Diagram Controls - MOVED TO TECHNICAL VIEW PAGE -->
         <!-- These controls are now hidden and available via the Technical button below -->
-        <br>
-
-        <button type="button" onclick="captureEntireScreen()">Email</button>
-        <button type="button" id="exportButton" onclick="exportToExcel()">Export to SL+</button>
-        <button type="button" onclick="zoomIn()">Zoom In</button>
-        <button type="button" onclick="zoomOut()">Zoom Out</button>
-        <button type="button" onclick="resetScreen()">Reset</button>
-        <button type="button" onclick="openScreenViews()" style="background-color: #0066cc; color: white; font-weight: bold;">Screen Views</button>
-        <button type="button" onclick="openTechnicalView()" style="background-color: #dc3545; color: white; font-weight: bold;">Technical</button>
+        <!-- Action buttons have been moved to header -->
       </div>
 
       <!-- Equipment Requirements (MOVED TO CENTER) -->
