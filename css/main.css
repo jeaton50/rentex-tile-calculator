@@ -328,8 +328,8 @@ header:hover {
   -ms-flex: 0 0 auto;
   flex: 0 0 auto;
   width: 1190px;
-  max-width: 1190px;
-  min-width: 1190px;
+  max-width: 1188px;
+  min-width: 1188px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
