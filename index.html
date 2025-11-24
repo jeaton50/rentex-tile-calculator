@@ -1163,10 +1163,10 @@ document.getElementById('powerDistroType')?.addEventListener('change', () => {
         // Reset topSection to original layout
         topSection.style.display = 'flex';
         topSection.style.alignItems = 'flex-start';
-        topSection.style.gap = '500px';
+        topSection.style.gap = '10px';
         topSection.style.margin = '0px 0';
         topSection.style.flexWrap = '';  // Clear the nowrap setting
-        topSection.style.justifyContent = '';  // Reset to CSS default (space-between)
+        topSection.style.justifyContent = 'flex-start';  // Reset to CSS default
 
         const screenEquipmentContainer = document.getElementById('screenEquipmentContainer');
         if (screenEquipmentContainer) {
